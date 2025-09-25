@@ -1,0 +1,23 @@
+version: v2
+managed:
+  enabled: true
+  override:
+    - file_option: go_package_prefix
+      value: github.com/shibayama-club/keyhub/internal/interface/gen
+  disable:
+    - file_option: go_package
+      module: buf.build/bufbuild/protovalidate
+plugins:
+  - remote: buf.build/protocolbuffers/go
+    out: ../backend/internal/interface/gen
+    opt: paths=source_relative
+  - remote: buf.build/connectrpc/go
+    out: ../backend/internal/interface/gen
+    opt: paths=source_relative
+  - remote: buf.build/bufbuild/es
+    out: ../frontend/proto/src
+    opt: target=ts
+    include_imports: true
+  - remote: buf.build/connectrpc/query-es
+    opt: target=ts
+    out: ../frontend/proto/src
