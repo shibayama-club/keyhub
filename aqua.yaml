@@ -1,0 +1,24 @@
+registries:
+  - type: standard
+    ref: v4.395.0
+
+packages:
+  # Go toolchain / task runner / linters
+  - name: golang/go@go1.25.0
+  - name: go-task/task@v3.43.3
+  - name: golangci/golangci-lint@v2.3.1
+
+  # DB / schema / migration / SQL→コード生成
+  - name: pressly/goose@v3.24.3
+  - name: k1LoW/tbls@v1.87.0
+  - name: sqlc-dev/sqlc@v1.29.0
+
+  # Node.js & パッケージマネージャ
+  - name: nodejs/node@v24.6.0
+  - name: pnpm/pnpm@v10.14.0
+
+  # proto
+  - name: bufbuild/buf@v1.55.1
+
+  # claude mcp用(人によってはいらないので消しておけばok)
+  - name: astral-sh/uv@0.4.27
