@@ -1,0 +1,21 @@
+# TBLS configuration
+docPath: doc/schema
+
+# Exclude goose migration table
+exclude:
+  - goose_db_version
+
+# Lint configuration
+lint:
+  requireColumnComment:
+    enabled: false
+  requireTableComment:
+    enabled: false
+  requireIndexComment:
+    enabled: false
+
+# ER diagram settings
+er:
+  format: svg
+  comment: true
+  distance: 2
