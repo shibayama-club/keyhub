@@ -1,0 +1,12 @@
+version: v2
+modules:
+  - name: buf.build/shibayama-club/keyhub
+    path: .
+deps:
+  - buf.build/bufbuild/protovalidate
+lint:
+  use:
+    - STANDARD
+breaking:
+  use:
+    - FILE
