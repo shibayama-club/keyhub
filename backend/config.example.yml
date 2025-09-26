@@ -1,0 +1,9 @@
+postgres:
+  host: localhost
+  port: 5432
+  user: keyhub-local
+  password: keyhub
+  database: keyhub
+sentry:
+  dsn: ""
+env: "local"
