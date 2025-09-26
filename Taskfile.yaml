@@ -1,0 +1,56 @@
+version: "3"
+
+vars:
+  POSTGRES_PORT: '{{.POSTGRES_PORT | default "5432"}}'
+  pgconn: "host=localhost port={{.POSTGRES_PORT}} user=keyhub password=keyhub dbname=keyhub"
+
+tasks:
+  init:
+    desc: init project
+    cmds:
+      - task: init:backend
+      - task: init:frontend
+      - task: init:frontend:app
+      - task: init:frontend:console
+  init:backend:
+    cmds:
+      - go install github.com/go-task/task/v3/cmd/task@latest
+      - aqua i -l
+  init:frontend:
+    dir: ./frontend
+    cmds:
+      - pnpm i
+  init:frontend:app:
+    dir: ./frontend/app
+    cmds:
+      - pnpm i
+  init:frontend:console:
+    dir: ./frontend/console
+    cmds:
+      - pnpm i
+
+  proto:
+    desc: Generate code from protobuf
+    dir: ./proto
+    cmds:
+      - buf dep update
+      - buf generate
+      - buf lint
+      - buf format -w
+
+  fmt:
+    deps: [fmt:frontend, fmt:backend]
+  fmt:frontend:
+    deps: [fmt:frontend:app, fmt:frontend:console]
+  fmt:frontend:app:
+    dir: ./frontend/app
+    cmds:
+      - pnpm run fmt
+  fmt:frontend:console:
+    dir: ./frontend/console
+    cmds:
+      - pnpm run fmt
+  fmt:backend:
+    dir: ./backend
+    cmds:
+      - gofmt -w ./backend
