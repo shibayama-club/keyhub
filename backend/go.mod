@@ -6,6 +6,8 @@ require (
 	github.com/cockroachdb/errors v1.12.0
 	github.com/getsentry/sentry-go v0.27.0
 	github.com/google/uuid v1.6.0
+	github.com/jackc/pgx v3.6.2+incompatible
+	github.com/jackc/pgx/v5 v5.7.5
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/pressly/goose/v3 v3.25.0
 	github.com/samber/slog-echo v1.17.2
@@ -16,15 +18,22 @@ require (
 )
 
 require (
+	github.com/cockroachdb/apd v1.1.0 // indirect
 	github.com/cockroachdb/logtags v0.0.0-20230118201751-21c54148d20b // indirect
 	github.com/cockroachdb/redact v1.1.5 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
+	github.com/gofrs/uuid v4.4.0+incompatible // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
+	github.com/jackc/fake v0.0.0-20150926172116-812a484cc733 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mfridman/interpolate v0.0.2 // indirect
