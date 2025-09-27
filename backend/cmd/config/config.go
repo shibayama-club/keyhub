@@ -32,7 +32,7 @@ type (
 func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("env", "dev", "Environment (dev, prod)")
 	flags.String("postgres.host", "localhost", "DB host")
-	flags.Int("postgres.port", 5433, "DB port")
+	flags.Int("postgres.port", 5432, "DB port")
 	flags.String("postgres.user", "todo", "DB user")
 	flags.String("postgres.password", "", "DB password")
 	flags.String("postgres.database", "todo", "DB name")
