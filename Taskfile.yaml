@@ -54,3 +54,127 @@ tasks:
     dir: ./backend
     cmds:
       - gofmt -w ./backend
+
+  compose:up:
+    cmds:
+      - docker compose up -d
+  compose:down:
+    cmds:
+      - docker compose down -v
+
+  migrate:up:
+    dir: ./backend/db/migrations
+    cmds:
+      - goose -dir . postgres '{{.pgconn}}' up
+      - task --force gen:docs:schema
+  migrate:up-by-one:
+    dir: ./backend/db/migrations
+    cmds:
+      - goose -dir . postgres '{{.pgconn}}' up-by-one
+      - task --force gen:docs:schema
+  migrate:down:
+    dir: ./backend/db/migrations
+    cmds:
+      - goose -dir . postgres '{{.pgconn}}' down
+      - task --force gen:docs:schema
+  migrate:new:
+    dir: ./backend/db/migrations
+    cmds:
+      - goose -dir . create _ sql
+  datamigrate:build:
+    dir: ./backend/datamigrations
+    cmds:
+      - go build -o goose-custom *.go && chmod 755 goose-custom
+  datamigrate:up:
+    dir: ./backend/datamigrations
+    cmds:
+      - ./goose-custom -dir . postgres '{{.pgconn}}' up
+  datamigrate:up-by-one:
+    dir: ./backend/datamigrations
+    cmds:
+      - ./goose-custom -dir . postgres '{{.pgconn}}' up-by-one
+  datamigrate:down:
+    dir: ./backend/datamigrations
+    cmds:
+      - ./goose-custom -dir . postgres '{{.pgconn}}' down
+
+  seed:up:
+    dir: ./backend/db/seeds
+    cmds:
+      - goose -dir . postgres '{{.pgconn}}' up -no-versioning
+  seed:new:
+    dir: ./backend/db/seeds
+    cmds:
+      - goose -dir . create _ sql
+
+  gen:
+    run: once
+    deps:
+      - dump:schema
+      - gen:docs:schema
+      - gen:sqlc
+  gen:docs:schema:
+    dir: ./backend
+    run: once
+    sources:
+      - ./tbls.yaml
+      - ./db/migrations/**/*
+    generates:
+      - ./docs/schema/**/*
+    cmds:
+      - tbls doc --rm-dist -c tbls.yaml
+  gen:sqlc:
+    dir: ./backend
+    cmds:
+      - sqlc generate -f sqlc.yaml
+
+  dump:schema:
+    desc: Dump database schema to SQL file
+    deps: [compose:up]
+    cmds:
+      - docker exec $(docker ps -qf "name=postgres") pg_dump -U keyhub -d keyhub --schema-only --no-owner --no-privileges > backend/db/schema.sql
+      - echo "Schema dumped to backend/db/schema.sql"
+
+  lint:
+    deps: [lint:backend, lint:frontend]
+  lint:backend:
+    dir: ./backend
+    cmds:
+      - golangci-lint run
+  lint:frontend:
+    deps: [lint:frontend:app, lint:frontend:console]
+  lint:frontend:app:
+    dir: ./frontend/app
+    cmds:
+      - pnpm run lint
+  lint:frontend:console:
+    dir: ./frontend/console
+    cmds:
+      - pnpm run lint
+
+  run:
+    deps: [run:frontend, run:backend]
+  run:app:
+    deps: [run:frontend:app, run:backend:app]
+  run:console:
+    deps: [run:frontend:console, run:backend:console]
+  run:frontend:
+    deps: [run:frontend:app, run:frontend:console]
+  run:frontend:app:
+    dir: ./frontend/app
+    cmds:
+      - pnpm run dev
+  run:frontend:console:
+    dir: ./frontend/console
+    cmds:
+      - pnpm run dev
+  run:backend:
+    deps: [run:backend:app, run:backend:console]
+  run:backend:app:
+    dir: ./backend
+    cmds:
+      - go run ./cmd app --config config.yaml --debug
+  run:backend:console:
+    dir: ./backend
+    cmds:
+      - go run ./cmd console --config config.yaml --debug
