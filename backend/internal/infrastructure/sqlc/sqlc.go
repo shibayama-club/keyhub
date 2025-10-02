@@ -5,6 +5,8 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/shibayama-club/keyhub/internal/domain/repository"
+	"github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
 )
 
 type SqlcRepository struct {
