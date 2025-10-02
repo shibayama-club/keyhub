@@ -1,7 +1,8 @@
+dsn: postgresql://keyhub:keyhub@localhost:5433/keyhub?sslmode=disable
 # TBLS configuration
-docPath: doc/schema
+docPath: docs/schema
 
-# Exclude goose migration table
+# Exclude migration management tables
 exclude:
   - goose_db_version
 
