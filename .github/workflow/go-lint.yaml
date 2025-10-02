@@ -1,0 +1,22 @@
+name: Go  Lint
+
+on:
+  push:
+
+jobs:
+  go-lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    keyhub:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+      - run: go mod download
+      - uses: golangci/golangci-lint-action@v7
+        with:
+          working-directory: backend
+          version: v2.1.2
+          args: --timeout 5m
