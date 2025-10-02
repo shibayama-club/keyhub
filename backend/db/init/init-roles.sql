@@ -1,3 +1,3 @@
 CREATE ROLE keyhub;
-CREATE USER "keyhub-local" WITH PASSWORD 'keyhub14';
+CREATE USER "keyhub-local" WITH PASSWORD 'keyhub';
 GRANT keyhub TO "keyhub-local";
