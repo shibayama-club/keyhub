@@ -113,7 +113,7 @@ func NewUserIcon(value string) (UserIcon, error) {
 }
 
 type User struct {
-	Id UserID
+	UserId UserID
 	Email UserEmail
 	Name UserName
 	Icon UserIcon
