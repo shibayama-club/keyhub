@@ -82,6 +82,10 @@ func NewUserName(value string) (UserName, error) {
 
 type UserIcon string
 
+func (i UserIcon) String() string {
+	return string(i)
+}
+
 func (i UserIcon) Validate() error {
 	if i == "" {
 		return nil
