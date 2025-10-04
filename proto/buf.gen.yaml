@@ -15,9 +15,9 @@ plugins:
     out: ../backend/internal/interface/gen
     opt: paths=source_relative
   - remote: buf.build/bufbuild/es
-    out: ../frontend/proto/src
+    out: ../frontend/gen/src
     opt: target=ts
     include_imports: true
   - remote: buf.build/connectrpc/query-es
     opt: target=ts
-    out: ../frontend/proto/src
+    out: ../frontend/gen/src
