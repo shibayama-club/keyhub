@@ -1,59 +1,32 @@
-このドキュメントは分割されました。最新の内容は以下を参照してください。
+# KeyHub ドキュメント案内（all.md）
 
-- docs/system/README.md
-- 認証の詳細: docs/auth/authflow.md
+このページは docs 配下の索引です。ドキュメントを「App」「Console」「App×Console（共有）」「その他」に大分類しました。
 
-主な分割先
-- 全体ワークフロー: docs/system/workflow.md
-- ER 図・テーブル詳細: docs/system/db/er-core.md, docs/system/db/tables.md
-- API と RPC: docs/system/api.md
-- 運用Tips/画面メモ: docs/system/operations.md
-- セキュリティ/一意性ポリシー: docs/system/security/policies.md
-- RLS 概略: docs/system/security/rls.md
-- マルチテナント拡張: docs/system/multitenant/overview.md, docs/system/multitenant/flows.md, docs/system/multitenant/er.md, docs/system/multitenant/ddl.md
+## App
+
+- 認証フロー（OAuth/セッション）: [app/authflow.md](app/authflow.md)
+- 全体ワークフロー（DB操作込み）: [app/workflow.md](app/workflow.md)
+- ER 図（コア）: [app/db/er-core.md](app/db/er-core.md)
+- テーブル詳細（コア）: [app/db/tables.md](app/db/tables.md)
+- 運用Tips / 画面メモ: [app/operations.md](app/operations.md)
+
+## Console
+
+- マルチテナント拡張の要約: [console/overview.md](console/overview.md)
+- コンソール/アプリのフロー図: [console/flows.md](console/flows.md)
+- 追加DDL（マルチテナント）: [console/ddl.md](console/ddl.md)
+
+## App×Console（共有）
+
+- ER 図（マルチテナント）: [shared/multitenant/er.md](shared/multitenant/er.md)
+- テーブル詳細（マルチテナント）: [shared/multitenant/tables.md](shared/multitenant/tables.md)
+- API と RPC（全体）: [shared/api.md](shared/api.md)
+- セキュリティ / 一意性ポリシー: [shared/security/policies.md](shared/security/policies.md)
+- RLS 概略・DDLサンプル: [shared/security/rls.md](shared/security/rls.md)
+- システム設計の目次（全体像）: [shared/README.md](shared/README.md)
+
+## その他
+
+- コミットメッセージ運用ルール: [other/commit.md](other/commit.md)
 
 ---
-
-### 10 RLS（概略）
-
-- コンテキスト: セッションの `active_membership_id` を接続単位で `SET app.membership_id = '...'` として渡す。
-- 補助関数（例）:
-
-```sql
-CREATE SCHEMA IF NOT EXISTS app;
-
-CREATE OR REPLACE FUNCTION app.current_membership_id()
-RETURNS uuid LANGUAGE sql STABLE AS $$
-  SELECT current_setting('app.membership_id', true)::uuid
-$$;
-
-CREATE OR REPLACE FUNCTION app.current_tenant_id()
-RETURNS uuid LANGUAGE sql STABLE AS $$
-  SELECT tm.tenant_id
-  FROM tenant_memberships tm
-  WHERE tm.id = app.current_membership_id()
-$$;
-```
-
-- ポリシー（例）: テナントに紐づく全テーブルを `tenant_id = app.current_tenant_id()` で制限。
-
-```sql
-ALTER TABLE tenants            ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_domains     ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_join_codes  ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_memberships ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY tenant_is_current ON tenants
-  USING (id = app.current_tenant_id());
-
-CREATE POLICY tenant_is_current ON tenant_domains
-  USING (tenant_id = app.current_tenant_id());
-
-CREATE POLICY tenant_is_current ON tenant_join_codes
-  USING (tenant_id = app.current_tenant_id());
-
-CREATE POLICY tenant_is_current ON tenant_memberships
-  USING (tenant_id = app.current_tenant_id());
-```
-
-注意: 実運用では書き込み系（INSERT/UPDATE/DELETE）の `WITH CHECK` も合わせて定義し、管理系（console）とアプリ系（app）でロールを分離する。
