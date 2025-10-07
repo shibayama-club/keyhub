@@ -63,8 +63,6 @@ erDiagram
     uuid active_membership_id FK
     timestamptz created_at
     timestamptz expires_at
-    inet ip
-    text user_agent
     text csrf_token
     boolean revoked
   }
@@ -75,8 +73,6 @@ erDiagram
     uuid tenant_id FK
     timestamptz created_at
     timestamptz expires_at
-    inet ip
-    text user_agent
   }
 
   tenants ||--o{ tenant_domains : has
