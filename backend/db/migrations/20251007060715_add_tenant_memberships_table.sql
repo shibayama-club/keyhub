@@ -20,11 +20,24 @@ CREATE TABLE tenant_memberships (
 GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE tenant_memberships TO keyhub;
 
 CREATE INDEX idx_memberships_user ON tenant_memberships(user_id);
+
+-- Add foreign key constraint and index to sessions.active_membership_id
+ALTER TABLE sessions
+    ADD CONSTRAINT fk_sessions_active_membership
+    FOREIGN KEY (active_membership_id) REFERENCES tenant_memberships(id);
+
+CREATE INDEX idx_sessions_active_membership ON sessions(active_membership_id);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
 SELECT 'down SQL query - tenant_memberships table rollback';
+
+-- Remove sessions foreign key and index first
+DROP INDEX IF EXISTS idx_sessions_active_membership;
+
+ALTER TABLE sessions
+    DROP CONSTRAINT IF EXISTS fk_sessions_active_membership;
 
 DROP INDEX IF EXISTS idx_memberships_user;
 
