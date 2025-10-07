@@ -1,6 +1,6 @@
 ## テーブル詳細（マルチテナント拡張）
 
-このドキュメントは、`./er.md` のERに基づき、マルチテナント関連テーブルと各カラムの意味・制約を整理したものです。コア側（users, user_identities, sessions など）の基本説明は `../../app/db/tables.md` も参照してください。
+このドキュメントは、`./er.md` のERに基づき、マルチテナント関連テーブルと各カラムの意味・制約を整理したものです。app側で定義される基本テーブル（users, user_identities, sessions など）の詳細は `../../app/db/tables.md` も参照してください。
 
 ### tenants
 
@@ -71,7 +71,7 @@
 - INDEX: `(user_id)`（ユーザーから所属一覧を引く用途）
 - CHECK制約: `role`, `status`, `joined_via` は定義済みの値に限定。
 
-### users（コア）
+### users（app側）
 
 ユーザー基本情報。詳細は `../../app/db/tables.md` 参照。
 
@@ -84,7 +84,7 @@
 | created_at | timestamptz | 作成時刻。 |
 | updated_at | timestamptz | 更新時刻。 |
 
-### user_identities（コア）
+### user_identities（app側）
 
 外部IDプロバイダとの紐付け。詳細は `../../app/db/tables.md` 参照。
 
@@ -96,7 +96,24 @@
 | provider_sub | text | プロバイダ側の一意ID（Googleの `sub` など）。 |
 | created_at / updated_at | timestamptz | 作成・更新時刻。 |
 
-### sessions（コア＋拡張）
+### oauth_states（app側）
+
+OAuth 2.0 / OIDC認証フロー中の一時的な状態を管理。CSRF攻撃とリプレイ攻撃を防止する。
+
+| カラム | 型 | 説明 |
+| --- | --- | --- |
+| state | text | 主キー。OAuth CSRF対策のランダム文字列。認証リクエスト時に生成し、コールバック時に検証。 |
+| code_verifier | text | PKCE（Proof Key for Code Exchange）のcode_verifier。必須。 |
+| nonce | text | IDトークン検証用nonce。リプレイ攻撃防止。必須。 |
+| created_at | timestamptz | 作成時刻。`now()` デフォルト。 |
+| consumed_at | timestamptz | 使用済み時刻。NULL可。コールバック処理完了時に記録。 |
+
+備考 / 制約・インデックス
+- INDEX: `(created_at)` - 古いレコードのクリーンアップに使用。
+- ライフサイクル: 認証開始時に作成 → コールバック時に`consumed_at`を更新 → 定期的に古いレコードを削除（例: 作成から15分経過したもの）。
+- セキュリティ: `consumed_at`が既に設定されているレコードは再利用を拒否することで、リプレイ攻撃を防ぐ。
+
+### sessions（app側 + マルチテナント拡張）
 
 アプリセッション。`active_membership_id` により現在のテナント文脈を保持。詳細は `../../app/db/tables.md` 参照。
 
@@ -107,14 +124,13 @@
 | active_membership_id | uuid | 外部キー。`tenant_memberships(id)`。NULL可（未選択時）。 |
 | created_at | timestamptz | 作成時刻。 |
 | expires_at | timestamptz | 期限。GC対象。 |
-| ip | inet | ログイン元IP。 |
-| user_agent | text | クライアントUA。 |
 | csrf_token | text | CSRF対策トークン。 |
 | revoked | boolean | 手動無効化フラグ。 |
 
 備考 / 制約・インデックス
-- INDEX: `(active_membership_id)`
-- 外部キーにより `active_membership_id` の整合性を強制。
+- INDEX: `(active_membership_id)` - テナント切り替えやメンバーシップに基づくセッション検索を高速化。
+- 外部キー: `fk_sessions_active_membership` - `active_membership_id`が`tenant_memberships(id)`を参照。データ整合性を強制し、存在しないメンバーシップIDの設定を防ぐ。
+- マイグレーション: `active_membership_id`カラムは`sessions`テーブル作成時に定義されるが、外部キー制約は`tenant_memberships`テーブル作成後（`20251007060715_add_tenant_memberships_table.sql`）に追加される。
 
 ### console_sessions
 
@@ -126,8 +142,6 @@
 | tenant_id | uuid | 外部キー。`tenants(id)`。CASCADE削除。 |
 | created_at | timestamptz | 作成時刻。`now()` デフォルト。 |
 | expires_at | timestamptz | 期限。必須。 |
-| ip | inet | 発行端末のIP。 |
-| user_agent | text | クライアントUA。 |
 
 備考 / 制約・インデックス
 - テナント境界の管理操作に使用。TTLに従って定期的にクリーンアップ。
