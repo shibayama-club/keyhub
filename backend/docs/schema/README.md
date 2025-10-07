@@ -5,6 +5,14 @@
 | Name | Columns | Comment | Type |
 | ---- | ------- | ------- | ---- |
 | [public.users](public.users.md) | 6 |  | BASE TABLE |
+| [public.user_identities](public.user_identities.md) | 6 |  | BASE TABLE |
+| [public.sessions](public.sessions.md) | 7 |  | BASE TABLE |
+| [public.oauth_states](public.oauth_states.md) | 5 |  | BASE TABLE |
+| [public.tenants](public.tenants.md) | 6 |  | BASE TABLE |
+| [public.tenant_domains](public.tenant_domains.md) | 4 |  | BASE TABLE |
+| [public.tenant_join_codes](public.tenant_join_codes.md) | 7 |  | BASE TABLE |
+| [public.tenant_memberships](public.tenant_memberships.md) | 8 |  | BASE TABLE |
+| [public.console_sessions](public.console_sessions.md) | 4 |  | BASE TABLE |
 
 ## Stored procedures and functions
 
@@ -21,6 +29,8 @@
 | public.uuid_generate_v4 | uuid |  | FUNCTION |
 | public.uuid_generate_v5 | uuid | namespace uuid, name text | FUNCTION |
 | public.update_updated_at_column | trigger |  | FUNCTION |
+| app.current_membership_id | uuid |  | FUNCTION |
+| app.current_tenant_id | uuid |  | FUNCTION |
 
 ## Relations
 

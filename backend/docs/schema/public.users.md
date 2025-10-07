@@ -6,7 +6,7 @@
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | uuid | uuid_generate_v4() | false |  |  |  |
+| id | uuid | uuid_generate_v4() | false | [public.user_identities](public.user_identities.md) [public.sessions](public.sessions.md) [public.tenant_memberships](public.tenant_memberships.md) |  |  |
 | email | text |  | false |  |  |  |
 | name | text |  | false |  |  |  |
 | icon | text |  | false |  |  |  |
