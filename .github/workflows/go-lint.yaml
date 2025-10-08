@@ -9,7 +9,7 @@ jobs:
     defaults:
       run:
         working-directory: backend
-    keyhub:
+    steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
