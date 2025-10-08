@@ -19,7 +19,7 @@ func parseSslcTenant(tenant sqlc.Tenant)(model.Tenant, error){
 	},nil
 }
 
-func (t *SqlcTransaction) InsertTenant(ctx context.Context, arg repository.InsertTenantArg)(model.tenant, error){
+func (t *SqlcTransaction) InsertTenant(ctx context.Context, arg repository.InsertTenantArg)(model.Tenant, error){
 	sqlcTenant, err := t.queries.InsertTenant(ctx, sqlc.InsertTenantParams{
 		ID: arg.Id.UUID(),
 		Name: arg.Name.String(),
@@ -31,3 +31,4 @@ func (t *SqlcTransaction) InsertTenant(ctx context.Context, arg repository.Inser
 	}
 	return parseSslcTenant(sqlcTenant)
 }
+

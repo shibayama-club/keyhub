@@ -110,7 +110,7 @@ func NewTenantPasswordHash(value string)(TenantPasswordHash, error){
 type Tenant struct{
 	TenantId TenantID
 	TenantName TenantName
-	TenantSlug TenantSlug
+	TenantSlug *TenantSlug
 	TenantPasswordHash TenantPasswordHash
 	CreatedAt time.Time
 	UpdatedAt time.Time
