@@ -11,19 +11,19 @@ import (
 
 type (
 	DBConfig struct {
-		Host string `mapstructure:"host"`
-		Port int `mapstructure:"port"`
-		User string `mapstructure:"user"`
+		Host     string `mapstructure:"host"`
+		Port     int    `mapstructure:"port"`
+		User     string `mapstructure:"user"`
 		Password string `mapstructure:"password"`
 		Database string `mapstructure:"database"`
-		Debug bool `mapstructure:"debug"`
+		Debug    bool   `mapstructure:"debug"`
 	}
 
 	Config struct {
-		Port int `mapstructure:"port"`
-		Env string `mapstructure:"env"`
+		Port     int      `mapstructure:"port"`
+		Env      string   `mapstructure:"env"`
 		Postgres DBConfig `mapstructure:"postgres"`
-		Sentry struct {
+		Sentry   struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
 	}
@@ -39,7 +39,7 @@ func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("sentry.dsn", "", "Sentry DSN")
 }
 
-func ParseConfig[T any] (cmd *cobra.Command, args []string) error {
+func ParseConfig[T any](cmd *cobra.Command, args []string) error {
 	if err := viper.BindPFlags(cmd.Flags()); err != nil {
 		return errors.Wrap(err, "failed to bind flags")
 	}

@@ -17,9 +17,9 @@ import (
 
 func ServeApp() *cobra.Command {
 	cmd := &cobra.Command{
-		Use: "app",
+		Use:     "app",
 		PreRunE: config.ParseConfig[config.Config],
-		RunE: runApp,
+		RunE:    runApp,
 	}
 	flags := cmd.Flags()
 	flags.Int("port", 8080, "Port number to listen")
@@ -45,10 +45,10 @@ func runApp(cmd *cobra.Command, args []string) error {
 
 func SetupApp(ctx context.Context, config config.Config) (*echo.Echo, error) {
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn: config.Sentry.DSN,
-		Environment: config.Env,
+		Dsn:              config.Sentry.DSN,
+		Environment:      config.Env,
 		TracesSampleRate: 1.0,
-		EnableTracing: true,
+		EnableTracing:    true,
 		AttachStacktrace: true,
 	}); err != nil {
 		return nil, errors.Wrap(err, "failed to initialize Sentry")

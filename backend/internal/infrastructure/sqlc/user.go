@@ -10,10 +10,10 @@ import (
 
 func parseSqlcUser(user sqlc.User) (model.User, error) {
 	return model.User{
-		UserId: model.UserID(user.ID),
-		Email: model.UserEmail(user.Email),
-		Name: model.UserName(user.Name),
-		Icon: model.UserIcon(user.Icon),
+		UserId:    model.UserID(user.ID),
+		Email:     model.UserEmail(user.Email),
+		Name:      model.UserName(user.Name),
+		Icon:      model.UserIcon(user.Icon),
 		CreatedAt: user.CreatedAt.Time,
 		UpdatedAt: user.UpdatedAt.Time,
 	}, nil
@@ -21,10 +21,10 @@ func parseSqlcUser(user sqlc.User) (model.User, error) {
 
 func (t *SqlcTransaction) InsertUser(ctx context.Context, arg repository.InsertUserArg) (model.User, error) {
 	sqlcUser, err := t.queries.InsertUser(ctx, sqlc.InsertUserParams{
-		ID: arg.ID.UUID(),
+		ID:    arg.ID.UUID(),
 		Email: arg.Email.String(),
-		Name: arg.Name.String(),
-		Icon: arg.Icon.String(),
+		Name:  arg.Name.String(),
+		Icon:  arg.Icon.String(),
 	})
 	if err != nil {
 		return model.User{}, err

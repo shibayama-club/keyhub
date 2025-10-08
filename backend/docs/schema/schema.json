@@ -67,6 +67,937 @@
           "def": "CREATE TRIGGER refresh_users_updated_at BEFORE UPDATE ON public.users FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
         }
       ]
+    },
+    {
+      "name": "public.user_identities",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "provider",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "provider_sub",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "user_identities_pkey",
+          "def": "CREATE UNIQUE INDEX user_identities_pkey ON public.user_identities USING btree (id)",
+          "table": "public.user_identities",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_identities_provider_provider_sub_key",
+          "def": "CREATE UNIQUE INDEX user_identities_provider_provider_sub_key ON public.user_identities USING btree (provider, provider_sub)",
+          "table": "public.user_identities",
+          "columns": [
+            "provider",
+            "provider_sub"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "user_identities_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+          "table": "public.user_identities",
+          "referenced_table": "users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_identities_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.user_identities",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "user_identities_provider_provider_sub_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (provider, provider_sub)",
+          "table": "public.user_identities",
+          "referenced_table": "",
+          "columns": [
+            "provider",
+            "provider_sub"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "refresh_user_identities_updated_at",
+          "def": "CREATE TRIGGER refresh_user_identities_updated_at BEFORE UPDATE ON public.user_identities FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ]
+    },
+    {
+      "name": "public.sessions",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "session_id",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "active_membership_id",
+          "type": "uuid",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "nullable": false
+        },
+        {
+          "name": "csrf_token",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "revoked",
+          "type": "boolean",
+          "nullable": false,
+          "default": "false"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "sessions_pkey",
+          "def": "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (session_id)",
+          "table": "public.sessions",
+          "columns": [
+            "session_id"
+          ]
+        },
+        {
+          "name": "idx_sessions_user",
+          "def": "CREATE INDEX idx_sessions_user ON public.sessions USING btree (user_id)",
+          "table": "public.sessions",
+          "columns": [
+            "user_id"
+          ]
+        },
+        {
+          "name": "idx_sessions_expires",
+          "def": "CREATE INDEX idx_sessions_expires ON public.sessions USING btree (expires_at)",
+          "table": "public.sessions",
+          "columns": [
+            "expires_at"
+          ]
+        },
+        {
+          "name": "idx_sessions_active_membership",
+          "def": "CREATE INDEX idx_sessions_active_membership ON public.sessions USING btree (active_membership_id)",
+          "table": "public.sessions",
+          "columns": [
+            "active_membership_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "sessions_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+          "table": "public.sessions",
+          "referenced_table": "users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "sessions_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (session_id)",
+          "table": "public.sessions",
+          "referenced_table": "",
+          "columns": [
+            "session_id"
+          ]
+        },
+        {
+          "name": "fk_sessions_active_membership",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (active_membership_id) REFERENCES tenant_memberships(id)",
+          "table": "public.sessions",
+          "referenced_table": "tenant_memberships",
+          "columns": [
+            "active_membership_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.oauth_states",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "state",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "code_verifier",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "nonce",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "oauth_states_pkey",
+          "def": "CREATE UNIQUE INDEX oauth_states_pkey ON public.oauth_states USING btree (state)",
+          "table": "public.oauth_states",
+          "columns": [
+            "state"
+          ]
+        },
+        {
+          "name": "idx_oauth_states_created",
+          "def": "CREATE INDEX idx_oauth_states_created ON public.oauth_states USING btree (created_at)",
+          "table": "public.oauth_states",
+          "columns": [
+            "created_at"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "oauth_states_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (state)",
+          "table": "public.oauth_states",
+          "referenced_table": "",
+          "columns": [
+            "state"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.tenants",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "slug",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "password_hash",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenants_pkey",
+          "def": "CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id)",
+          "table": "public.tenants",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenants_name_key",
+          "def": "CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name)",
+          "table": "public.tenants",
+          "columns": [
+            "name"
+          ]
+        },
+        {
+          "name": "tenants_slug_key",
+          "def": "CREATE UNIQUE INDEX tenants_slug_key ON public.tenants USING btree (slug)",
+          "table": "public.tenants",
+          "columns": [
+            "slug"
+          ]
+        },
+        {
+          "name": "idx_tenants_name_ci",
+          "def": "CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name))",
+          "table": "public.tenants",
+          "columns": [
+            "lower"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tenants_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.tenants",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenants_name_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (name)",
+          "table": "public.tenants",
+          "referenced_table": "",
+          "columns": [
+            "name"
+          ]
+        },
+        {
+          "name": "tenants_slug_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (slug)",
+          "table": "public.tenants",
+          "referenced_table": "",
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "refresh_tenants_updated_at",
+          "def": "CREATE TRIGGER refresh_tenants_updated_at BEFORE UPDATE ON public.tenants FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ]
+    },
+    {
+      "name": "public.tenant_domains",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "domain",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenant_domains_pkey",
+          "def": "CREATE UNIQUE INDEX tenant_domains_pkey ON public.tenant_domains USING btree (id)",
+          "table": "public.tenant_domains",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_domains_domain_key",
+          "def": "CREATE UNIQUE INDEX tenant_domains_domain_key ON public.tenant_domains USING btree (domain)",
+          "table": "public.tenant_domains",
+          "columns": [
+            "domain"
+          ]
+        },
+        {
+          "name": "idx_tenant_domains_tenant",
+          "def": "CREATE INDEX idx_tenant_domains_tenant ON public.tenant_domains USING btree (tenant_id)",
+          "table": "public.tenant_domains",
+          "columns": [
+            "tenant_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tenant_domains_tenant_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+          "table": "public.tenant_domains",
+          "referenced_table": "tenants",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_domains_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.tenant_domains",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_domains_domain_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (domain)",
+          "table": "public.tenant_domains",
+          "referenced_table": "",
+          "columns": [
+            "domain"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.tenant_join_codes",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "code",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "nullable": true
+        },
+        {
+          "name": "max_uses",
+          "type": "integer",
+          "nullable": false,
+          "default": "0"
+        },
+        {
+          "name": "used_count",
+          "type": "integer",
+          "nullable": false,
+          "default": "0"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenant_join_codes_pkey",
+          "def": "CREATE UNIQUE INDEX tenant_join_codes_pkey ON public.tenant_join_codes USING btree (id)",
+          "table": "public.tenant_join_codes",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_join_codes_code_key",
+          "def": "CREATE UNIQUE INDEX tenant_join_codes_code_key ON public.tenant_join_codes USING btree (code)",
+          "table": "public.tenant_join_codes",
+          "columns": [
+            "code"
+          ]
+        },
+        {
+          "name": "idx_join_codes_tenant",
+          "def": "CREATE INDEX idx_join_codes_tenant ON public.tenant_join_codes USING btree (tenant_id)",
+          "table": "public.tenant_join_codes",
+          "columns": [
+            "tenant_id"
+          ]
+        },
+        {
+          "name": "idx_join_codes_exp",
+          "def": "CREATE INDEX idx_join_codes_exp ON public.tenant_join_codes USING btree (expires_at)",
+          "table": "public.tenant_join_codes",
+          "columns": [
+            "expires_at"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tenant_join_codes_tenant_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+          "table": "public.tenant_join_codes",
+          "referenced_table": "tenants",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_join_codes_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.tenant_join_codes",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_join_codes_code_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (code)",
+          "table": "public.tenant_join_codes",
+          "referenced_table": "",
+          "columns": [
+            "code"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.tenant_memberships",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "role",
+          "type": "text",
+          "nullable": false,
+          "default": "'member'::text"
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": "'active'::text"
+        },
+        {
+          "name": "joined_via",
+          "type": "text",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "left_at",
+          "type": "timestamp with time zone",
+          "nullable": true
+        }
+      ],
+      "indexes": [
+        {
+          "name": "tenant_memberships_pkey",
+          "def": "CREATE UNIQUE INDEX tenant_memberships_pkey ON public.tenant_memberships USING btree (id)",
+          "table": "public.tenant_memberships",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_memberships_tenant_id_user_id_key",
+          "def": "CREATE UNIQUE INDEX tenant_memberships_tenant_id_user_id_key ON public.tenant_memberships USING btree (tenant_id, user_id)",
+          "table": "public.tenant_memberships",
+          "columns": [
+            "tenant_id",
+            "user_id"
+          ]
+        },
+        {
+          "name": "idx_memberships_user",
+          "def": "CREATE INDEX idx_memberships_user ON public.tenant_memberships USING btree (user_id)",
+          "table": "public.tenant_memberships",
+          "columns": [
+            "user_id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "tenant_memberships_joined_via_check",
+          "type": "CHECK",
+          "def": "CHECK ((joined_via = ANY (ARRAY['domain'::text, 'code'::text, 'manual'::text])))",
+          "table": "public.tenant_memberships",
+          "referenced_table": "",
+          "columns": [
+            "joined_via"
+          ]
+        },
+        {
+          "name": "tenant_memberships_role_check",
+          "type": "CHECK",
+          "def": "CHECK ((role = ANY (ARRAY['admin'::text, 'member'::text])))",
+          "table": "public.tenant_memberships",
+          "referenced_table": "",
+          "columns": [
+            "role"
+          ]
+        },
+        {
+          "name": "tenant_memberships_status_check",
+          "type": "CHECK",
+          "def": "CHECK ((status = ANY (ARRAY['active'::text, 'invited'::text, 'left'::text])))",
+          "table": "public.tenant_memberships",
+          "referenced_table": "",
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "tenant_memberships_user_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE",
+          "table": "public.tenant_memberships",
+          "referenced_table": "users",
+          "columns": [
+            "user_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_memberships_tenant_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+          "table": "public.tenant_memberships",
+          "referenced_table": "tenants",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_memberships_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.tenant_memberships",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "tenant_memberships_tenant_id_user_id_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (tenant_id, user_id)",
+          "table": "public.tenant_memberships",
+          "referenced_table": "",
+          "columns": [
+            "tenant_id",
+            "user_id"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "public.console_sessions",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "session_id",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "nullable": false
+        }
+      ],
+      "indexes": [
+        {
+          "name": "console_sessions_pkey",
+          "def": "CREATE UNIQUE INDEX console_sessions_pkey ON public.console_sessions USING btree (session_id)",
+          "table": "public.console_sessions",
+          "columns": [
+            "session_id"
+          ]
+        },
+        {
+          "name": "idx_console_sessions_tenant",
+          "def": "CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (tenant_id)",
+          "table": "public.console_sessions",
+          "columns": [
+            "tenant_id"
+          ]
+        },
+        {
+          "name": "idx_console_sessions_expires",
+          "def": "CREATE INDEX idx_console_sessions_expires ON public.console_sessions USING btree (expires_at)",
+          "table": "public.console_sessions",
+          "columns": [
+            "expires_at"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "console_sessions_tenant_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+          "table": "public.console_sessions",
+          "referenced_table": "tenants",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "console_sessions_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (session_id)",
+          "table": "public.console_sessions",
+          "referenced_table": "",
+          "columns": [
+            "session_id"
+          ]
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "table": "public.user_identities",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.sessions",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.sessions",
+      "columns": [
+        "active_membership_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenant_memberships",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "zero_or_one",
+      "def": "FOREIGN KEY (active_membership_id) REFERENCES tenant_memberships(id)"
+    },
+    {
+      "table": "public.tenant_domains",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenants",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.tenant_join_codes",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenants",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.tenant_memberships",
+      "columns": [
+        "user_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.users",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.tenant_memberships",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenants",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.console_sessions",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenants",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
     }
   ],
   "functions": [
@@ -133,6 +1064,18 @@
     {
       "name": "public.update_updated_at_column",
       "return_type": "trigger",
+      "arguments": "",
+      "type": "FUNCTION"
+    },
+    {
+      "name": "app.current_membership_id",
+      "return_type": "uuid",
+      "arguments": "",
+      "type": "FUNCTION"
+    },
+    {
+      "name": "app.current_tenant_id",
+      "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"
     }

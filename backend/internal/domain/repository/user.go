@@ -7,10 +7,10 @@ import (
 )
 
 type InsertUserArg struct {
-	ID model.UserID
+	ID    model.UserID
 	Email model.UserEmail
-	Name model.UserName
-	Icon model.UserIcon
+	Name  model.UserName
+	Icon  model.UserIcon
 }
 
 type UserRepository interface {
