@@ -32,7 +32,7 @@ func (e UserEmail) Validate() error {
 			"Emailは必須です。",
 		)
 	}
-	
+
 	if !IsEmailFormat(string(e)) {
 		return errors.WithHint(
 			errors.New("Please enter a validate email address"),
@@ -90,7 +90,7 @@ func (i UserIcon) Validate() error {
 	if i == "" {
 		return nil
 	}
-	
+
 	if !IsIconURLFormat(string(i)) {
 		return errors.WithHint(
 			errors.New("icon must be a valid HTTPS URL"),
@@ -117,10 +117,10 @@ func NewUserIcon(value string) (UserIcon, error) {
 }
 
 type User struct {
-	UserId UserID
-	Email UserEmail
-	Name UserName
-	Icon UserIcon
+	UserId    UserID
+	Email     UserEmail
+	Name      UserName
+	Icon      UserIcon
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

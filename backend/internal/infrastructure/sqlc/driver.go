@@ -15,7 +15,7 @@ import (
 func NewPool(ctx context.Context, cf config.DBConfig) (*pgxpool.Pool, error) {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s database=%s",
 		cf.Host, cf.Port, cf.User, cf.Password, cf.Database)
-	
+
 	config, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to parse pgx config")
@@ -23,7 +23,7 @@ func NewPool(ctx context.Context, cf config.DBConfig) (*pgxpool.Pool, error) {
 
 	if cf.Debug {
 		config.ConnConfig.Tracer = &tracelog.TraceLog{
-			Logger: newLogger(),
+			Logger:   newLogger(),
 			LogLevel: tracelog.LogLevelTrace,
 		}
 	}

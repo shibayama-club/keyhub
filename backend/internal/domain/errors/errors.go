@@ -3,10 +3,10 @@ package errors
 import "github.com/cockroachdb/errors"
 
 var (
-	ErrValidation = errors.New("Validation error")
-	ErrNotFound = errors.New("not found error")
+	ErrValidation   = errors.New("Validation error")
+	ErrNotFound     = errors.New("not found error")
 	ErrUnAuthorized = errors.New("unauthorized error")
-	ErrInternal = errors.New("internal error")
+	ErrInternal     = errors.New("internal error")
 )
 
 func IsValidationError(err error) bool {
