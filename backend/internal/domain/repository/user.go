@@ -10,7 +10,7 @@ type InsertUserArg struct {
 	ID    model.UserID
 	Email model.UserEmail
 	Name  model.UserName
-	Icon  model.UserIcon
+	Icon   model.UserIcon
 }
 
 type UserRepository interface {
