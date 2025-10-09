@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/cockroachdb/errors"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 	"github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
@@ -27,24 +28,34 @@ func NewRepository(pool *pgxpool.Pool) *SqlcRepository {
 	}
 }
 
-func (r *SqlcRepository) WithTransaction(ctx context.Context, fn func(ctx context.Context, tx repository.Transaction) error) error {
+func (r *SqlcRepository) WithTransaction(ctx context.Context, fn func(ctx context.Context, tx repository.Transaction) error) (err error) {
 	tx, err := r.pool.Begin(ctx)
 	if err != nil {
 		return errors.Wrap(err, "failed to begin transaction")
 	}
-	defer tx.Rollback(ctx)
 
-	if err := fn(ctx, &SqlcTransaction{queries: r.queries.WithTx(tx)}); err != nil {
-		if txErr := tx.Rollback(ctx); txErr != nil {
-			return errors.Wrapf(err, "failed to Queries and Rollback: %v", txErr)
+	committed := false
+	defer func() {
+		if committed {
+			return
 		}
-		return errors.Wrap(err, "failed to Queries")
+		if rbErr := tx.Rollback(ctx); rbErr != nil && !errors.Is(rbErr, pgx.ErrTxClosed) {
+			if err != nil {
+				err = errors.Wrapf(err, "failed to rollback transaction: %v", rbErr)
+			}
+		}
+	}()
+
+	if txErr := fn(ctx, &SqlcTransaction{queries: r.queries.WithTx(tx)}); txErr != nil {
+		err = errors.Wrap(txErr, "failed to Queries")
+		return err
 	}
 
-	err = tx.Commit(ctx)
-	if err != nil {
+	if err = tx.Commit(ctx); err != nil {
 		return errors.Wrap(err, "failed to Commit")
 	}
+	committed = true
+
 	return nil
 }
 
