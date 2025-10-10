@@ -7,16 +7,16 @@ import (
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 )
 
-type IUseCase interface {}
+type IUseCase interface{}
 
 type UseCase struct {
-	repo repository.Repository
+	repo   repository.Repository
 	config config.Config
 }
 
 func NewUseCase(ctx context.Context, repo repository.Repository, cf config.Config) IUseCase {
 	return &UseCase{
-		repo: repo,
+		repo:   repo,
 		config: cf,
 	}
 }
