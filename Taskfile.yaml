@@ -53,7 +53,7 @@ tasks:
   fmt:backend:
     dir: ./backend
     cmds:
-      - gofmt -w ./backend
+      - gofmt -w .
 
   compose:up:
     cmds:
