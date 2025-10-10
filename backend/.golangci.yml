@@ -3,4 +3,6 @@ version: "2"
 linters:
   enable:
     - staticcheck
+formatters:
+  enable:
     - gofmt
