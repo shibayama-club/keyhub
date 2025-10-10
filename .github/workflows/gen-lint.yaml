@@ -42,6 +42,7 @@ jobs:
       - name: Generate schema dump
         run: |
           docker exec $(docker ps -qf "name=postgres") pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} --schema-only --no-owner --no-privileges > backend/db/schema.sql
+          sed -i '/^\\restrict /d; /^\\unrestrict /d' backend/db/schema.sql
       - name: ignore docs/schema/schema.json diff
         run: git checkout -- backend/docs/schema/schema.json
       - uses: actions/setup-go@v5
