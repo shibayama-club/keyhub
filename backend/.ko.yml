@@ -1,0 +1,26 @@
+builds:
+  - id: keyhub
+    main: ./cmd
+    env:
+      - CGO_ENABLED=0
+    ldflags:
+      - -s -w
+      - -extldflags "-static"
+    flags:
+      - -trimpath
+
+# Base image configuration
+defaultBaseImage: cgr.dev/chainguard/static:latest
+
+labels:
+  org.opencontainers.image.source: "https://github.com/shibayama-club/keyhub"
+  org.opencontainers.image.licenses: "Apache-2.0"
+
+# Platform configuration for multi-arch builds
+platforms:
+  - linux/amd64
+  - linux/arm64
+
+# Image naming
+sbomDir: .sbom
+sbom: spdx
