@@ -1,4 +1,4 @@
-dsn: postgresql://keyhub:keyhub@localhost:5433/keyhub?sslmode=disable
+dsn: postgresql://keyhub:keyhub@localhost:5432/keyhub?sslmode=disable
 # TBLS configuration
 docPath: docs/schema
 
