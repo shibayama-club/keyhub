@@ -23,3 +23,17 @@ message User {
   string name = 3;
   string icon = 4;
 }
+
+message Membership {
+  string id = 1;
+  string tenant_id = 2;
+  string user_id = 3;
+  string role = 4;
+  Tenant tenant = 5;
+}
+
+message Tenant {
+  string id = 1;
+  string name = 2;
+  string slug = 3;
+}
