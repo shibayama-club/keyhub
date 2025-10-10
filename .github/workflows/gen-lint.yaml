@@ -14,12 +14,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker compose up -d postgres
-      - name: Wait for PostgreSQL to be ready
-        run: |
-          until docker compose exec postgres pg_isready -U ${{ env.DB_USER }}; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
       - uses: actions/cache@v4
         with:
           path: ~/.local/share/aquaproj-aqua
