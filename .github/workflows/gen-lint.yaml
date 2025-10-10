@@ -1,0 +1,57 @@
+name: Generated files Lint
+
+on:
+  push:
+
+jobs:
+  gen-lint:
+    env:
+      DB_HOST: localhost
+      DB_USER: keyhub
+      DB_PASS: keyhub
+      DB_NAME: keyhub
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up -d postgres
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          until docker compose exec postgres pg_isready -U ${{ env.DB_USER }}; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+      - uses: actions/cache@v4
+        with:
+          path: ~/.local/share/aquaproj-aqua
+          key: v1-aqua-installer-${{runner.os}}-${{runner.arch}}-${{hashFiles('aqua.yaml')}}
+          restore-keys: |
+            v1-aqua-installer-${{runner.os}}-${{runner.arch}}-
+      - uses: aquaproj/aqua-installer@v3.0.1
+        with:
+          aqua_version: v2.42.2
+      - run: goose -dir ./backend/db/migrations postgres 'host=${{ env.DB_HOST }} user=${{ env.DB_USER }} password=${{ env.DB_PASS }} dbname=${{ env.DB_NAME }}' up
+      - run: cd backend && tbls doc --force -c tbls.yaml && cd ..
+      - run: cd backend && sqlc generate && cd ..
+      - name: Generate schema dump
+        run: |
+          docker exec $(docker ps -qf "name=postgres") pg_dump -U ${{ env.DB_USER }} -d ${{ env.DB_NAME }} --schema-only --no-owner --no-privileges > backend/db/schema.sql
+      - name: ignore docs/schema/schema.json diff
+        run: git checkout -- backend/docs/schema/schema.json
+      - uses: actions/setup-go@v5
+        with:
+          check-latest: true
+          go-version-file: ./backend/go.mod
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+          key: "go-build-cache-v2-${{runner.os}}-${{runner.arch}}-${{ hashFiles('backend/go.sum') }}"
+          restore-keys: |
+            go-build-cache-v2-${{runner.os}}-${{runner.arch}}-
+      - run: gofmt -w .
+        working-directory: ./backend
+      - run: buf dep update
+        working-directory: ./proto
+      - run: buf generate
+        working-directory: ./proto
+      - run: git diff --exit-code
