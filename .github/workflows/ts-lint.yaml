@@ -6,9 +6,6 @@ on:
 jobs:
   ts-lint:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v3
@@ -19,9 +16,22 @@ jobs:
           node-version: "20"
           cache: "pnpm"
           cache-dependency-path: "frontend/*/pnpm-lock.yaml"
-      - run: pnpm install --frozen-lockfile
-      - name: Lint
-        run: pnpm run -r lint
-      - name: Chckformat
-        run: pnpm run -r fmt
+      - name: Install dependencies (app)
+        run: pnpm install --frozen-lockfile
+        working-directory: frontend/app
+      - name: Install dependencies (console)
+        run: pnpm install --frozen-lockfile
+        working-directory: frontend/console
+      - name: Lint (app)
+        run: pnpm run lint
+        working-directory: frontend/app
+      - name: Lint (console)
+        run: pnpm run lint
+        working-directory: frontend/console
+      - name: Format check (app)
+        run: pnpm run fmt
+        working-directory: frontend/app
+      - name: Format check (console)
+        run: pnpm run fmt
+        working-directory: frontend/console
       - run: git diff --exit-code
