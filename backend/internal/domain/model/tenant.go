@@ -57,16 +57,13 @@ func (s TenantSlug) String() string {
 }
 
 func (s TenantSlug) Validate() error {
-	if s == "" {
-		return nil
-	}
 	if utf8.RuneCountInString(string(s)) > 30 {
 		return errors.WithHint(
 			errors.New("please enter a tenant slug within 30 characters"),
 			"Slugは30文字以内で入力してください。",
 		)
 	}
-	if !IsSlugFormat(string(s)) {
+	if s != "" && !IsSlugFormat(string(s)) {
 		return errors.WithHint(
 			errors.New("Please enter a validate slug address"),
 			"Slugの正しい形式で入力してください",
@@ -110,7 +107,7 @@ func NewTenantPasswordHash(value string) (TenantPasswordHash, error) {
 type Tenant struct {
 	TenantId           TenantID
 	TenantName         TenantName
-	TenantSlug         *TenantSlug
+	TenantSlug         TenantSlug
 	TenantPasswordHash TenantPasswordHash
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
