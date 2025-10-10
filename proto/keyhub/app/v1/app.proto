@@ -8,6 +8,12 @@ import "google/protobuf/timestamp.proto";
 service AppService {
   // ログインユーザーの情報を取得
   rpc GetMe(GetMeRequest) returns (GetMeResponse);
+
+  // ログアウト
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+
+  // アクティブなテナントを切り替え
+  rpc SwitchTenant(SwitchTenantRequest) returns (SwitchTenantResponse);
 }
 
 message GetMeRequest {}
@@ -17,23 +23,54 @@ message GetMeResponse {
   Membership active_membership = 2;
 }
 
+message LogoutRequest {}
+
+message LogoutResponse {}
+
+message SwitchTenantRequest {
+  string tenant_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message SwitchTenantResponse {
+  Membership active_membership = 1;
+}
+
 message User {
   string id = 1;
   string email = 2;
   string name = 3;
   string icon = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
 }
 
 message Membership {
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    ROLE_ADMIN = 1;
+    ROLE_MEMBER = 2;
+  }
+
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_ACTIVE = 1;
+    STATUS_INVITED = 2;
+    STATUS_LEFT = 3;
+  }
+
   string id = 1;
   string tenant_id = 2;
   string user_id = 3;
-  string role = 4;
-  Tenant tenant = 5;
+  Role role = 4;
+  Status status = 5;
+  Tenant tenant = 6;
+  google.protobuf.Timestamp created_at = 7;
 }
 
 message Tenant {
   string id = 1;
   string name = 2;
   string slug = 3;
+  google.protobuf.Timestamp created_at = 4;
+  google.protobuf.Timestamp updated_at = 5;
 }
