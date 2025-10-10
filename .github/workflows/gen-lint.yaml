@@ -6,6 +6,7 @@ on:
 jobs:
   gen-lint:
     env:
+      POSTGRES_PORT: 5432
       DB_HOST: localhost
       DB_USER: keyhub
       DB_PASS: keyhub
