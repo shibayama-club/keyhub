@@ -1,3 +1,3 @@
-CREATE ROLE keyhub;
+CREATE ROLE keyhub_role;
 CREATE USER "keyhub-local" WITH PASSWORD 'keyhub';
-GRANT keyhub TO "keyhub-local";
+GRANT keyhub_role TO "keyhub-local";
