@@ -5,4 +5,21 @@ package keyhub.app.v1;
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
-service AppService {}
+service AppService {
+  // ログインユーザーの情報を取得
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  User user = 1;
+  Membership active_membership = 2;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string name = 3;
+  string icon = 4;
+}
