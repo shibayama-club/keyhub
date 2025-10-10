@@ -13,6 +13,9 @@ packages:
   - name: k1LoW/tbls@v1.87.0
   - name: sqlc-dev/sqlc@v1.29.0
 
+  # Container Optimized Go
+  - name: ko-build/ko@v0.18.0
+
   # Node.js & パッケージマネージャ
   - name: nodejs/node@v24.6.0
   - name: pnpm/pnpm@v10.14.0
