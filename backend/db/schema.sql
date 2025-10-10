@@ -2,7 +2,6 @@
 -- PostgreSQL database dump
 --
 
-\restrict YIZYUHyTVem2wXCjq1yYoTnPiWjqp410Owy1cozgsiBpKaavrYgH8bG0Y0wyfYj
 
 -- Dumped from database version 16.10
 -- Dumped by pg_dump version 16.10
@@ -581,5 +580,4 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
-\unrestrict YIZYUHyTVem2wXCjq1yYoTnPiWjqp410Owy1cozgsiBpKaavrYgH8bG0Y0wyfYj
 
