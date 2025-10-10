@@ -18,7 +18,7 @@ jobs:
         with:
           node-version: "20"
           cache: "pnpm"
-          cache-dependency-path: "frontend/pnpm-lock.yaml"
+          cache-dependency-path: "frontend/*/pnpm-lock.yaml"
       - run: pnpm install --frozen-lockfile
       - name: Lint
         run: pnpm run -r lint
