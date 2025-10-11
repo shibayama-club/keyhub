@@ -2,3 +2,23 @@
 config.yaml
 config.yml
 .env
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build outputs
+dist/
+dist-ssr/
+*.local
+
+# Lock files (consider committing these for reproducibility)
+pnpm-lock.yaml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
