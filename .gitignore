@@ -12,8 +12,11 @@ dist/
 dist-ssr/
 *.local
 
-# Lock files (consider committing these for reproducibility)
-pnpm-lock.yaml
+# Lock files
+# Keep workspace root lockfile for reproducibility
+# Exclude individual package lockfiles (managed by workspace)
+!frontend/pnpm-lock.yaml
+frontend/*/pnpm-lock.yaml
 
 # Logs
 *.log
