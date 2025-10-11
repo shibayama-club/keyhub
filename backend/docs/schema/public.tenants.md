@@ -18,13 +18,14 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | tenants_pkey | PRIMARY KEY | PRIMARY KEY (id) |
+| tenants_name_key | UNIQUE | UNIQUE (name) |
 
 ## Indexes
 
 | Name | Definition |
 | ---- | ---------- |
 | tenants_pkey | CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id) |
-| idx_tenants_name_ci | CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name)) |
+| tenants_name_key | CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name) |
 | idx_tenants_slug_nonempty | CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug <> ''::text) |
 
 ## Triggers

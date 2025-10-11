@@ -394,11 +394,11 @@
           ]
         },
         {
-          "name": "idx_tenants_name_ci",
-          "def": "CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name))",
+          "name": "tenants_name_key",
+          "def": "CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name)",
           "table": "public.tenants",
           "columns": [
-            "lower"
+            "name"
           ]
         },
         {
@@ -419,6 +419,16 @@
           "referenced_table": "",
           "columns": [
             "id"
+          ]
+        },
+        {
+          "name": "tenants_name_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (name)",
+          "table": "public.tenants",
+          "referenced_table": "",
+          "columns": [
+            "name"
           ]
         }
       ],

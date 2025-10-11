@@ -315,6 +315,14 @@ ALTER TABLE ONLY public.tenant_memberships
 
 
 --
+-- Name: tenants tenants_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tenants
+    ADD CONSTRAINT tenants_name_key UNIQUE (name);
+
+
+--
 -- Name: tenants tenants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -414,13 +422,6 @@ CREATE INDEX idx_sessions_user ON public.sessions USING btree (user_id);
 --
 
 CREATE INDEX idx_tenant_domains_tenant ON public.tenant_domains USING btree (tenant_id);
-
-
---
--- Name: idx_tenants_name_ci; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name));
 
 
 --
