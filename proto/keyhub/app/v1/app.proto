@@ -5,72 +5,45 @@ package keyhub.app.v1;
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
 
-service AppService {
-  // ログインユーザーの情報を取得
+service AuthService {
+  // 現在のユーザー情報取得
   rpc GetMe(GetMeRequest) returns (GetMeResponse);
 
   // ログアウト
   rpc Logout(LogoutRequest) returns (LogoutResponse);
-
-  // アクティブなテナントを切り替え
-  rpc SwitchTenant(SwitchTenantRequest) returns (SwitchTenantResponse);
 }
 
 message GetMeRequest {}
 
 message GetMeResponse {
   User user = 1;
-  Membership active_membership = 2;
+  Tenant active_tenant = 2;
+  repeated Tenant tenants = 3;
 }
 
 message LogoutRequest {}
 
-message LogoutResponse {}
-
-message SwitchTenantRequest {
-  string tenant_id = 1 [(buf.validate.field).string.uuid = true];
-}
-
-message SwitchTenantResponse {
-  Membership active_membership = 1;
+message LogoutResponse {
+  bool success = 1;
 }
 
 message User {
-  string id = 1;
-  string email = 2;
-  string name = 3;
-  string icon = 4;
-  google.protobuf.Timestamp created_at = 5;
-  google.protobuf.Timestamp updated_at = 6;
-}
-
-message Membership {
-  enum Role {
-    ROLE_UNSPECIFIED = 0;
-    ROLE_ADMIN = 1;
-    ROLE_MEMBER = 2;
-  }
-
-  enum Status {
-    STATUS_UNSPECIFIED = 0;
-    STATUS_ACTIVE = 1;
-    STATUS_INVITED = 2;
-    STATUS_LEFT = 3;
-  }
-
-  string id = 1;
-  string tenant_id = 2;
-  string user_id = 3;
-  Role role = 4;
-  Status status = 5;
-  Tenant tenant = 6;
-  google.protobuf.Timestamp created_at = 7;
+    string id = 1 [(buf.validate.field).string.uuid = true];
+    string email = 2 [(buf.validate.field).string.email = true];
+    string name = 3 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+    string icon = 4 [(buf.validate.field).string.uri = true];
+    google.protobuf.Timestamp created_at = 5;
+    google.protobuf.Timestamp updated_at = 6;
 }
 
 message Tenant {
-  string id = 1;
-  string name = 2;
-  string slug = 3;
-  google.protobuf.Timestamp created_at = 4;
-  google.protobuf.Timestamp updated_at = 5;
+    string id = 1 [(buf.validate.field).string.uuid = true];
+    string organization_id = 2 [(buf.validate.field).string.uuid = true];
+    string name = 3 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+    string slug = 4 [(buf.validate.field).string = {pattern: "^[a-z0-9-]+$", min_len: 3, max_len: 50}];
+    string description = 5 [(buf.validate.field).string.max_len = 500];
+    TenantType tenant_type = 6;
+    int32 member_count = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
 }
