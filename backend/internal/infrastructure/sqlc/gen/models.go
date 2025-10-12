@@ -37,7 +37,7 @@ type Session struct {
 type Tenant struct {
 	ID           uuid.UUID
 	Name         string
-	Slug         *string
+	Slug         string
 	PasswordHash string
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz

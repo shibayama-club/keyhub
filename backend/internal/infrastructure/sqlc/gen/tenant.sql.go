@@ -35,7 +35,7 @@ RETURNING id, name, slug, password_hash, created_at, updated_at
 type InsertTenantParams struct {
 	ID           uuid.UUID
 	Name         string
-	Slug         *string
+	Slug         string
 	PasswordHash string
 	CreatedAt    pgtype.Timestamptz
 	UpdatedAt    pgtype.Timestamptz

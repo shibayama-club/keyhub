@@ -199,7 +199,7 @@ CREATE TABLE public.tenant_memberships (
 CREATE TABLE public.tenants (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
-    slug text,
+    slug text DEFAULT ''::text NOT NULL,
     password_hash text NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
@@ -331,14 +331,6 @@ ALTER TABLE ONLY public.tenants
 
 
 --
--- Name: tenants tenants_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tenants
-    ADD CONSTRAINT tenants_slug_key UNIQUE (slug);
-
-
---
 -- Name: user_identities user_identities_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -433,10 +425,10 @@ CREATE INDEX idx_tenant_domains_tenant ON public.tenant_domains USING btree (ten
 
 
 --
--- Name: idx_tenants_name_ci; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_tenants_slug_nonempty; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name));
+CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug <> ''::text);
 
 
 --

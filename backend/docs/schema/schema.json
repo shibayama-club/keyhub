@@ -363,7 +363,8 @@
         {
           "name": "slug",
           "type": "text",
-          "nullable": true
+          "nullable": false,
+          "default": "''::text"
         },
         {
           "name": "password_hash",
@@ -401,19 +402,11 @@
           ]
         },
         {
-          "name": "tenants_slug_key",
-          "def": "CREATE UNIQUE INDEX tenants_slug_key ON public.tenants USING btree (slug)",
+          "name": "idx_tenants_slug_nonempty",
+          "def": "CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug \u003c\u003e ''::text)",
           "table": "public.tenants",
           "columns": [
             "slug"
-          ]
-        },
-        {
-          "name": "idx_tenants_name_ci",
-          "def": "CREATE UNIQUE INDEX idx_tenants_name_ci ON public.tenants USING btree (lower(name))",
-          "table": "public.tenants",
-          "columns": [
-            "lower"
           ]
         }
       ],
@@ -436,16 +429,6 @@
           "referenced_table": "",
           "columns": [
             "name"
-          ]
-        },
-        {
-          "name": "tenants_slug_key",
-          "type": "UNIQUE",
-          "def": "UNIQUE (slug)",
-          "table": "public.tenants",
-          "referenced_table": "",
-          "columns": [
-            "slug"
           ]
         }
       ],
