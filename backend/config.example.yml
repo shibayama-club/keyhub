@@ -7,3 +7,10 @@ postgres:
 sentry:
   dsn: ""
 env: "local"
+auth:
+  google:
+    client_id:
+    client_secret:
+console:
+  organization_id:
+  organization_key:
