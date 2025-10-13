@@ -7,7 +7,7 @@ CREATE TABLE console_sessions (
     organization_id UUID NOT NULL,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMPTZ NOT NULL,
-    PRIMARY KEY (session_id),
+    PRIMARY KEY (session_id)
 );
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE console_sessions TO keyhub;
