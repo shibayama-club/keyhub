@@ -6,10 +6,11 @@
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | uuid | uuid_generate_v4() | false | [public.tenant_domains](public.tenant_domains.md) [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) [public.console_sessions](public.console_sessions.md) |  |  |
+| id | uuid | uuid_generate_v4() | false | [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) |  |  |
 | name | text |  | false |  |  |  |
-| slug | text | ''::text | false |  |  |  |
+| description | text | ''::text | false |  |  |  |
 | password_hash | text |  | false |  |  |  |
+| tenant_type | text |  | false |  |  |  |
 | created_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |
 | updated_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |
 
@@ -26,7 +27,7 @@
 | ---- | ---------- |
 | tenants_pkey | CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id) |
 | tenants_name_key | CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name) |
-| idx_tenants_slug_nonempty | CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug <> ''::text) |
+| idx_tenants_description_nonempty | CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description <> ''::text) |
 
 ## Triggers
 

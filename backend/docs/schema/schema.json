@@ -361,13 +361,18 @@
           "nullable": false
         },
         {
-          "name": "slug",
+          "name": "description",
           "type": "text",
           "nullable": false,
           "default": "''::text"
         },
         {
           "name": "password_hash",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "tenant_type",
           "type": "text",
           "nullable": false
         },
@@ -402,11 +407,11 @@
           ]
         },
         {
-          "name": "idx_tenants_slug_nonempty",
-          "def": "CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug \u003c\u003e ''::text)",
+          "name": "idx_tenants_description_nonempty",
+          "def": "CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description \u003c\u003e ''::text)",
           "table": "public.tenants",
           "columns": [
-            "slug"
+            "description"
           ]
         }
       ],
@@ -436,95 +441,6 @@
         {
           "name": "refresh_tenants_updated_at",
           "def": "CREATE TRIGGER refresh_tenants_updated_at BEFORE UPDATE ON public.tenants FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
-        }
-      ]
-    },
-    {
-      "name": "public.tenant_domains",
-      "type": "BASE TABLE",
-      "columns": [
-        {
-          "name": "id",
-          "type": "uuid",
-          "nullable": false,
-          "default": "uuid_generate_v4()"
-        },
-        {
-          "name": "tenant_id",
-          "type": "uuid",
-          "nullable": false
-        },
-        {
-          "name": "domain",
-          "type": "text",
-          "nullable": false
-        },
-        {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "nullable": false,
-          "default": "CURRENT_TIMESTAMP"
-        }
-      ],
-      "indexes": [
-        {
-          "name": "tenant_domains_pkey",
-          "def": "CREATE UNIQUE INDEX tenant_domains_pkey ON public.tenant_domains USING btree (id)",
-          "table": "public.tenant_domains",
-          "columns": [
-            "id"
-          ]
-        },
-        {
-          "name": "tenant_domains_domain_key",
-          "def": "CREATE UNIQUE INDEX tenant_domains_domain_key ON public.tenant_domains USING btree (domain)",
-          "table": "public.tenant_domains",
-          "columns": [
-            "domain"
-          ]
-        },
-        {
-          "name": "idx_tenant_domains_tenant",
-          "def": "CREATE INDEX idx_tenant_domains_tenant ON public.tenant_domains USING btree (tenant_id)",
-          "table": "public.tenant_domains",
-          "columns": [
-            "tenant_id"
-          ]
-        }
-      ],
-      "constraints": [
-        {
-          "name": "tenant_domains_tenant_id_fkey",
-          "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
-          "table": "public.tenant_domains",
-          "referenced_table": "tenants",
-          "columns": [
-            "tenant_id"
-          ],
-          "referenced_columns": [
-            "id"
-          ]
-        },
-        {
-          "name": "tenant_domains_pkey",
-          "type": "PRIMARY KEY",
-          "def": "PRIMARY KEY (id)",
-          "table": "public.tenant_domains",
-          "referenced_table": "",
-          "columns": [
-            "id"
-          ]
-        },
-        {
-          "name": "tenant_domains_domain_key",
-          "type": "UNIQUE",
-          "def": "UNIQUE (domain)",
-          "table": "public.tenant_domains",
-          "referenced_table": "",
-          "columns": [
-            "domain"
-          ]
         }
       ]
     },
@@ -808,7 +724,7 @@
           "nullable": false
         },
         {
-          "name": "tenant_id",
+          "name": "organization_id",
           "type": "uuid",
           "nullable": false
         },
@@ -835,10 +751,10 @@
         },
         {
           "name": "idx_console_sessions_tenant",
-          "def": "CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (tenant_id)",
+          "def": "CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (organization_id)",
           "table": "public.console_sessions",
           "columns": [
-            "tenant_id"
+            "organization_id"
           ]
         },
         {
@@ -851,19 +767,6 @@
         }
       ],
       "constraints": [
-        {
-          "name": "console_sessions_tenant_id_fkey",
-          "type": "FOREIGN KEY",
-          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
-          "table": "public.console_sessions",
-          "referenced_table": "tenants",
-          "columns": [
-            "tenant_id"
-          ],
-          "referenced_columns": [
-            "id"
-          ]
-        },
         {
           "name": "console_sessions_pkey",
           "type": "PRIMARY KEY",
@@ -918,19 +821,6 @@
       "def": "FOREIGN KEY (active_membership_id) REFERENCES tenant_memberships(id)"
     },
     {
-      "table": "public.tenant_domains",
-      "columns": [
-        "tenant_id"
-      ],
-      "cardinality": "zero_or_more",
-      "parent_table": "public.tenants",
-      "parent_columns": [
-        "id"
-      ],
-      "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
-    },
-    {
       "table": "public.tenant_join_codes",
       "columns": [
         "tenant_id"
@@ -958,19 +848,6 @@
     },
     {
       "table": "public.tenant_memberships",
-      "columns": [
-        "tenant_id"
-      ],
-      "cardinality": "zero_or_more",
-      "parent_table": "public.tenants",
-      "parent_columns": [
-        "id"
-      ],
-      "parent_cardinality": "exactly_one",
-      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
-    },
-    {
-      "table": "public.console_sessions",
       "columns": [
         "tenant_id"
       ],

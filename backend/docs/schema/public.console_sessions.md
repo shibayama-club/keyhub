@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | session_id | text |  | false |  |  |  |
-| tenant_id | uuid |  | false |  | [public.tenants](public.tenants.md) |  |
+| organization_id | uuid |  | false |  |  |  |
 | created_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |
 | expires_at | timestamp with time zone |  | false |  |  |  |
 
@@ -15,7 +15,6 @@
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
-| console_sessions_tenant_id_fkey | FOREIGN KEY | FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE |
 | console_sessions_pkey | PRIMARY KEY | PRIMARY KEY (session_id) |
 
 ## Indexes
@@ -23,7 +22,7 @@
 | Name | Definition |
 | ---- | ---------- |
 | console_sessions_pkey | CREATE UNIQUE INDEX console_sessions_pkey ON public.console_sessions USING btree (session_id) |
-| idx_console_sessions_tenant | CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (tenant_id) |
+| idx_console_sessions_tenant | CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (organization_id) |
 | idx_console_sessions_expires | CREATE INDEX idx_console_sessions_expires ON public.console_sessions USING btree (expires_at) |
 
 ## Relations
