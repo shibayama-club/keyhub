@@ -50,67 +50,69 @@ func NewTenantName(value string) (TenantName, error) {
 	return n, nil
 }
 
-type TenantSlug string
+type TenantDescription string
 
-func (s TenantSlug) String() string {
-	return string(s)
+func (d TenantDescription) String() string {
+	return string(d)
 }
 
-func (s TenantSlug) Validate() error {
-	if utf8.RuneCountInString(string(s)) > 30 {
+func (d TenantDescription) Validate() error {
+	if utf8.RuneCountInString(string(d)) > 500 {
 		return errors.WithHint(
-			errors.New("please enter a tenant slug within 30 characters"),
-			"Slugは30文字以内で入力してください。",
-		)
-	}
-	if s != "" && !IsSlugFormat(string(s)) {
-		return errors.WithHint(
-			errors.New("Please enter a validate slug address"),
-			"Slugの正しい形式で入力してください",
+			errors.New("Please enter a tenant description within 500 characters"),
+			"テナントの説明は500文字以内で入力してください。",
 		)
 	}
 	return nil
 }
 
-func NewTenantSlug(value string) (TenantSlug, error) {
-	s := TenantSlug(value)
-	if err := s.Validate(); err != nil {
+func NewTenantDescription(value string) (TenantDescription, error) {
+	d := TenantDescription(value)
+	if err := d.Validate(); err != nil {
 		return "", err
 	}
-	return s, nil
+	return d, nil
 }
 
-type TenantPasswordHash string
+type TenantType string
 
-func (p TenantPasswordHash) String() string {
-	return string(p)
+const (
+	TenantTypeDepartment TenantType = "department"
+	TenantTypeLaboratory TenantType = "laboratory"
+	TenantTypeDivision   TenantType = "division"
+)
+
+func (t TenantType) String() string {
+	return string(t)
 }
 
-func (p TenantPasswordHash) Validate() error {
-	if p == "" {
+func (t TenantType) Validate() error {
+	switch t {
+	case TenantTypeDepartment, TenantTypeLaboratory, TenantTypeDivision:
+		return nil
+	default:
 		return errors.WithHint(
-			errors.New("tenant password hash is required"),
-			"テナントパスワードハッシュは必須です。",
+			errors.Newf("invalid tenant type: %s", t),
+			"テナントタイプは department, laboratory, division のいずれかである必要があります。",
 		)
 	}
-	return nil
 }
 
-func NewTenantPasswordHash(value string) (TenantPasswordHash, error) {
-	p := TenantPasswordHash(value)
-	if err := p.Validate(); err != nil {
+func NewTenantType(value string) (TenantType, error) {
+	t := TenantType(value)
+	if err := t.Validate(); err != nil {
 		return "", err
 	}
-	return p, nil
+	return t, nil
 }
 
 type Tenant struct {
-	TenantId           TenantID
-	TenantName         TenantName
-	TenantSlug         TenantSlug
-	TenantPasswordHash TenantPasswordHash
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
+	ID          TenantID
+	Name        TenantName
+	Description TenantDescription
+	Type        TenantType
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 var isSlugFormatRegex = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)

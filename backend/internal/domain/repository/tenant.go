@@ -7,10 +7,10 @@ import (
 )
 
 type InsertTenantArg struct {
-	Id           model.TenantID
-	Name         model.TenantName
-	Slug         model.TenantSlug
-	PasswordHash model.TenantPasswordHash
+	Id          model.TenantID
+	Name        model.TenantName
+	Description model.TenantDescription
+	Type        model.TenantType
 }
 
 type TenantRepository interface {

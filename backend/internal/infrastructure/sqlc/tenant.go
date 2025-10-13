@@ -11,12 +11,12 @@ import (
 func parseSqlcTenant(tenant sqlc.Tenant) (model.Tenant, error) {
 
 	return model.Tenant{
-		TenantId:           model.TenantID(tenant.ID),
-		TenantName:         model.TenantName(tenant.Name),
-		TenantSlug:         model.TenantSlug(tenant.Slug),
-		TenantPasswordHash: model.TenantPasswordHash(tenant.PasswordHash),
-		CreatedAt:          tenant.CreatedAt.Time,
-		UpdatedAt:          tenant.UpdatedAt.Time,
+		ID:          model.TenantID(tenant.ID),
+		Name:        model.TenantName(tenant.Name),
+		Description: model.TenantDescription(tenant.Description),
+		Type:        model.TenantType(tenant.TenantType),
+		CreatedAt:   tenant.CreatedAt.Time,
+		UpdatedAt:   tenant.UpdatedAt.Time,
 	}, nil
 }
 
@@ -24,8 +24,8 @@ func (t *SqlcTransaction) InsertTenant(ctx context.Context, arg repository.Inser
 	sqlcTenant, err := t.queries.InsertTenant(ctx, sqlc.InsertTenantParams{
 		ID:           arg.Id.UUID(),
 		Name:         arg.Name.String(),
-		Slug:         arg.Slug.String(),
-		PasswordHash: arg.PasswordHash.String(),
+		Slug:         arg.Description.String(),
+		PasswordHash: arg.Type.String(),
 	})
 	if err != nil {
 		return model.Tenant{}, err
