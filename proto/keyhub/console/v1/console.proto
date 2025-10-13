@@ -3,28 +3,28 @@ syntax = "proto3";
 package keyhub.console.v1;
 
 import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
+// import "google/protobuf/timestamp.proto";
 
 service ConsoleAuthService {
-    // Organization IDで認証
-    rpc LoginWithOrgId(LoginWithOrgIdRequest) returns (LoginResponse);
+  // Organization IDで認証
+  rpc LoginWithOrgId(LoginWithOrgIdRequest) returns (LoginWithOrgIdResponse);
 
-    // ログアウト
-    rpc Logout(LogoutRequest) returns (LogoutResponse);
+  // ログアウト
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
 message LoginWithOrgIdRequest {
-    string organization_id = 1 [(buf.validate.field).string.uuid = true]; // uuid
-    string organization_key = 2;
+  string organization_id = 1 [(buf.validate.field).string.uuid = true]; // uuid
+  string organization_key = 2;
 }
 
-message LoginResponse {
-    string session_token = 1;  // JWT形式
-    int64 expires_in = 2;      // 有効期限（秒）
+message LoginWithOrgIdResponse {
+  string session_token = 1; // JWT形式
+  int64 expires_in = 2; // 有効期限（秒）
 }
 
 message LogoutRequest {}
 
 message LogoutResponse {
-    bool success = 1;
+  bool success = 1;
 }
