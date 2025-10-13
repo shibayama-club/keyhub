@@ -2,8 +2,8 @@
 INSERT INTO tenants(
     id,
     name,
-    slug,
-    password_hash,
+    description,
+    tenant_type,
     created_at,
     updated_at
 )
