@@ -40,7 +40,6 @@ message Tenant {
     string id = 1 [(buf.validate.field).string.uuid = true];
     string organization_id = 2 [(buf.validate.field).string.uuid = true];
     string name = 3;
-    string slug = 4;
     string description = 5;
     TenantType tenant_type = 6;
     int32 member_count = 7;
