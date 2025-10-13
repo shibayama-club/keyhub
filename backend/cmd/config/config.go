@@ -25,13 +25,13 @@ type (
 	}
 
 	Config struct {
-		Port     int           `mapstructure:"port"`
-		Env      string        `mapstructure:"env"`
-		Postgres DBConfig      `mapstructure:"postgres"`
+		Port     int      `mapstructure:"port"`
+		Env      string   `mapstructure:"env"`
+		Postgres DBConfig `mapstructure:"postgres"`
 		Sentry   struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
-		Console  ConsoleConfig `mapstructure:"console"`
+		Console ConsoleConfig `mapstructure:"console"`
 	}
 )
 
