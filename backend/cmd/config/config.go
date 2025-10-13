@@ -19,15 +19,19 @@ type (
 		Debug    bool   `mapstructure:"debug"`
 	}
 
+	ConsoleConfig struct {
+		OrganizationId  string `mapstructure:"organization_id"`
+		OrganizationKey string `mapstructure:"organization_key"`
+	}
+
 	Config struct {
-		Port     int      `mapstructure:"port"`
-		Env      string   `mapstructure:"env"`
-		Postgres DBConfig `mapstructure:"postgres"`
+		Port     int           `mapstructure:"port"`
+		Env      string        `mapstructure:"env"`
+		Postgres DBConfig      `mapstructure:"postgres"`
 		Sentry   struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
-		OrganizationId  string `mapstructure:"organization_id"`
-		OrganizationKey string `mapstructure:"organization_key"`
+		Console  ConsoleConfig `mapstructure:"console"`
 	}
 )
 
