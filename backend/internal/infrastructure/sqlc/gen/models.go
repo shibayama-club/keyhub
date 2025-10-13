@@ -10,10 +10,10 @@ import (
 )
 
 type ConsoleSession struct {
-	SessionID string
-	TenantID  uuid.UUID
-	CreatedAt pgtype.Timestamptz
-	ExpiresAt pgtype.Timestamptz
+	SessionID      string
+	OrganizationID uuid.UUID
+	CreatedAt      pgtype.Timestamptz
+	ExpiresAt      pgtype.Timestamptz
 }
 
 type OauthState struct {
@@ -35,19 +35,12 @@ type Session struct {
 }
 
 type Tenant struct {
-	ID           uuid.UUID
-	Name         string
-	Slug         string
-	PasswordHash string
-	CreatedAt    pgtype.Timestamptz
-	UpdatedAt    pgtype.Timestamptz
-}
-
-type TenantDomain struct {
-	ID        uuid.UUID
-	TenantID  uuid.UUID
-	Domain    string
-	CreatedAt pgtype.Timestamptz
+	ID          uuid.UUID
+	Name        string
+	Description string
+	TenantType  string
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
 }
 
 type TenantJoinCode struct {

@@ -16,8 +16,8 @@ const insertTenant = `-- name: InsertTenant :one
 INSERT INTO tenants(
     id,
     name,
-    slug,
-    password_hash,
+    description,
+    tenant_type,
     created_at,
     updated_at
 )
@@ -29,7 +29,7 @@ VALUES(
     $5,
     $6
 )
-RETURNING id, name, slug, password_hash, created_at, updated_at
+RETURNING id, name, description, tenant_type, created_at, updated_at
 `
 
 type InsertTenantParams struct {
@@ -54,8 +54,8 @@ func (q *Queries) InsertTenant(ctx context.Context, arg InsertTenantParams) (Ten
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
-		&i.Slug,
-		&i.PasswordHash,
+		&i.Description,
+		&i.TenantType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
