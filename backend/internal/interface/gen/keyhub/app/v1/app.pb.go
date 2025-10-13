@@ -23,105 +23,59 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type Membership_Role int32
+type TenantType int32
 
 const (
-	Membership_ROLE_UNSPECIFIED Membership_Role = 0
-	Membership_ROLE_ADMIN       Membership_Role = 1
-	Membership_ROLE_MEMBER      Membership_Role = 2
+	TenantType_TENANT_TYPE_UNSPECIFIED TenantType = 0
+	TenantType_TENANT_TYPE_TEAM        TenantType = 1 // チーム
+	TenantType_TENANT_TYPE_DEPARTMENT  TenantType = 2 // 部署
+	TenantType_TENANT_TYPE_PROJECT     TenantType = 3 // プロジェクト
+	TenantType_TENANT_TYPE_LABORATORY  TenantType = 4 // 研究室
 )
 
-// Enum value maps for Membership_Role.
+// Enum value maps for TenantType.
 var (
-	Membership_Role_name = map[int32]string{
-		0: "ROLE_UNSPECIFIED",
-		1: "ROLE_ADMIN",
-		2: "ROLE_MEMBER",
+	TenantType_name = map[int32]string{
+		0: "TENANT_TYPE_UNSPECIFIED",
+		1: "TENANT_TYPE_TEAM",
+		2: "TENANT_TYPE_DEPARTMENT",
+		3: "TENANT_TYPE_PROJECT",
+		4: "TENANT_TYPE_LABORATORY",
 	}
-	Membership_Role_value = map[string]int32{
-		"ROLE_UNSPECIFIED": 0,
-		"ROLE_ADMIN":       1,
-		"ROLE_MEMBER":      2,
+	TenantType_value = map[string]int32{
+		"TENANT_TYPE_UNSPECIFIED": 0,
+		"TENANT_TYPE_TEAM":        1,
+		"TENANT_TYPE_DEPARTMENT":  2,
+		"TENANT_TYPE_PROJECT":     3,
+		"TENANT_TYPE_LABORATORY":  4,
 	}
 )
 
-func (x Membership_Role) Enum() *Membership_Role {
-	p := new(Membership_Role)
+func (x TenantType) Enum() *TenantType {
+	p := new(TenantType)
 	*p = x
 	return p
 }
 
-func (x Membership_Role) String() string {
+func (x TenantType) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (Membership_Role) Descriptor() protoreflect.EnumDescriptor {
+func (TenantType) Descriptor() protoreflect.EnumDescriptor {
 	return file_keyhub_app_v1_app_proto_enumTypes[0].Descriptor()
 }
 
-func (Membership_Role) Type() protoreflect.EnumType {
+func (TenantType) Type() protoreflect.EnumType {
 	return &file_keyhub_app_v1_app_proto_enumTypes[0]
 }
 
-func (x Membership_Role) Number() protoreflect.EnumNumber {
+func (x TenantType) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Membership_Role.Descriptor instead.
-func (Membership_Role) EnumDescriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{7, 0}
-}
-
-type Membership_Status int32
-
-const (
-	Membership_STATUS_UNSPECIFIED Membership_Status = 0
-	Membership_STATUS_ACTIVE      Membership_Status = 1
-	Membership_STATUS_INVITED     Membership_Status = 2
-	Membership_STATUS_LEFT        Membership_Status = 3
-)
-
-// Enum value maps for Membership_Status.
-var (
-	Membership_Status_name = map[int32]string{
-		0: "STATUS_UNSPECIFIED",
-		1: "STATUS_ACTIVE",
-		2: "STATUS_INVITED",
-		3: "STATUS_LEFT",
-	}
-	Membership_Status_value = map[string]int32{
-		"STATUS_UNSPECIFIED": 0,
-		"STATUS_ACTIVE":      1,
-		"STATUS_INVITED":     2,
-		"STATUS_LEFT":        3,
-	}
-)
-
-func (x Membership_Status) Enum() *Membership_Status {
-	p := new(Membership_Status)
-	*p = x
-	return p
-}
-
-func (x Membership_Status) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (Membership_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_keyhub_app_v1_app_proto_enumTypes[1].Descriptor()
-}
-
-func (Membership_Status) Type() protoreflect.EnumType {
-	return &file_keyhub_app_v1_app_proto_enumTypes[1]
-}
-
-func (x Membership_Status) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use Membership_Status.Descriptor instead.
-func (Membership_Status) EnumDescriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{7, 1}
+// Deprecated: Use TenantType.Descriptor instead.
+func (TenantType) EnumDescriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{0}
 }
 
 type GetMeRequest struct {
@@ -161,11 +115,12 @@ func (*GetMeRequest) Descriptor() ([]byte, []int) {
 }
 
 type GetMeResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	User             *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	ActiveMembership *Membership            `protobuf:"bytes,2,opt,name=active_membership,json=activeMembership,proto3" json:"active_membership,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	ActiveTenant  *Tenant                `protobuf:"bytes,2,opt,name=active_tenant,json=activeTenant,proto3" json:"active_tenant,omitempty"`
+	Tenants       []*Tenant              `protobuf:"bytes,3,rep,name=tenants,proto3" json:"tenants,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetMeResponse) Reset() {
@@ -205,9 +160,16 @@ func (x *GetMeResponse) GetUser() *User {
 	return nil
 }
 
-func (x *GetMeResponse) GetActiveMembership() *Membership {
+func (x *GetMeResponse) GetActiveTenant() *Tenant {
 	if x != nil {
-		return x.ActiveMembership
+		return x.ActiveTenant
+	}
+	return nil
+}
+
+func (x *GetMeResponse) GetTenants() []*Tenant {
+	if x != nil {
+		return x.Tenants
 	}
 	return nil
 }
@@ -250,6 +212,7 @@ func (*LogoutRequest) Descriptor() ([]byte, []int) {
 
 type LogoutResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -284,92 +247,11 @@ func (*LogoutResponse) Descriptor() ([]byte, []int) {
 	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{3}
 }
 
-type SwitchTenantRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	TenantId      string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *SwitchTenantRequest) Reset() {
-	*x = SwitchTenantRequest{}
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SwitchTenantRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SwitchTenantRequest) ProtoMessage() {}
-
-func (x *SwitchTenantRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[4]
+func (x *LogoutResponse) GetSuccess() bool {
 	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
+		return x.Success
 	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SwitchTenantRequest.ProtoReflect.Descriptor instead.
-func (*SwitchTenantRequest) Descriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *SwitchTenantRequest) GetTenantId() string {
-	if x != nil {
-		return x.TenantId
-	}
-	return ""
-}
-
-type SwitchTenantResponse struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	ActiveMembership *Membership            `protobuf:"bytes,1,opt,name=active_membership,json=activeMembership,proto3" json:"active_membership,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
-}
-
-func (x *SwitchTenantResponse) Reset() {
-	*x = SwitchTenantResponse{}
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *SwitchTenantResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*SwitchTenantResponse) ProtoMessage() {}
-
-func (x *SwitchTenantResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use SwitchTenantResponse.ProtoReflect.Descriptor instead.
-func (*SwitchTenantResponse) Descriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *SwitchTenantResponse) GetActiveMembership() *Membership {
-	if x != nil {
-		return x.ActiveMembership
-	}
-	return nil
+	return false
 }
 
 type User struct {
@@ -386,7 +268,7 @@ type User struct {
 
 func (x *User) Reset() {
 	*x = User{}
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[6]
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +280,7 @@ func (x *User) String() string {
 func (*User) ProtoMessage() {}
 
 func (x *User) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[6]
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +293,7 @@ func (x *User) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use User.ProtoReflect.Descriptor instead.
 func (*User) Descriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{6}
+	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *User) GetId() string {
@@ -456,112 +338,23 @@ func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-type Membership struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	TenantId      string                 `protobuf:"bytes,2,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	Role          Membership_Role        `protobuf:"varint,4,opt,name=role,proto3,enum=keyhub.app.v1.Membership_Role" json:"role,omitempty"`
-	Status        Membership_Status      `protobuf:"varint,5,opt,name=status,proto3,enum=keyhub.app.v1.Membership_Status" json:"status,omitempty"`
-	Tenant        *Tenant                `protobuf:"bytes,6,opt,name=tenant,proto3" json:"tenant,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *Membership) Reset() {
-	*x = Membership{}
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[7]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Membership) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Membership) ProtoMessage() {}
-
-func (x *Membership) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[7]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Membership.ProtoReflect.Descriptor instead.
-func (*Membership) Descriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{7}
-}
-
-func (x *Membership) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
-}
-
-func (x *Membership) GetTenantId() string {
-	if x != nil {
-		return x.TenantId
-	}
-	return ""
-}
-
-func (x *Membership) GetUserId() string {
-	if x != nil {
-		return x.UserId
-	}
-	return ""
-}
-
-func (x *Membership) GetRole() Membership_Role {
-	if x != nil {
-		return x.Role
-	}
-	return Membership_ROLE_UNSPECIFIED
-}
-
-func (x *Membership) GetStatus() Membership_Status {
-	if x != nil {
-		return x.Status
-	}
-	return Membership_STATUS_UNSPECIFIED
-}
-
-func (x *Membership) GetTenant() *Tenant {
-	if x != nil {
-		return x.Tenant
-	}
-	return nil
-}
-
-func (x *Membership) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
-}
-
 type Tenant struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Slug          string                 `protobuf:"bytes,3,opt,name=slug,proto3" json:"slug,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	OrganizationId string                 `protobuf:"bytes,2,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	Name           string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description    string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	TenantType     TenantType             `protobuf:"varint,6,opt,name=tenant_type,json=tenantType,proto3,enum=keyhub.app.v1.TenantType" json:"tenant_type,omitempty"`
+	MemberCount    int32                  `protobuf:"varint,7,opt,name=member_count,json=memberCount,proto3" json:"member_count,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *Tenant) Reset() {
 	*x = Tenant{}
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[8]
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -573,7 +366,7 @@ func (x *Tenant) String() string {
 func (*Tenant) ProtoMessage() {}
 
 func (x *Tenant) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_app_v1_app_proto_msgTypes[8]
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -586,12 +379,19 @@ func (x *Tenant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tenant.ProtoReflect.Descriptor instead.
 func (*Tenant) Descriptor() ([]byte, []int) {
-	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{8}
+	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Tenant) GetId() string {
 	if x != nil {
 		return x.Id
+	}
+	return ""
+}
+
+func (x *Tenant) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
 	}
 	return ""
 }
@@ -603,11 +403,25 @@ func (x *Tenant) GetName() string {
 	return ""
 }
 
-func (x *Tenant) GetSlug() string {
+func (x *Tenant) GetDescription() string {
 	if x != nil {
-		return x.Slug
+		return x.Description
 	}
 	return ""
+}
+
+func (x *Tenant) GetTenantType() TenantType {
+	if x != nil {
+		return x.TenantType
+	}
+	return TenantType_TENANT_TYPE_UNSPECIFIED
+}
+
+func (x *Tenant) GetMemberCount() int32 {
+	if x != nil {
+		return x.MemberCount
+	}
+	return 0
 }
 
 func (x *Tenant) GetCreatedAt() *timestamppb.Timestamp {
@@ -629,58 +443,45 @@ var File_keyhub_app_v1_app_proto protoreflect.FileDescriptor
 const file_keyhub_app_v1_app_proto_rawDesc = "" +
 	"\n" +
 	"\x17keyhub/app/v1/app.proto\x12\rkeyhub.app.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x0e\n" +
-	"\fGetMeRequest\"\x80\x01\n" +
+	"\fGetMeRequest\"\xa5\x01\n" +
 	"\rGetMeResponse\x12'\n" +
-	"\x04user\x18\x01 \x01(\v2\x13.keyhub.app.v1.UserR\x04user\x12F\n" +
-	"\x11active_membership\x18\x02 \x01(\v2\x19.keyhub.app.v1.MembershipR\x10activeMembership\"\x0f\n" +
-	"\rLogoutRequest\"\x10\n" +
-	"\x0eLogoutResponse\"<\n" +
-	"\x13SwitchTenantRequest\x12%\n" +
-	"\ttenant_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\btenantId\"^\n" +
-	"\x14SwitchTenantResponse\x12F\n" +
-	"\x11active_membership\x18\x01 \x01(\v2\x19.keyhub.app.v1.MembershipR\x10activeMembership\"\xca\x01\n" +
-	"\x04User\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x04user\x18\x01 \x01(\v2\x13.keyhub.app.v1.UserR\x04user\x12:\n" +
+	"\ractive_tenant\x18\x02 \x01(\v2\x15.keyhub.app.v1.TenantR\factiveTenant\x12/\n" +
+	"\atenants\x18\x03 \x03(\v2\x15.keyhub.app.v1.TenantR\atenants\"\x0f\n" +
+	"\rLogoutRequest\"*\n" +
+	"\x0eLogoutResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xd4\x01\n" +
+	"\x04User\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
 	"\x04name\x18\x03 \x01(\tR\x04name\x12\x12\n" +
 	"\x04icon\x18\x04 \x01(\tR\x04icon\x129\n" +
 	"\n" +
 	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xc3\x03\n" +
+	"updated_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xe0\x02\n" +
+	"\x06Tenant\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x121\n" +
+	"\x0forganization_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eorganizationId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12:\n" +
+	"\vtenant_type\x18\x06 \x01(\x0e2\x19.keyhub.app.v1.TenantTypeR\n" +
+	"tenantType\x12!\n" +
+	"\fmember_count\x18\a \x01(\x05R\vmemberCount\x129\n" +
 	"\n" +
-	"Membership\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
-	"\ttenant_id\x18\x02 \x01(\tR\btenantId\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\x122\n" +
-	"\x04role\x18\x04 \x01(\x0e2\x1e.keyhub.app.v1.Membership.RoleR\x04role\x128\n" +
-	"\x06status\x18\x05 \x01(\x0e2 .keyhub.app.v1.Membership.StatusR\x06status\x12-\n" +
-	"\x06tenant\x18\x06 \x01(\v2\x15.keyhub.app.v1.TenantR\x06tenant\x129\n" +
+	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"=\n" +
-	"\x04Role\x12\x14\n" +
-	"\x10ROLE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt*\x90\x01\n" +
 	"\n" +
-	"ROLE_ADMIN\x10\x01\x12\x0f\n" +
-	"\vROLE_MEMBER\x10\x02\"X\n" +
-	"\x06Status\x12\x16\n" +
-	"\x12STATUS_UNSPECIFIED\x10\x00\x12\x11\n" +
-	"\rSTATUS_ACTIVE\x10\x01\x12\x12\n" +
-	"\x0eSTATUS_INVITED\x10\x02\x12\x0f\n" +
-	"\vSTATUS_LEFT\x10\x03\"\xb6\x01\n" +
-	"\x06Tenant\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\x12\x12\n" +
-	"\x04slug\x18\x03 \x01(\tR\x04slug\x129\n" +
-	"\n" +
-	"created_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
-	"\n" +
-	"updated_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt2\xf0\x01\n" +
-	"\n" +
-	"AppService\x12B\n" +
+	"TenantType\x12\x1b\n" +
+	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10TENANT_TYPE_TEAM\x10\x01\x12\x1a\n" +
+	"\x16TENANT_TYPE_DEPARTMENT\x10\x02\x12\x17\n" +
+	"\x13TENANT_TYPE_PROJECT\x10\x03\x12\x1a\n" +
+	"\x16TENANT_TYPE_LABORATORY\x10\x042\x98\x01\n" +
+	"\vAuthService\x12B\n" +
 	"\x05GetMe\x12\x1b.keyhub.app.v1.GetMeRequest\x1a\x1c.keyhub.app.v1.GetMeResponse\x12E\n" +
-	"\x06Logout\x12\x1c.keyhub.app.v1.LogoutRequest\x1a\x1d.keyhub.app.v1.LogoutResponse\x12W\n" +
-	"\fSwitchTenant\x12\".keyhub.app.v1.SwitchTenantRequest\x1a#.keyhub.app.v1.SwitchTenantResponseB\xc0\x01\n" +
+	"\x06Logout\x12\x1c.keyhub.app.v1.LogoutRequest\x1a\x1d.keyhub.app.v1.LogoutResponseB\xc0\x01\n" +
 	"\x11com.keyhub.app.v1B\bAppProtoP\x01ZKgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1;appv1\xa2\x02\x03KAX\xaa\x02\rKeyhub.App.V1\xca\x02\rKeyhub\\App\\V1\xe2\x02\x19Keyhub\\App\\V1\\GPBMetadata\xea\x02\x0fKeyhub::App::V1b\x06proto3"
 
 var (
@@ -695,45 +496,36 @@ func file_keyhub_app_v1_app_proto_rawDescGZIP() []byte {
 	return file_keyhub_app_v1_app_proto_rawDescData
 }
 
-var file_keyhub_app_v1_app_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_keyhub_app_v1_app_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_keyhub_app_v1_app_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_keyhub_app_v1_app_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_keyhub_app_v1_app_proto_goTypes = []any{
-	(Membership_Role)(0),          // 0: keyhub.app.v1.Membership.Role
-	(Membership_Status)(0),        // 1: keyhub.app.v1.Membership.Status
-	(*GetMeRequest)(nil),          // 2: keyhub.app.v1.GetMeRequest
-	(*GetMeResponse)(nil),         // 3: keyhub.app.v1.GetMeResponse
-	(*LogoutRequest)(nil),         // 4: keyhub.app.v1.LogoutRequest
-	(*LogoutResponse)(nil),        // 5: keyhub.app.v1.LogoutResponse
-	(*SwitchTenantRequest)(nil),   // 6: keyhub.app.v1.SwitchTenantRequest
-	(*SwitchTenantResponse)(nil),  // 7: keyhub.app.v1.SwitchTenantResponse
-	(*User)(nil),                  // 8: keyhub.app.v1.User
-	(*Membership)(nil),            // 9: keyhub.app.v1.Membership
-	(*Tenant)(nil),                // 10: keyhub.app.v1.Tenant
-	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(TenantType)(0),               // 0: keyhub.app.v1.TenantType
+	(*GetMeRequest)(nil),          // 1: keyhub.app.v1.GetMeRequest
+	(*GetMeResponse)(nil),         // 2: keyhub.app.v1.GetMeResponse
+	(*LogoutRequest)(nil),         // 3: keyhub.app.v1.LogoutRequest
+	(*LogoutResponse)(nil),        // 4: keyhub.app.v1.LogoutResponse
+	(*User)(nil),                  // 5: keyhub.app.v1.User
+	(*Tenant)(nil),                // 6: keyhub.app.v1.Tenant
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_keyhub_app_v1_app_proto_depIdxs = []int32{
-	8,  // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
-	9,  // 1: keyhub.app.v1.GetMeResponse.active_membership:type_name -> keyhub.app.v1.Membership
-	9,  // 2: keyhub.app.v1.SwitchTenantResponse.active_membership:type_name -> keyhub.app.v1.Membership
-	11, // 3: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	11, // 4: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 5: keyhub.app.v1.Membership.role:type_name -> keyhub.app.v1.Membership.Role
-	1,  // 6: keyhub.app.v1.Membership.status:type_name -> keyhub.app.v1.Membership.Status
-	10, // 7: keyhub.app.v1.Membership.tenant:type_name -> keyhub.app.v1.Tenant
-	11, // 8: keyhub.app.v1.Membership.created_at:type_name -> google.protobuf.Timestamp
-	11, // 9: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
-	11, // 10: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 11: keyhub.app.v1.AppService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
-	4,  // 12: keyhub.app.v1.AppService.Logout:input_type -> keyhub.app.v1.LogoutRequest
-	6,  // 13: keyhub.app.v1.AppService.SwitchTenant:input_type -> keyhub.app.v1.SwitchTenantRequest
-	3,  // 14: keyhub.app.v1.AppService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
-	5,  // 15: keyhub.app.v1.AppService.Logout:output_type -> keyhub.app.v1.LogoutResponse
-	7,  // 16: keyhub.app.v1.AppService.SwitchTenant:output_type -> keyhub.app.v1.SwitchTenantResponse
-	14, // [14:17] is the sub-list for method output_type
-	11, // [11:14] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	5,  // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
+	6,  // 1: keyhub.app.v1.GetMeResponse.active_tenant:type_name -> keyhub.app.v1.Tenant
+	6,  // 2: keyhub.app.v1.GetMeResponse.tenants:type_name -> keyhub.app.v1.Tenant
+	7,  // 3: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 4: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 5: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
+	7,  // 6: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 7: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
+	1,  // 8: keyhub.app.v1.AuthService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
+	3,  // 9: keyhub.app.v1.AuthService.Logout:input_type -> keyhub.app.v1.LogoutRequest
+	2,  // 10: keyhub.app.v1.AuthService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
+	4,  // 11: keyhub.app.v1.AuthService.Logout:output_type -> keyhub.app.v1.LogoutResponse
+	10, // [10:12] is the sub-list for method output_type
+	8,  // [8:10] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_app_v1_app_proto_init() }
@@ -746,8 +538,8 @@ func file_keyhub_app_v1_app_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_app_v1_app_proto_rawDesc), len(file_keyhub_app_v1_app_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   9,
+			NumEnums:      1,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -6,8 +6,11 @@ package consolev1connect
 
 import (
 	connect "connectrpc.com/connect"
-	_ "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1"
+	context "context"
+	errors "errors"
+	v1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1"
 	http "net/http"
+	strings "strings"
 )
 
 // This is a compile-time assertion to ensure that this generated file and the connect package are
@@ -18,46 +21,123 @@ import (
 const _ = connect.IsAtLeastVersion1_13_0
 
 const (
-	// ConsoleServiceName is the fully-qualified name of the ConsoleService service.
-	ConsoleServiceName = "keyhub.console.v1.ConsoleService"
+	// ConsoleAuthServiceName is the fully-qualified name of the ConsoleAuthService service.
+	ConsoleAuthServiceName = "keyhub.console.v1.ConsoleAuthService"
 )
 
-// ConsoleServiceClient is a client for the keyhub.console.v1.ConsoleService service.
-type ConsoleServiceClient interface {
+// These constants are the fully-qualified names of the RPCs defined in this package. They're
+// exposed at runtime as Spec.Procedure and as the final two segments of the HTTP route.
+//
+// Note that these are different from the fully-qualified method names used by
+// google.golang.org/protobuf/reflect/protoreflect. To convert from these constants to
+// reflection-formatted method names, remove the leading slash and convert the remaining slash to a
+// period.
+const (
+	// ConsoleAuthServiceLoginWithOrgIdProcedure is the fully-qualified name of the ConsoleAuthService's
+	// LoginWithOrgId RPC.
+	ConsoleAuthServiceLoginWithOrgIdProcedure = "/keyhub.console.v1.ConsoleAuthService/LoginWithOrgId"
+	// ConsoleAuthServiceLogoutProcedure is the fully-qualified name of the ConsoleAuthService's Logout
+	// RPC.
+	ConsoleAuthServiceLogoutProcedure = "/keyhub.console.v1.ConsoleAuthService/Logout"
+)
+
+// ConsoleAuthServiceClient is a client for the keyhub.console.v1.ConsoleAuthService service.
+type ConsoleAuthServiceClient interface {
+	// Organization IDで認証
+	LoginWithOrgId(context.Context, *connect.Request[v1.LoginWithOrgIdRequest]) (*connect.Response[v1.LoginWithOrgIdResponse], error)
+	// ログアウト
+	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
 }
 
-// NewConsoleServiceClient constructs a client for the keyhub.console.v1.ConsoleService service. By
-// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
-// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
-// connect.WithGRPC() or connect.WithGRPCWeb() options.
+// NewConsoleAuthServiceClient constructs a client for the keyhub.console.v1.ConsoleAuthService
+// service. By default, it uses the Connect protocol with the binary Protobuf Codec, asks for
+// gzipped responses, and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply
+// the connect.WithGRPC() or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConsoleServiceClient {
-	return &consoleServiceClient{}
+func NewConsoleAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConsoleAuthServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	consoleAuthServiceMethods := v1.File_keyhub_console_v1_console_proto.Services().ByName("ConsoleAuthService").Methods()
+	return &consoleAuthServiceClient{
+		loginWithOrgId: connect.NewClient[v1.LoginWithOrgIdRequest, v1.LoginWithOrgIdResponse](
+			httpClient,
+			baseURL+ConsoleAuthServiceLoginWithOrgIdProcedure,
+			connect.WithSchema(consoleAuthServiceMethods.ByName("LoginWithOrgId")),
+			connect.WithClientOptions(opts...),
+		),
+		logout: connect.NewClient[v1.LogoutRequest, v1.LogoutResponse](
+			httpClient,
+			baseURL+ConsoleAuthServiceLogoutProcedure,
+			connect.WithSchema(consoleAuthServiceMethods.ByName("Logout")),
+			connect.WithClientOptions(opts...),
+		),
+	}
 }
 
-// consoleServiceClient implements ConsoleServiceClient.
-type consoleServiceClient struct {
+// consoleAuthServiceClient implements ConsoleAuthServiceClient.
+type consoleAuthServiceClient struct {
+	loginWithOrgId *connect.Client[v1.LoginWithOrgIdRequest, v1.LoginWithOrgIdResponse]
+	logout         *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
 }
 
-// ConsoleServiceHandler is an implementation of the keyhub.console.v1.ConsoleService service.
-type ConsoleServiceHandler interface {
+// LoginWithOrgId calls keyhub.console.v1.ConsoleAuthService.LoginWithOrgId.
+func (c *consoleAuthServiceClient) LoginWithOrgId(ctx context.Context, req *connect.Request[v1.LoginWithOrgIdRequest]) (*connect.Response[v1.LoginWithOrgIdResponse], error) {
+	return c.loginWithOrgId.CallUnary(ctx, req)
 }
 
-// NewConsoleServiceHandler builds an HTTP handler from the service implementation. It returns the
-// path on which to mount the handler and the handler itself.
+// Logout calls keyhub.console.v1.ConsoleAuthService.Logout.
+func (c *consoleAuthServiceClient) Logout(ctx context.Context, req *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
+	return c.logout.CallUnary(ctx, req)
+}
+
+// ConsoleAuthServiceHandler is an implementation of the keyhub.console.v1.ConsoleAuthService
+// service.
+type ConsoleAuthServiceHandler interface {
+	// Organization IDで認証
+	LoginWithOrgId(context.Context, *connect.Request[v1.LoginWithOrgIdRequest]) (*connect.Response[v1.LoginWithOrgIdResponse], error)
+	// ログアウト
+	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
+}
+
+// NewConsoleAuthServiceHandler builds an HTTP handler from the service implementation. It returns
+// the path on which to mount the handler and the handler itself.
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	return "/keyhub.console.v1.ConsoleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+func NewConsoleAuthServiceHandler(svc ConsoleAuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	consoleAuthServiceMethods := v1.File_keyhub_console_v1_console_proto.Services().ByName("ConsoleAuthService").Methods()
+	consoleAuthServiceLoginWithOrgIdHandler := connect.NewUnaryHandler(
+		ConsoleAuthServiceLoginWithOrgIdProcedure,
+		svc.LoginWithOrgId,
+		connect.WithSchema(consoleAuthServiceMethods.ByName("LoginWithOrgId")),
+		connect.WithHandlerOptions(opts...),
+	)
+	consoleAuthServiceLogoutHandler := connect.NewUnaryHandler(
+		ConsoleAuthServiceLogoutProcedure,
+		svc.Logout,
+		connect.WithSchema(consoleAuthServiceMethods.ByName("Logout")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/keyhub.console.v1.ConsoleAuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case ConsoleAuthServiceLoginWithOrgIdProcedure:
+			consoleAuthServiceLoginWithOrgIdHandler.ServeHTTP(w, r)
+		case ConsoleAuthServiceLogoutProcedure:
+			consoleAuthServiceLogoutHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
 	})
 }
 
-// UnimplementedConsoleServiceHandler returns CodeUnimplemented from all methods.
-type UnimplementedConsoleServiceHandler struct{}
+// UnimplementedConsoleAuthServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedConsoleAuthServiceHandler struct{}
+
+func (UnimplementedConsoleAuthServiceHandler) LoginWithOrgId(context.Context, *connect.Request[v1.LoginWithOrgIdRequest]) (*connect.Response[v1.LoginWithOrgIdResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleAuthService.LoginWithOrgId is not implemented"))
+}
+
+func (UnimplementedConsoleAuthServiceHandler) Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleAuthService.Logout is not implemented"))
+}

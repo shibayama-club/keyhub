@@ -7,9 +7,11 @@
 package consolev1
 
 import (
+	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -20,18 +22,236 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type LoginWithOrgIdRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	OrganizationId  string                 `protobuf:"bytes,1,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"` // uuid
+	OrganizationKey string                 `protobuf:"bytes,2,opt,name=organization_key,json=organizationKey,proto3" json:"organization_key,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *LoginWithOrgIdRequest) Reset() {
+	*x = LoginWithOrgIdRequest{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginWithOrgIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginWithOrgIdRequest) ProtoMessage() {}
+
+func (x *LoginWithOrgIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginWithOrgIdRequest.ProtoReflect.Descriptor instead.
+func (*LoginWithOrgIdRequest) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *LoginWithOrgIdRequest) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *LoginWithOrgIdRequest) GetOrganizationKey() string {
+	if x != nil {
+		return x.OrganizationKey
+	}
+	return ""
+}
+
+type LoginWithOrgIdResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SessionToken  string                 `protobuf:"bytes,1,opt,name=session_token,json=sessionToken,proto3" json:"session_token,omitempty"` // JWT形式
+	ExpiresIn     int64                  `protobuf:"varint,2,opt,name=expires_in,json=expiresIn,proto3" json:"expires_in,omitempty"`         // 有効期限（秒）
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LoginWithOrgIdResponse) Reset() {
+	*x = LoginWithOrgIdResponse{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LoginWithOrgIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LoginWithOrgIdResponse) ProtoMessage() {}
+
+func (x *LoginWithOrgIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LoginWithOrgIdResponse.ProtoReflect.Descriptor instead.
+func (*LoginWithOrgIdResponse) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LoginWithOrgIdResponse) GetSessionToken() string {
+	if x != nil {
+		return x.SessionToken
+	}
+	return ""
+}
+
+func (x *LoginWithOrgIdResponse) GetExpiresIn() int64 {
+	if x != nil {
+		return x.ExpiresIn
+	}
+	return 0
+}
+
+type LogoutRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutRequest) Reset() {
+	*x = LogoutRequest{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutRequest) ProtoMessage() {}
+
+func (x *LogoutRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutRequest.ProtoReflect.Descriptor instead.
+func (*LogoutRequest) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{2}
+}
+
+type LogoutResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LogoutResponse) Reset() {
+	*x = LogoutResponse{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LogoutResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LogoutResponse) ProtoMessage() {}
+
+func (x *LogoutResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LogoutResponse.ProtoReflect.Descriptor instead.
+func (*LogoutResponse) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *LogoutResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
 var File_keyhub_console_v1_console_proto protoreflect.FileDescriptor
 
 const file_keyhub_console_v1_console_proto_rawDesc = "" +
 	"\n" +
-	"\x1fkeyhub/console/v1/console.proto\x12\x11keyhub.console.v12\x10\n" +
-	"\x0eConsoleServiceB\xe0\x01\n" +
+	"\x1fkeyhub/console/v1/console.proto\x12\x11keyhub.console.v1\x1a\x1bbuf/validate/validate.proto\"u\n" +
+	"\x15LoginWithOrgIdRequest\x121\n" +
+	"\x0forganization_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eorganizationId\x12)\n" +
+	"\x10organization_key\x18\x02 \x01(\tR\x0forganizationKey\"\\\n" +
+	"\x16LoginWithOrgIdResponse\x12#\n" +
+	"\rsession_token\x18\x01 \x01(\tR\fsessionToken\x12\x1d\n" +
+	"\n" +
+	"expires_in\x18\x02 \x01(\x03R\texpiresIn\"\x0f\n" +
+	"\rLogoutRequest\"*\n" +
+	"\x0eLogoutResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess2\xca\x01\n" +
+	"\x12ConsoleAuthService\x12e\n" +
+	"\x0eLoginWithOrgId\x12(.keyhub.console.v1.LoginWithOrgIdRequest\x1a).keyhub.console.v1.LoginWithOrgIdResponse\x12M\n" +
+	"\x06Logout\x12 .keyhub.console.v1.LogoutRequest\x1a!.keyhub.console.v1.LogoutResponseB\xe0\x01\n" +
 	"\x15com.keyhub.console.v1B\fConsoleProtoP\x01ZSgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1;consolev1\xa2\x02\x03KCX\xaa\x02\x11Keyhub.Console.V1\xca\x02\x11Keyhub\\Console\\V1\xe2\x02\x1dKeyhub\\Console\\V1\\GPBMetadata\xea\x02\x13Keyhub::Console::V1b\x06proto3"
 
-var file_keyhub_console_v1_console_proto_goTypes = []any{}
+var (
+	file_keyhub_console_v1_console_proto_rawDescOnce sync.Once
+	file_keyhub_console_v1_console_proto_rawDescData []byte
+)
+
+func file_keyhub_console_v1_console_proto_rawDescGZIP() []byte {
+	file_keyhub_console_v1_console_proto_rawDescOnce.Do(func() {
+		file_keyhub_console_v1_console_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_console_proto_rawDesc), len(file_keyhub_console_v1_console_proto_rawDesc)))
+	})
+	return file_keyhub_console_v1_console_proto_rawDescData
+}
+
+var file_keyhub_console_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_keyhub_console_v1_console_proto_goTypes = []any{
+	(*LoginWithOrgIdRequest)(nil),  // 0: keyhub.console.v1.LoginWithOrgIdRequest
+	(*LoginWithOrgIdResponse)(nil), // 1: keyhub.console.v1.LoginWithOrgIdResponse
+	(*LogoutRequest)(nil),          // 2: keyhub.console.v1.LogoutRequest
+	(*LogoutResponse)(nil),         // 3: keyhub.console.v1.LogoutResponse
+}
 var file_keyhub_console_v1_console_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
+	0, // 0: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:input_type -> keyhub.console.v1.LoginWithOrgIdRequest
+	2, // 1: keyhub.console.v1.ConsoleAuthService.Logout:input_type -> keyhub.console.v1.LogoutRequest
+	1, // 2: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:output_type -> keyhub.console.v1.LoginWithOrgIdResponse
+	3, // 3: keyhub.console.v1.ConsoleAuthService.Logout:output_type -> keyhub.console.v1.LogoutResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -48,12 +268,13 @@ func file_keyhub_console_v1_console_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_console_proto_rawDesc), len(file_keyhub_console_v1_console_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_keyhub_console_v1_console_proto_goTypes,
 		DependencyIndexes: file_keyhub_console_v1_console_proto_depIdxs,
+		MessageInfos:      file_keyhub_console_v1_console_proto_msgTypes,
 	}.Build()
 	File_keyhub_console_v1_console_proto = out.File
 	file_keyhub_console_v1_console_proto_goTypes = nil

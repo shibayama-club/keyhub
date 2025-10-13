@@ -2,19 +2,121 @@
 // @generated from file keyhub/console/v1/console.proto (package keyhub.console.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import { file_buf_validate_validate } from "../../../buf/validate/validate_pb";
+import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file keyhub/console/v1/console.proto.
  */
 export const file_keyhub_console_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("Ch9rZXlodWIvY29uc29sZS92MS9jb25zb2xlLnByb3RvEhFrZXlodWIuY29uc29sZS52MTIQCg5Db25zb2xlU2VydmljZULgAQoVY29tLmtleWh1Yi5jb25zb2xlLnYxQgxDb25zb2xlUHJvdG9QAVpTZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvY29uc29sZS92MTtjb25zb2xldjGiAgNLQ1iqAhFLZXlodWIuQ29uc29sZS5WMcoCEUtleWh1YlxDb25zb2xlXFYx4gIdS2V5aHViXENvbnNvbGVcVjFcR1BCTWV0YWRhdGHqAhNLZXlodWI6OkNvbnNvbGU6OlYxYgZwcm90bzM");
+  fileDesc("Ch9rZXlodWIvY29uc29sZS92MS9jb25zb2xlLnByb3RvEhFrZXlodWIuY29uc29sZS52MSJUChVMb2dpbldpdGhPcmdJZFJlcXVlc3QSIQoPb3JnYW5pemF0aW9uX2lkGAEgASgJQgi6SAVyA7ABARIYChBvcmdhbml6YXRpb25fa2V5GAIgASgJIkMKFkxvZ2luV2l0aE9yZ0lkUmVzcG9uc2USFQoNc2Vzc2lvbl90b2tlbhgBIAEoCRISCgpleHBpcmVzX2luGAIgASgDIg8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCDLKAQoSQ29uc29sZUF1dGhTZXJ2aWNlEmUKDkxvZ2luV2l0aE9yZ0lkEigua2V5aHViLmNvbnNvbGUudjEuTG9naW5XaXRoT3JnSWRSZXF1ZXN0Gikua2V5aHViLmNvbnNvbGUudjEuTG9naW5XaXRoT3JnSWRSZXNwb25zZRJNCgZMb2dvdXQSIC5rZXlodWIuY29uc29sZS52MS5Mb2dvdXRSZXF1ZXN0GiEua2V5aHViLmNvbnNvbGUudjEuTG9nb3V0UmVzcG9uc2VC4AEKFWNvbS5rZXlodWIuY29uc29sZS52MUIMQ29uc29sZVByb3RvUAFaU2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2NvbnNvbGUvdjE7Y29uc29sZXYxogIDS0NYqgIRS2V5aHViLkNvbnNvbGUuVjHKAhFLZXlodWJcQ29uc29sZVxWMeICHUtleWh1YlxDb25zb2xlXFYxXEdQQk1ldGFkYXRh6gITS2V5aHViOjpDb25zb2xlOjpWMWIGcHJvdG8z", [file_buf_validate_validate]);
 
 /**
- * @generated from service keyhub.console.v1.ConsoleService
+ * @generated from message keyhub.console.v1.LoginWithOrgIdRequest
  */
-export const ConsoleService: GenService<{
+export type LoginWithOrgIdRequest = Message<"keyhub.console.v1.LoginWithOrgIdRequest"> & {
+  /**
+   * uuid
+   *
+   * @generated from field: string organization_id = 1;
+   */
+  organizationId: string;
+
+  /**
+   * @generated from field: string organization_key = 2;
+   */
+  organizationKey: string;
+};
+
+/**
+ * Describes the message keyhub.console.v1.LoginWithOrgIdRequest.
+ * Use `create(LoginWithOrgIdRequestSchema)` to create a new message.
+ */
+export const LoginWithOrgIdRequestSchema: GenMessage<LoginWithOrgIdRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 0);
+
+/**
+ * @generated from message keyhub.console.v1.LoginWithOrgIdResponse
+ */
+export type LoginWithOrgIdResponse = Message<"keyhub.console.v1.LoginWithOrgIdResponse"> & {
+  /**
+   * JWT形式
+   *
+   * @generated from field: string session_token = 1;
+   */
+  sessionToken: string;
+
+  /**
+   * 有効期限（秒）
+   *
+   * @generated from field: int64 expires_in = 2;
+   */
+  expiresIn: bigint;
+};
+
+/**
+ * Describes the message keyhub.console.v1.LoginWithOrgIdResponse.
+ * Use `create(LoginWithOrgIdResponseSchema)` to create a new message.
+ */
+export const LoginWithOrgIdResponseSchema: GenMessage<LoginWithOrgIdResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 1);
+
+/**
+ * @generated from message keyhub.console.v1.LogoutRequest
+ */
+export type LogoutRequest = Message<"keyhub.console.v1.LogoutRequest"> & {
+};
+
+/**
+ * Describes the message keyhub.console.v1.LogoutRequest.
+ * Use `create(LogoutRequestSchema)` to create a new message.
+ */
+export const LogoutRequestSchema: GenMessage<LogoutRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 2);
+
+/**
+ * @generated from message keyhub.console.v1.LogoutResponse
+ */
+export type LogoutResponse = Message<"keyhub.console.v1.LogoutResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
+};
+
+/**
+ * Describes the message keyhub.console.v1.LogoutResponse.
+ * Use `create(LogoutResponseSchema)` to create a new message.
+ */
+export const LogoutResponseSchema: GenMessage<LogoutResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 3);
+
+/**
+ * @generated from service keyhub.console.v1.ConsoleAuthService
+ */
+export const ConsoleAuthService: GenService<{
+  /**
+   * Organization IDで認証
+   *
+   * @generated from rpc keyhub.console.v1.ConsoleAuthService.LoginWithOrgId
+   */
+  loginWithOrgId: {
+    methodKind: "unary";
+    input: typeof LoginWithOrgIdRequestSchema;
+    output: typeof LoginWithOrgIdResponseSchema;
+  },
+  /**
+   * ログアウト
+   *
+   * @generated from rpc keyhub.console.v1.ConsoleAuthService.Logout
+   */
+  logout: {
+    methodKind: "unary";
+    input: typeof LogoutRequestSchema;
+    output: typeof LogoutResponseSchema;
+  },
 }> = /*@__PURE__*/
   serviceDesc(file_keyhub_console_v1_console, 0);
 

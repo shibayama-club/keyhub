@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file keyhub/app/v1/app.proto.
  */
 export const file_keyhub_app_v1_app: GenFile = /*@__PURE__*/
-  fileDesc("ChdrZXlodWIvYXBwL3YxL2FwcC5wcm90bxINa2V5aHViLmFwcC52MSIOCgxHZXRNZVJlcXVlc3QiaAoNR2V0TWVSZXNwb25zZRIhCgR1c2VyGAEgASgLMhMua2V5aHViLmFwcC52MS5Vc2VyEjQKEWFjdGl2ZV9tZW1iZXJzaGlwGAIgASgLMhkua2V5aHViLmFwcC52MS5NZW1iZXJzaGlwIg8KDUxvZ291dFJlcXVlc3QiEAoOTG9nb3V0UmVzcG9uc2UiMgoTU3dpdGNoVGVuYW50UmVxdWVzdBIbCgl0ZW5hbnRfaWQYASABKAlCCLpIBXIDsAEBIkwKFFN3aXRjaFRlbmFudFJlc3BvbnNlEjQKEWFjdGl2ZV9tZW1iZXJzaGlwGAEgASgLMhkua2V5aHViLmFwcC52MS5NZW1iZXJzaGlwIp0BCgRVc2VyEgoKAmlkGAEgASgJEg0KBWVtYWlsGAIgASgJEgwKBG5hbWUYAyABKAkSDAoEaWNvbhgEIAEoCRIuCgpjcmVhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GAYgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCKMAwoKTWVtYmVyc2hpcBIKCgJpZBgBIAEoCRIRCgl0ZW5hbnRfaWQYAiABKAkSDwoHdXNlcl9pZBgDIAEoCRIsCgRyb2xlGAQgASgOMh4ua2V5aHViLmFwcC52MS5NZW1iZXJzaGlwLlJvbGUSMAoGc3RhdHVzGAUgASgOMiAua2V5aHViLmFwcC52MS5NZW1iZXJzaGlwLlN0YXR1cxIlCgZ0ZW5hbnQYBiABKAsyFS5rZXlodWIuYXBwLnYxLlRlbmFudBIuCgpjcmVhdGVkX2F0GAcgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcCI9CgRSb2xlEhQKEFJPTEVfVU5TUEVDSUZJRUQQABIOCgpST0xFX0FETUlOEAESDwoLUk9MRV9NRU1CRVIQAiJYCgZTdGF0dXMSFgoSU1RBVFVTX1VOU1BFQ0lGSUVEEAASEQoNU1RBVFVTX0FDVElWRRABEhIKDlNUQVRVU19JTlZJVEVEEAISDwoLU1RBVFVTX0xFRlQQAyKQAQoGVGVuYW50EgoKAmlkGAEgASgJEgwKBG5hbWUYAiABKAkSDAoEc2x1ZxgDIAEoCRIuCgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIuCgp1cGRhdGVkX2F0GAUgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcDLwAQoKQXBwU2VydmljZRJCCgVHZXRNZRIbLmtleWh1Yi5hcHAudjEuR2V0TWVSZXF1ZXN0Ghwua2V5aHViLmFwcC52MS5HZXRNZVJlc3BvbnNlEkUKBkxvZ291dBIcLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVxdWVzdBodLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVzcG9uc2USVwoMU3dpdGNoVGVuYW50EiIua2V5aHViLmFwcC52MS5Td2l0Y2hUZW5hbnRSZXF1ZXN0GiMua2V5aHViLmFwcC52MS5Td2l0Y2hUZW5hbnRSZXNwb25zZULAAQoRY29tLmtleWh1Yi5hcHAudjFCCEFwcFByb3RvUAFaS2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2FwcC92MTthcHB2MaICA0tBWKoCDUtleWh1Yi5BcHAuVjHKAg1LZXlodWJcQXBwXFYx4gIZS2V5aHViXEFwcFxWMVxHUEJNZXRhZGF0YeoCD0tleWh1Yjo6QXBwOjpWMWIGcHJvdG8z", [file_buf_validate_validate, file_google_protobuf_timestamp]);
+  fileDesc("ChdrZXlodWIvYXBwL3YxL2FwcC5wcm90bxINa2V5aHViLmFwcC52MSIOCgxHZXRNZVJlcXVlc3QiiAEKDUdldE1lUmVzcG9uc2USIQoEdXNlchgBIAEoCzITLmtleWh1Yi5hcHAudjEuVXNlchIsCg1hY3RpdmVfdGVuYW50GAIgASgLMhUua2V5aHViLmFwcC52MS5UZW5hbnQSJgoHdGVuYW50cxgDIAMoCzIVLmtleWh1Yi5hcHAudjEuVGVuYW50Ig8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCKnAQoEVXNlchIUCgJpZBgBIAEoCUIIukgFcgOwAQESDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCRIMCgRpY29uGAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIooCCgZUZW5hbnQSFAoCaWQYASABKAlCCLpIBXIDsAEBEiEKD29yZ2FuaXphdGlvbl9pZBgCIAEoCUIIukgFcgOwAQESDAoEbmFtZRgDIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIuCgt0ZW5hbnRfdHlwZRgGIAEoDjIZLmtleWh1Yi5hcHAudjEuVGVuYW50VHlwZRIUCgxtZW1iZXJfY291bnQYByABKAUSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAqkAEKClRlbmFudFR5cGUSGwoXVEVOQU5UX1RZUEVfVU5TUEVDSUZJRUQQABIUChBURU5BTlRfVFlQRV9URUFNEAESGgoWVEVOQU5UX1RZUEVfREVQQVJUTUVOVBACEhcKE1RFTkFOVF9UWVBFX1BST0pFQ1QQAxIaChZURU5BTlRfVFlQRV9MQUJPUkFUT1JZEAQymAEKC0F1dGhTZXJ2aWNlEkIKBUdldE1lEhsua2V5aHViLmFwcC52MS5HZXRNZVJlcXVlc3QaHC5rZXlodWIuYXBwLnYxLkdldE1lUmVzcG9uc2USRQoGTG9nb3V0Ehwua2V5aHViLmFwcC52MS5Mb2dvdXRSZXF1ZXN0Gh0ua2V5aHViLmFwcC52MS5Mb2dvdXRSZXNwb25zZULAAQoRY29tLmtleWh1Yi5hcHAudjFCCEFwcFByb3RvUAFaS2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2FwcC92MTthcHB2MaICA0tBWKoCDUtleWh1Yi5BcHAuVjHKAg1LZXlodWJcQXBwXFYx4gIZS2V5aHViXEFwcFxWMVxHUEJNZXRhZGF0YeoCD0tleWh1Yjo6QXBwOjpWMWIGcHJvdG8z", [file_buf_validate_validate, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message keyhub.app.v1.GetMeRequest
@@ -38,9 +38,14 @@ export type GetMeResponse = Message<"keyhub.app.v1.GetMeResponse"> & {
   user?: User;
 
   /**
-   * @generated from field: keyhub.app.v1.Membership active_membership = 2;
+   * @generated from field: keyhub.app.v1.Tenant active_tenant = 2;
    */
-  activeMembership?: Membership;
+  activeTenant?: Tenant;
+
+  /**
+   * @generated from field: repeated keyhub.app.v1.Tenant tenants = 3;
+   */
+  tenants: Tenant[];
 };
 
 /**
@@ -67,6 +72,10 @@ export const LogoutRequestSchema: GenMessage<LogoutRequest> = /*@__PURE__*/
  * @generated from message keyhub.app.v1.LogoutResponse
  */
 export type LogoutResponse = Message<"keyhub.app.v1.LogoutResponse"> & {
+  /**
+   * @generated from field: bool success = 1;
+   */
+  success: boolean;
 };
 
 /**
@@ -75,40 +84,6 @@ export type LogoutResponse = Message<"keyhub.app.v1.LogoutResponse"> & {
  */
 export const LogoutResponseSchema: GenMessage<LogoutResponse> = /*@__PURE__*/
   messageDesc(file_keyhub_app_v1_app, 3);
-
-/**
- * @generated from message keyhub.app.v1.SwitchTenantRequest
- */
-export type SwitchTenantRequest = Message<"keyhub.app.v1.SwitchTenantRequest"> & {
-  /**
-   * @generated from field: string tenant_id = 1;
-   */
-  tenantId: string;
-};
-
-/**
- * Describes the message keyhub.app.v1.SwitchTenantRequest.
- * Use `create(SwitchTenantRequestSchema)` to create a new message.
- */
-export const SwitchTenantRequestSchema: GenMessage<SwitchTenantRequest> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 4);
-
-/**
- * @generated from message keyhub.app.v1.SwitchTenantResponse
- */
-export type SwitchTenantResponse = Message<"keyhub.app.v1.SwitchTenantResponse"> & {
-  /**
-   * @generated from field: keyhub.app.v1.Membership active_membership = 1;
-   */
-  activeMembership?: Membership;
-};
-
-/**
- * Describes the message keyhub.app.v1.SwitchTenantResponse.
- * Use `create(SwitchTenantResponseSchema)` to create a new message.
- */
-export const SwitchTenantResponseSchema: GenMessage<SwitchTenantResponse> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 5);
 
 /**
  * @generated from message keyhub.app.v1.User
@@ -150,111 +125,7 @@ export type User = Message<"keyhub.app.v1.User"> & {
  * Use `create(UserSchema)` to create a new message.
  */
 export const UserSchema: GenMessage<User> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 6);
-
-/**
- * @generated from message keyhub.app.v1.Membership
- */
-export type Membership = Message<"keyhub.app.v1.Membership"> & {
-  /**
-   * @generated from field: string id = 1;
-   */
-  id: string;
-
-  /**
-   * @generated from field: string tenant_id = 2;
-   */
-  tenantId: string;
-
-  /**
-   * @generated from field: string user_id = 3;
-   */
-  userId: string;
-
-  /**
-   * @generated from field: keyhub.app.v1.Membership.Role role = 4;
-   */
-  role: Membership_Role;
-
-  /**
-   * @generated from field: keyhub.app.v1.Membership.Status status = 5;
-   */
-  status: Membership_Status;
-
-  /**
-   * @generated from field: keyhub.app.v1.Tenant tenant = 6;
-   */
-  tenant?: Tenant;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp created_at = 7;
-   */
-  createdAt?: Timestamp;
-};
-
-/**
- * Describes the message keyhub.app.v1.Membership.
- * Use `create(MembershipSchema)` to create a new message.
- */
-export const MembershipSchema: GenMessage<Membership> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 7);
-
-/**
- * @generated from enum keyhub.app.v1.Membership.Role
- */
-export enum Membership_Role {
-  /**
-   * @generated from enum value: ROLE_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: ROLE_ADMIN = 1;
-   */
-  ADMIN = 1,
-
-  /**
-   * @generated from enum value: ROLE_MEMBER = 2;
-   */
-  MEMBER = 2,
-}
-
-/**
- * Describes the enum keyhub.app.v1.Membership.Role.
- */
-export const Membership_RoleSchema: GenEnum<Membership_Role> = /*@__PURE__*/
-  enumDesc(file_keyhub_app_v1_app, 7, 0);
-
-/**
- * @generated from enum keyhub.app.v1.Membership.Status
- */
-export enum Membership_Status {
-  /**
-   * @generated from enum value: STATUS_UNSPECIFIED = 0;
-   */
-  UNSPECIFIED = 0,
-
-  /**
-   * @generated from enum value: STATUS_ACTIVE = 1;
-   */
-  ACTIVE = 1,
-
-  /**
-   * @generated from enum value: STATUS_INVITED = 2;
-   */
-  INVITED = 2,
-
-  /**
-   * @generated from enum value: STATUS_LEFT = 3;
-   */
-  LEFT = 3,
-}
-
-/**
- * Describes the enum keyhub.app.v1.Membership.Status.
- */
-export const Membership_StatusSchema: GenEnum<Membership_Status> = /*@__PURE__*/
-  enumDesc(file_keyhub_app_v1_app, 7, 1);
+  messageDesc(file_keyhub_app_v1_app, 4);
 
 /**
  * @generated from message keyhub.app.v1.Tenant
@@ -266,22 +137,37 @@ export type Tenant = Message<"keyhub.app.v1.Tenant"> & {
   id: string;
 
   /**
-   * @generated from field: string name = 2;
+   * @generated from field: string organization_id = 2;
+   */
+  organizationId: string;
+
+  /**
+   * @generated from field: string name = 3;
    */
   name: string;
 
   /**
-   * @generated from field: string slug = 3;
+   * @generated from field: string description = 5;
    */
-  slug: string;
+  description: string;
 
   /**
-   * @generated from field: google.protobuf.Timestamp created_at = 4;
+   * @generated from field: keyhub.app.v1.TenantType tenant_type = 6;
+   */
+  tenantType: TenantType;
+
+  /**
+   * @generated from field: int32 member_count = 7;
+   */
+  memberCount: number;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 8;
    */
   createdAt?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp updated_at = 5;
+   * @generated from field: google.protobuf.Timestamp updated_at = 9;
    */
   updatedAt?: Timestamp;
 };
@@ -291,16 +177,60 @@ export type Tenant = Message<"keyhub.app.v1.Tenant"> & {
  * Use `create(TenantSchema)` to create a new message.
  */
 export const TenantSchema: GenMessage<Tenant> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 8);
+  messageDesc(file_keyhub_app_v1_app, 5);
 
 /**
- * @generated from service keyhub.app.v1.AppService
+ * @generated from enum keyhub.app.v1.TenantType
  */
-export const AppService: GenService<{
+export enum TenantType {
   /**
-   * ログインユーザーの情報を取得
+   * @generated from enum value: TENANT_TYPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * チーム
    *
-   * @generated from rpc keyhub.app.v1.AppService.GetMe
+   * @generated from enum value: TENANT_TYPE_TEAM = 1;
+   */
+  TEAM = 1,
+
+  /**
+   * 部署
+   *
+   * @generated from enum value: TENANT_TYPE_DEPARTMENT = 2;
+   */
+  DEPARTMENT = 2,
+
+  /**
+   * プロジェクト
+   *
+   * @generated from enum value: TENANT_TYPE_PROJECT = 3;
+   */
+  PROJECT = 3,
+
+  /**
+   * 研究室
+   *
+   * @generated from enum value: TENANT_TYPE_LABORATORY = 4;
+   */
+  LABORATORY = 4,
+}
+
+/**
+ * Describes the enum keyhub.app.v1.TenantType.
+ */
+export const TenantTypeSchema: GenEnum<TenantType> = /*@__PURE__*/
+  enumDesc(file_keyhub_app_v1_app, 0);
+
+/**
+ * @generated from service keyhub.app.v1.AuthService
+ */
+export const AuthService: GenService<{
+  /**
+   * 現在のユーザー情報取得
+   *
+   * @generated from rpc keyhub.app.v1.AuthService.GetMe
    */
   getMe: {
     methodKind: "unary";
@@ -310,22 +240,12 @@ export const AppService: GenService<{
   /**
    * ログアウト
    *
-   * @generated from rpc keyhub.app.v1.AppService.Logout
+   * @generated from rpc keyhub.app.v1.AuthService.Logout
    */
   logout: {
     methodKind: "unary";
     input: typeof LogoutRequestSchema;
     output: typeof LogoutResponseSchema;
-  },
-  /**
-   * アクティブなテナントを切り替え
-   *
-   * @generated from rpc keyhub.app.v1.AppService.SwitchTenant
-   */
-  switchTenant: {
-    methodKind: "unary";
-    input: typeof SwitchTenantRequestSchema;
-    output: typeof SwitchTenantResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_keyhub_app_v1_app, 0);

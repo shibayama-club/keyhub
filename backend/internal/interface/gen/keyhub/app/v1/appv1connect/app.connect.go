@@ -21,8 +21,8 @@ import (
 const _ = connect.IsAtLeastVersion1_13_0
 
 const (
-	// AppServiceName is the fully-qualified name of the AppService service.
-	AppServiceName = "keyhub.app.v1.AppService"
+	// AuthServiceName is the fully-qualified name of the AuthService service.
+	AuthServiceName = "keyhub.app.v1.AuthService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -33,138 +33,108 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
-	// AppServiceGetMeProcedure is the fully-qualified name of the AppService's GetMe RPC.
-	AppServiceGetMeProcedure = "/keyhub.app.v1.AppService/GetMe"
-	// AppServiceLogoutProcedure is the fully-qualified name of the AppService's Logout RPC.
-	AppServiceLogoutProcedure = "/keyhub.app.v1.AppService/Logout"
-	// AppServiceSwitchTenantProcedure is the fully-qualified name of the AppService's SwitchTenant RPC.
-	AppServiceSwitchTenantProcedure = "/keyhub.app.v1.AppService/SwitchTenant"
+	// AuthServiceGetMeProcedure is the fully-qualified name of the AuthService's GetMe RPC.
+	AuthServiceGetMeProcedure = "/keyhub.app.v1.AuthService/GetMe"
+	// AuthServiceLogoutProcedure is the fully-qualified name of the AuthService's Logout RPC.
+	AuthServiceLogoutProcedure = "/keyhub.app.v1.AuthService/Logout"
 )
 
-// AppServiceClient is a client for the keyhub.app.v1.AppService service.
-type AppServiceClient interface {
-	// ログインユーザーの情報を取得
+// AuthServiceClient is a client for the keyhub.app.v1.AuthService service.
+type AuthServiceClient interface {
+	// 現在のユーザー情報取得
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	// ログアウト
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
-	// アクティブなテナントを切り替え
-	SwitchTenant(context.Context, *connect.Request[v1.SwitchTenantRequest]) (*connect.Response[v1.SwitchTenantResponse], error)
 }
 
-// NewAppServiceClient constructs a client for the keyhub.app.v1.AppService service. By default, it
-// uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and sends
-// uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC() or
-// connect.WithGRPCWeb() options.
+// NewAuthServiceClient constructs a client for the keyhub.app.v1.AuthService service. By default,
+// it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses, and
+// sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the connect.WithGRPC()
+// or connect.WithGRPCWeb() options.
 //
 // The URL supplied here should be the base URL for the Connect or gRPC server (for example,
 // http://api.acme.com or https://acme.com/grpc).
-func NewAppServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AppServiceClient {
+func NewAuthServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) AuthServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
-	appServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("AppService").Methods()
-	return &appServiceClient{
+	authServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("AuthService").Methods()
+	return &authServiceClient{
 		getMe: connect.NewClient[v1.GetMeRequest, v1.GetMeResponse](
 			httpClient,
-			baseURL+AppServiceGetMeProcedure,
-			connect.WithSchema(appServiceMethods.ByName("GetMe")),
+			baseURL+AuthServiceGetMeProcedure,
+			connect.WithSchema(authServiceMethods.ByName("GetMe")),
 			connect.WithClientOptions(opts...),
 		),
 		logout: connect.NewClient[v1.LogoutRequest, v1.LogoutResponse](
 			httpClient,
-			baseURL+AppServiceLogoutProcedure,
-			connect.WithSchema(appServiceMethods.ByName("Logout")),
-			connect.WithClientOptions(opts...),
-		),
-		switchTenant: connect.NewClient[v1.SwitchTenantRequest, v1.SwitchTenantResponse](
-			httpClient,
-			baseURL+AppServiceSwitchTenantProcedure,
-			connect.WithSchema(appServiceMethods.ByName("SwitchTenant")),
+			baseURL+AuthServiceLogoutProcedure,
+			connect.WithSchema(authServiceMethods.ByName("Logout")),
 			connect.WithClientOptions(opts...),
 		),
 	}
 }
 
-// appServiceClient implements AppServiceClient.
-type appServiceClient struct {
-	getMe        *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
-	logout       *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
-	switchTenant *connect.Client[v1.SwitchTenantRequest, v1.SwitchTenantResponse]
+// authServiceClient implements AuthServiceClient.
+type authServiceClient struct {
+	getMe  *connect.Client[v1.GetMeRequest, v1.GetMeResponse]
+	logout *connect.Client[v1.LogoutRequest, v1.LogoutResponse]
 }
 
-// GetMe calls keyhub.app.v1.AppService.GetMe.
-func (c *appServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+// GetMe calls keyhub.app.v1.AuthService.GetMe.
+func (c *authServiceClient) GetMe(ctx context.Context, req *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
 	return c.getMe.CallUnary(ctx, req)
 }
 
-// Logout calls keyhub.app.v1.AppService.Logout.
-func (c *appServiceClient) Logout(ctx context.Context, req *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
+// Logout calls keyhub.app.v1.AuthService.Logout.
+func (c *authServiceClient) Logout(ctx context.Context, req *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
 	return c.logout.CallUnary(ctx, req)
 }
 
-// SwitchTenant calls keyhub.app.v1.AppService.SwitchTenant.
-func (c *appServiceClient) SwitchTenant(ctx context.Context, req *connect.Request[v1.SwitchTenantRequest]) (*connect.Response[v1.SwitchTenantResponse], error) {
-	return c.switchTenant.CallUnary(ctx, req)
-}
-
-// AppServiceHandler is an implementation of the keyhub.app.v1.AppService service.
-type AppServiceHandler interface {
-	// ログインユーザーの情報を取得
+// AuthServiceHandler is an implementation of the keyhub.app.v1.AuthService service.
+type AuthServiceHandler interface {
+	// 現在のユーザー情報取得
 	GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error)
 	// ログアウト
 	Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error)
-	// アクティブなテナントを切り替え
-	SwitchTenant(context.Context, *connect.Request[v1.SwitchTenantRequest]) (*connect.Response[v1.SwitchTenantResponse], error)
 }
 
-// NewAppServiceHandler builds an HTTP handler from the service implementation. It returns the path
+// NewAuthServiceHandler builds an HTTP handler from the service implementation. It returns the path
 // on which to mount the handler and the handler itself.
 //
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
-func NewAppServiceHandler(svc AppServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
-	appServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("AppService").Methods()
-	appServiceGetMeHandler := connect.NewUnaryHandler(
-		AppServiceGetMeProcedure,
+func NewAuthServiceHandler(svc AuthServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	authServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("AuthService").Methods()
+	authServiceGetMeHandler := connect.NewUnaryHandler(
+		AuthServiceGetMeProcedure,
 		svc.GetMe,
-		connect.WithSchema(appServiceMethods.ByName("GetMe")),
+		connect.WithSchema(authServiceMethods.ByName("GetMe")),
 		connect.WithHandlerOptions(opts...),
 	)
-	appServiceLogoutHandler := connect.NewUnaryHandler(
-		AppServiceLogoutProcedure,
+	authServiceLogoutHandler := connect.NewUnaryHandler(
+		AuthServiceLogoutProcedure,
 		svc.Logout,
-		connect.WithSchema(appServiceMethods.ByName("Logout")),
+		connect.WithSchema(authServiceMethods.ByName("Logout")),
 		connect.WithHandlerOptions(opts...),
 	)
-	appServiceSwitchTenantHandler := connect.NewUnaryHandler(
-		AppServiceSwitchTenantProcedure,
-		svc.SwitchTenant,
-		connect.WithSchema(appServiceMethods.ByName("SwitchTenant")),
-		connect.WithHandlerOptions(opts...),
-	)
-	return "/keyhub.app.v1.AppService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return "/keyhub.app.v1.AuthService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case AppServiceGetMeProcedure:
-			appServiceGetMeHandler.ServeHTTP(w, r)
-		case AppServiceLogoutProcedure:
-			appServiceLogoutHandler.ServeHTTP(w, r)
-		case AppServiceSwitchTenantProcedure:
-			appServiceSwitchTenantHandler.ServeHTTP(w, r)
+		case AuthServiceGetMeProcedure:
+			authServiceGetMeHandler.ServeHTTP(w, r)
+		case AuthServiceLogoutProcedure:
+			authServiceLogoutHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
 	})
 }
 
-// UnimplementedAppServiceHandler returns CodeUnimplemented from all methods.
-type UnimplementedAppServiceHandler struct{}
+// UnimplementedAuthServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedAuthServiceHandler struct{}
 
-func (UnimplementedAppServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.AppService.GetMe is not implemented"))
+func (UnimplementedAuthServiceHandler) GetMe(context.Context, *connect.Request[v1.GetMeRequest]) (*connect.Response[v1.GetMeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.AuthService.GetMe is not implemented"))
 }
 
-func (UnimplementedAppServiceHandler) Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.AppService.Logout is not implemented"))
-}
-
-func (UnimplementedAppServiceHandler) SwitchTenant(context.Context, *connect.Request[v1.SwitchTenantRequest]) (*connect.Response[v1.SwitchTenantResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.AppService.SwitchTenant is not implemented"))
+func (UnimplementedAuthServiceHandler) Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.AuthService.Logout is not implemented"))
 }
