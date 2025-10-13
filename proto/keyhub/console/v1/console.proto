@@ -15,7 +15,7 @@ service ConsoleAuthService {
 
 message LoginWithOrgIdRequest {
     string organization_id = 1 [(buf.validate.field).string.uuid = true]; // uuid
-    string organization_key = 2 [(buf.validate.field).string.uuid = true]; // uuid
+    string organization_key = 2;
 }
 
 message LoginResponse {
@@ -28,4 +28,3 @@ message LogoutRequest {}
 message LogoutResponse {
     bool success = 1;
 }
-
