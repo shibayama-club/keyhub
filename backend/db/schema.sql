@@ -2,6 +2,7 @@
 -- PostgreSQL database dump
 --
 
+\restrict L5I8VCwawAlEes4GYkP80diUZfLeOtWijpnu55F2Jp5BstCjb1e40SGhcSHzGQC
 
 -- Dumped from database version 16.10
 -- Dumped by pg_dump version 16.10
@@ -86,7 +87,7 @@ SET default_table_access_method = heap;
 
 CREATE TABLE public.console_sessions (
     session_id text NOT NULL,
-    tenant_id uuid NOT NULL,
+    organization_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     expires_at timestamp with time zone NOT NULL
 );
@@ -147,18 +148,6 @@ CREATE TABLE public.sessions (
 
 
 --
--- Name: tenant_domains; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.tenant_domains (
-    id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
-    tenant_id uuid NOT NULL,
-    domain text NOT NULL,
-    created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
-);
-
-
---
 -- Name: tenant_join_codes; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -199,8 +188,8 @@ CREATE TABLE public.tenant_memberships (
 CREATE TABLE public.tenants (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     name text NOT NULL,
-    slug text DEFAULT ''::text NOT NULL,
-    password_hash text NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    tenant_type text NOT NULL,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
@@ -264,22 +253,6 @@ ALTER TABLE ONLY public.oauth_states
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_pkey PRIMARY KEY (session_id);
-
-
---
--- Name: tenant_domains tenant_domains_domain_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tenant_domains
-    ADD CONSTRAINT tenant_domains_domain_key UNIQUE (domain);
-
-
---
--- Name: tenant_domains tenant_domains_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tenant_domains
-    ADD CONSTRAINT tenant_domains_pkey PRIMARY KEY (id);
 
 
 --
@@ -365,7 +338,7 @@ CREATE INDEX idx_console_sessions_expires ON public.console_sessions USING btree
 -- Name: idx_console_sessions_tenant; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (tenant_id);
+CREATE INDEX idx_console_sessions_tenant ON public.console_sessions USING btree (organization_id);
 
 
 --
@@ -418,17 +391,10 @@ CREATE INDEX idx_sessions_user ON public.sessions USING btree (user_id);
 
 
 --
--- Name: idx_tenant_domains_tenant; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_tenants_description_nonempty; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_tenant_domains_tenant ON public.tenant_domains USING btree (tenant_id);
-
-
---
--- Name: idx_tenants_slug_nonempty; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_tenants_slug_nonempty ON public.tenants USING btree (slug) WHERE (slug <> ''::text);
+CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description <> ''::text);
 
 
 --
@@ -453,14 +419,6 @@ CREATE TRIGGER refresh_users_updated_at BEFORE UPDATE ON public.users FOR EACH R
 
 
 --
--- Name: console_sessions console_sessions_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.console_sessions
-    ADD CONSTRAINT console_sessions_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES public.tenants(id) ON DELETE CASCADE;
-
-
---
 -- Name: sessions fk_sessions_active_membership; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -474,14 +432,6 @@ ALTER TABLE ONLY public.sessions
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: tenant_domains tenant_domains_tenant_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.tenant_domains
-    ADD CONSTRAINT tenant_domains_tenant_id_fkey FOREIGN KEY (tenant_id) REFERENCES public.tenants(id) ON DELETE CASCADE;
 
 
 --
@@ -514,19 +464,6 @@ ALTER TABLE ONLY public.tenant_memberships
 
 ALTER TABLE ONLY public.user_identities
     ADD CONSTRAINT user_identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
-
-
---
--- Name: tenant_domains; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.tenant_domains ENABLE ROW LEVEL SECURITY;
-
---
--- Name: tenant_domains tenant_is_current; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY tenant_is_current ON public.tenant_domains USING ((tenant_id = app.current_tenant_id()));
 
 
 --
@@ -572,4 +509,5 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
+\unrestrict L5I8VCwawAlEes4GYkP80diUZfLeOtWijpnu55F2Jp5BstCjb1e40SGhcSHzGQC
 
