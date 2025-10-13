@@ -20,16 +20,12 @@ $$;
 
 -- Enable RLS on multitenant tables
 ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_domains ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_join_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_memberships ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies
 CREATE POLICY tenant_is_current ON tenants
   USING (id = app.current_tenant_id());
-
-CREATE POLICY tenant_is_current ON tenant_domains
-  USING (tenant_id = app.current_tenant_id());
 
 CREATE POLICY tenant_is_current ON tenant_join_codes
   USING (tenant_id = app.current_tenant_id());
@@ -45,13 +41,11 @@ SELECT 'down SQL query - RLS Functions and Policies rollback';
 -- Drop policies
 DROP POLICY IF EXISTS tenant_is_current ON tenant_memberships;
 DROP POLICY IF EXISTS tenant_is_current ON tenant_join_codes;
-DROP POLICY IF EXISTS tenant_is_current ON tenant_domains;
 DROP POLICY IF EXISTS tenant_is_current ON tenants;
 
 -- Disable RLS
 ALTER TABLE tenant_memberships DISABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_join_codes DISABLE ROW LEVEL SECURITY;
-ALTER TABLE tenant_domains DISABLE ROW LEVEL SECURITY;
 ALTER TABLE tenants DISABLE ROW LEVEL SECURITY;
 
 -- Drop functions
