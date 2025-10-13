@@ -26,6 +26,8 @@ type (
 		Sentry   struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
+		OrganizationId  string `mapstructure:"organization_id"`
+		OrganizationKey string `mapstructure:"organization_key"`
 	}
 )
 
@@ -37,6 +39,8 @@ func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("postgres.password", "", "DB password")
 	flags.String("postgres.database", "todo", "DB name")
 	flags.String("sentry.dsn", "", "Sentry DSN")
+	flags.String("organization.id", "", "Organization ID(uuid)")
+	flags.String("organization.key", "", "Organization Key")
 }
 
 func ParseConfig[T any](cmd *cobra.Command, args []string) error {
