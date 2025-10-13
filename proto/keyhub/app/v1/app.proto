@@ -29,9 +29,9 @@ message LogoutResponse {
 
 message User {
     string id = 1 [(buf.validate.field).string.uuid = true];
-    string email = 2 [(buf.validate.field).string.email = true];
-    string name = 3 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
-    string icon = 4 [(buf.validate.field).string.uri = true];
+    string email = 2;
+    string name = 3;
+    string icon = 4;
     google.protobuf.Timestamp created_at = 5;
     google.protobuf.Timestamp updated_at = 6;
 }
@@ -39,9 +39,9 @@ message User {
 message Tenant {
     string id = 1 [(buf.validate.field).string.uuid = true];
     string organization_id = 2 [(buf.validate.field).string.uuid = true];
-    string name = 3 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
-    string slug = 4 [(buf.validate.field).string = {pattern: "^[a-z0-9-]+$", min_len: 3, max_len: 50}];
-    string description = 5 [(buf.validate.field).string.max_len = 500];
+    string name = 3;
+    string slug = 4;
+    string description = 5;
     TenantType tenant_type = 6;
     int32 member_count = 7;
     google.protobuf.Timestamp created_at = 8;
