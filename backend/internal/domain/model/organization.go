@@ -54,4 +54,3 @@ type Organization struct {
 	ID  OrganizationID
 	Key OrganizationKey
 }
-

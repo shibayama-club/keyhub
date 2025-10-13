@@ -20,7 +20,7 @@ func main() {
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			logger.SetupLogger(debug)
 		},
-		SilenceUsage: true,
+		SilenceUsage:  true,
 		SilenceErrors: true,
 	}
 	cobra.OnInitialize(func() {

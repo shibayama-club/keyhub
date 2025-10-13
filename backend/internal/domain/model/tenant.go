@@ -79,7 +79,8 @@ type TenantType string
 const (
 	TenantTypeDepartment TenantType = "department"
 	TenantTypeLaboratory TenantType = "laboratory"
-	TenantTypeDivision   TenantType = "division"
+	TenantTypeProject    TenantType = "project"
+	TenantTypeTeam       TenantType = "team"
 )
 
 func (t TenantType) String() string {
@@ -88,7 +89,7 @@ func (t TenantType) String() string {
 
 func (t TenantType) Validate() error {
 	switch t {
-	case TenantTypeDepartment, TenantTypeLaboratory, TenantTypeDivision:
+	case TenantTypeDepartment, TenantTypeLaboratory, TenantTypeProject, TenantTypeTeam:
 		return nil
 	default:
 		return errors.WithHint(
