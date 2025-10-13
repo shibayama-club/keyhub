@@ -14,7 +14,7 @@ type Handler struct {
 	checkers []healthcheck.HealthChecker
 }
 
-func New(checkers ...healthcheck.HealthChecker) *Handler {
+func NewHealthCheck(checkers ...healthcheck.HealthChecker) *Handler {
 	return &Handler{
 		checkers: checkers,
 	}
