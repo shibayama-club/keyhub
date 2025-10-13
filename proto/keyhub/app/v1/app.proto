@@ -28,21 +28,29 @@ message LogoutResponse {
 }
 
 message User {
-    string id = 1 [(buf.validate.field).string.uuid = true];
-    string email = 2;
-    string name = 3;
-    string icon = 4;
-    google.protobuf.Timestamp created_at = 5;
-    google.protobuf.Timestamp updated_at = 6;
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string email = 2;
+  string name = 3;
+  string icon = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
 }
 
 message Tenant {
-    string id = 1 [(buf.validate.field).string.uuid = true];
-    string organization_id = 2 [(buf.validate.field).string.uuid = true];
-    string name = 3;
-    string description = 5;
-    TenantType tenant_type = 6;
-    int32 member_count = 7;
-    google.protobuf.Timestamp created_at = 8;
-    google.protobuf.Timestamp updated_at = 9;
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string organization_id = 2 [(buf.validate.field).string.uuid = true];
+  string name = 3;
+  string description = 5;
+  TenantType tenant_type = 6;
+  int32 member_count = 7;
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+enum TenantType {
+  TENANT_TYPE_UNSPECIFIED = 0;
+  TENANT_TYPE_TEAM = 1; // チーム
+  TENANT_TYPE_DEPARTMENT = 2; // 部署
+  TENANT_TYPE_PROJECT = 3; // プロジェクト
+  TENANT_TYPE_LABORATORY = 4; // 研究室
 }
