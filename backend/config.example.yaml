@@ -12,5 +12,5 @@ auth:
     client_id:
     client_secret:
 console:
-  organization_id:
-  organization_key:
+  organization_id: "550e8400-e29b-41d4-a716-446655440000"
+  organization_key: "org_key_example_12345"
