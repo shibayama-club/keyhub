@@ -9,7 +9,6 @@
 | id | uuid | uuid_generate_v4() | false | [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) |  |  |
 | name | text |  | false |  |  |  |
 | description | text | ''::text | false |  |  |  |
-| password_hash | text |  | false |  |  |  |
 | tenant_type | text |  | false |  |  |  |
 | created_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |
 | updated_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |

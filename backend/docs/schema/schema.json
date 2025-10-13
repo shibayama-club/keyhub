@@ -367,11 +367,6 @@
           "default": "''::text"
         },
         {
-          "name": "password_hash",
-          "type": "text",
-          "nullable": false
-        },
-        {
           "name": "tenant_type",
           "type": "text",
           "nullable": false
