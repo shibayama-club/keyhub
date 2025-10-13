@@ -508,3 +508,4 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 -- PostgreSQL database dump complete
 --
 
+
