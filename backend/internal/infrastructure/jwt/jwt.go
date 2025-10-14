@@ -9,22 +9,12 @@ import (
 	"time"
 
 	"github.com/cockroachdb/errors"
+	"github.com/shibayama-club/keyhub/internal/infrastructure/auth/claim"
 )
 
 type Header struct {
 	Alg string `json:"alg"`
 	Typ string `json:"typ"`
-}
-
-type Claims interface {
-	// 有効期限を取得+トークン検証時に期限切れをチェック
-	GetExpiration() int64
-	// 発行時刻を取得+トークンの発行時刻を確認
-	GetIssuedAt() int64
-	// 有効期限を設定+トークン生成時に自動設定
-	SetExpiration(exp int64)
-	// 発行時刻を設定+トークン生成時に自動設定
-	SetIssuedAt(iat int64)
 }
 
 type Generator struct {
@@ -40,7 +30,7 @@ func NewGenerator(secret string) (*Generator, error) {
 	}, nil
 }
 
-func (g *Generator) Generate(claims Claims, expiresIn time.Duration) (string, error) {
+func (g *Generator) Generate(claims claim.Claims, expiresIn time.Duration) (string, error) {
 	if claims == nil {
 		return "", ErrInvalidClaims
 	}
@@ -93,7 +83,7 @@ func NewValidator(secret string) (*Validator, error) {
 	}, nil
 }
 
-func (v *Validator) Validate(tokenString string, claims Claims) error {
+func (v *Validator) Validate(tokenString string, claims claim.Claims) error {
 	if tokenString == "" {
 		return ErrInvalidToken
 	}
