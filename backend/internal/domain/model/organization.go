@@ -17,6 +17,24 @@ func (id OrganizationID) String() string {
 	return uuid.UUID(id).String()
 }
 
+func (id OrganizationID) Validate() error {
+	if id == OrganizationID(uuid.Nil) {
+		return errors.WithHint(
+			errors.New("organization ID is required"),
+			"組織IDは必須です。",
+		)
+	}
+	return nil
+}
+
+func NewOrganizationID(id uuid.UUID) (OrganizationID, error) {
+	orgID := OrganizationID(id)
+	if err := orgID.Validate(); err != nil {
+		return OrganizationID(uuid.Nil), err
+	}
+	return orgID, nil
+}
+
 type OrganizationKey string
 
 func (k OrganizationKey) String() string {
