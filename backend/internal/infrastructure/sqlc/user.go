@@ -5,10 +5,10 @@ import (
 
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
-	sqlc "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
+	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
 )
 
-func parseSqlcUser(user sqlc.User) (model.User, error) {
+func parseSqlcUser(user sqlcgen.User) (model.User, error) {
 	return model.User{
 		UserId:    model.UserID(user.ID),
 		Email:     model.UserEmail(user.Email),
@@ -20,7 +20,7 @@ func parseSqlcUser(user sqlc.User) (model.User, error) {
 }
 
 func (t *SqlcTransaction) InsertUser(ctx context.Context, arg repository.InsertUserArg) (model.User, error) {
-	sqlcUser, err := t.queries.InsertUser(ctx, sqlc.InsertUserParams{
+	sqlcUser, err := t.queries.InsertUser(ctx, sqlcgen.InsertUserParams{
 		ID:    arg.ID.UUID(),
 		Email: arg.Email.String(),
 		Name:  arg.Name.String(),
