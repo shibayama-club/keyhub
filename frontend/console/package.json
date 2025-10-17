@@ -16,6 +16,7 @@
     "@connectrpc/connect-query": "^2.2.0",
     "@connectrpc/connect-web": "^2.1.0",
     "@keyhub/gen": "workspace:*",
+    "@sentry/react": "^10.20.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-query": "^5.66.1",
     "react": "^19.1.1",
