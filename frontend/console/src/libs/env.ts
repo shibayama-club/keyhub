@@ -13,6 +13,11 @@ export const SENTRY_DSN = import.meta.env.VITE_SENTRY_DSN as string | undefined;
 export const APP_ENVIRONMENT = import.meta.env.MODE as string;
 
 /**
+ * 本番環境かどうか
+ */
+export const IS_PRODUCTION = APP_ENVIRONMENT === 'production';
+
+/**
  * API Base URL
  * バックエンドAPIのベースURL
  */
