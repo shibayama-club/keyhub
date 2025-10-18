@@ -31,7 +31,7 @@ message LogoutResponse {
 
 service ConsoleService {
   // Tenant作成
-  rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse)
+  rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse);
 }
 
 message Tenant {
