@@ -54,10 +54,10 @@ func runConsole(cmd *cobra.Command, args []string) error {
 	return e.StartH2CServer(fmt.Sprintf(":%d", cfg.Port), &http2.Server{})
 }
 
-func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error) {
+func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              config.Sentry.DSN,
-		Environment:      config.Env,
+		Dsn:              cfg.Sentry.DSN,
+		Environment:      cfg.Env,
 		TracesSampleRate: 1.0,
 		EnableTracing:    true,
 		AttachStacktrace: true,
@@ -78,14 +78,14 @@ func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error)
 
 	healthCheckers := make([]healthcheck.HealthChecker, 0)
 
-	pool, err := sqlc.NewPool(ctx, config.Postgres)
+	pool, err := sqlc.NewPool(ctx, cfg.Postgres)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create postgres pool")
 	}
 	repo := sqlc.NewRepository(pool)
 	healthCheckers = append(healthCheckers, healthcheck.NewHealthCheckFunc("repository", repo.Ping))
 
-	jwtSecret := config.Console.JWTSecret
+	jwtSecret := cfg.Console.JWTSecret
 	if jwtSecret == "" {
 		jwtSecret = console.DEFAULT_JWT_SECRET
 	}
@@ -94,7 +94,7 @@ func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error)
 		return nil, errors.Wrap(err, "failed to create console auth service")
 	}
 
-	consoleUseCase, err := console.NewUseCase(ctx, repo, config, consoleAuth)
+	consoleUseCase, err := console.NewUseCase(ctx, repo, cfg, consoleAuth)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create console use case")
 	}
