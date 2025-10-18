@@ -29,7 +29,9 @@ func main() {
 }
 
 func run() error {
-	flagSet.Parse(os.Args[1:])
+	if err := flagSet.Parse(os.Args[1:]); err != nil {
+		return fmt.Errorf("failed to parse flags: %w", err)
+	}
 	args := flagSet.Args()
 
 	if len(args) < minRequiredArgs {
