@@ -1,20 +1,31 @@
-import { useAuthStore } from '../libs/auth';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useMutationLogout } from '../libs/query';
+import { useAuthStore } from '../libs/auth';
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { logout } = useAuthStore();
+  const { mutate: logoutMutation } = useMutationLogout();
+  const clearAuth = useAuthStore((state) => state.clearAuth);
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success('Logged out successfully');
-      navigate('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast.error('Error logging out');
-    }
+  const handleLogout = () => {
+    logoutMutation(
+      {},
+      {
+        onSuccess: () => {
+          clearAuth();
+          toast.success('Logged out successfully');
+          navigate('/login');
+        },
+        onError: (error) => {
+          console.error('Logout error:', error);
+          // エラーが発生してもローカルの認証情報はクリア
+          clearAuth();
+          toast.error('Error logging out');
+          navigate('/login');
+        },
+      }
+    );
   };
 
   return (
