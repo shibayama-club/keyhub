@@ -25,7 +25,7 @@ func ServeApp() *cobra.Command {
 		RunE:    runApp,
 	}
 	flags := cmd.Flags()
-	flags.Int("port", 8080, "Port number to listen")
+	flags.Int("port", 8080, "Listen Port")
 
 	config.ConfigFlags(flags)
 

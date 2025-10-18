@@ -32,7 +32,7 @@ func ServeConsole() *cobra.Command {
 		RunE:    runConsole,
 	}
 	flags := cmd.Flags()
-	flags.Int("port", 8081, "port number to listen")
+	flags.Int("port", 8081, "Listen port")
 
 	config.ConfigFlags(flags)
 
