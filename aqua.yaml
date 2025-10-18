@@ -6,7 +6,7 @@ packages:
   # Go toolchain / task runner / linters
   - name: golang/go@go1.25.0
   - name: go-task/task@v3.43.3
-  - name: golangci/golangci-lint@v2.3.1
+  - name: golangci/golangci-lint@v2.4.0
 
   # DB / schema / migration / SQL→コード生成
   - name: pressly/goose@v3.24.3
