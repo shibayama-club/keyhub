@@ -941,7 +941,7 @@
     "meta": {
       "current_schema": "public",
       "search_paths": [
-        "keyhub",
+        "postgres",
         "public"
       ],
       "dict": {
