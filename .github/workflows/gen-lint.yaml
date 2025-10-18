@@ -8,7 +8,7 @@ jobs:
     env:
       POSTGRES_PORT: 5432
       DB_HOST: localhost
-      DB_USER: keyhub
+      DB_USER: postgres
       DB_PASS: keyhub
       DB_NAME: keyhub
     runs-on: ubuntu-latest
