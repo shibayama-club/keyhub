@@ -11,4 +11,5 @@ type Repository interface {
 type Transaction interface {
 	UserRepository
 	TenantRepository
+	ConsoleSessionRepository
 }

@@ -9,6 +9,10 @@ import (
 )
 
 type Querier interface {
+	CleanupExpiredConsoleSessions(ctx context.Context) error
+	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (ConsoleSession, error)
+	DeleteConsoleSession(ctx context.Context, sessionID string) error
+	GetConsoleSession(ctx context.Context, sessionID string) (ConsoleSession, error)
 	InsertTenant(ctx context.Context, arg InsertTenantParams) (Tenant, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 }

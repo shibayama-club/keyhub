@@ -1,0 +1,39 @@
+import { Code, ConnectError } from '@connectrpc/connect';
+import { useMutation } from '@connectrpc/connect-query';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+import { loginWithOrgId, logout } from '../../../gen/src/keyhub/console/v1/console-ConsoleAuthService_connectquery';
+
+const retry = (failureCount: number, err: unknown) => {
+  if (err instanceof ConnectError) {
+    if (err.code === Code.PermissionDenied || err.code === Code.Unauthenticated) {
+      return false;
+    }
+  }
+  return failureCount < 3;
+};
+
+const onError = (err: unknown) => {
+  console.error(err);
+};
+
+export const queryClient = new QueryClient({
+  queryCache: new QueryCache({ onError }),
+  mutationCache: new MutationCache({ onError }),
+  defaultOptions: {
+    queries: {
+      retry,
+      staleTime: 60 * 1000,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
+export const useMutationLoginWithOrgId = () => {
+  return useMutation(loginWithOrgId);
+};
+
+export const useMutationLogout = () => {
+  return useMutation(logout);
+};

@@ -5,10 +5,10 @@ import (
 
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
-	sqlc "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
+	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
 )
 
-func parseSqlcTenant(tenant sqlc.Tenant) (model.Tenant, error) {
+func parseSqlcTenant(tenant sqlcgen.Tenant) (model.Tenant, error) {
 
 	return model.Tenant{
 		ID:          model.TenantID(tenant.ID),
@@ -21,7 +21,7 @@ func parseSqlcTenant(tenant sqlc.Tenant) (model.Tenant, error) {
 }
 
 func (t *SqlcTransaction) InsertTenant(ctx context.Context, arg repository.InsertTenantArg) (model.Tenant, error) {
-	sqlcTenant, err := t.queries.InsertTenant(ctx, sqlc.InsertTenantParams{
+	sqlcTenant, err := t.queries.InsertTenant(ctx, sqlcgen.InsertTenantParams{
 		ID:           arg.Id.UUID(),
 		Name:         arg.Name.String(),
 		Slug:         arg.Description.String(),

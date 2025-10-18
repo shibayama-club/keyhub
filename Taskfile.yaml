@@ -2,11 +2,10 @@ version: "3"
 
 vars:
   POSTGRES_PORT: '{{.POSTGRES_PORT | default "5432"}}'
-  pgconn: "host=localhost port={{.POSTGRES_PORT}} user=keyhub password=keyhub dbname=keyhub"
+  pgconn: "host=localhost port={{.POSTGRES_PORT}} user=postgres password=keyhub dbname=keyhub"
 
 tasks:
   init:
-    desc: init project
     cmds:
       - task: init:backend
       - task: init:frontend
@@ -129,10 +128,9 @@ tasks:
       - sqlc generate -f sqlc.yaml
 
   dump:schema:
-    desc: Dump database schema to SQL file
     deps: [compose:up]
     cmds:
-      - docker exec $(docker ps -qf "name=postgres") pg_dump -U keyhub -d keyhub --schema-only --no-owner --no-privileges > backend/db/schema.sql
+      - docker exec $(docker ps -qf "name=postgres") pg_dump -U postgres -d keyhub --schema-only --no-owner --no-privileges > backend/db/schema.sql
       - echo "Schema dumped to backend/db/schema.sql"
 
   lint:

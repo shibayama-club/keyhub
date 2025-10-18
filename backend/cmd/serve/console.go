@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"net/http"
 
+	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
@@ -12,8 +14,13 @@ import (
 	slogecho "github.com/samber/slog-echo"
 	"github.com/shibayama-club/keyhub/cmd/config"
 	"github.com/shibayama-club/keyhub/internal/domain/healthcheck"
+	consoleauth "github.com/shibayama-club/keyhub/internal/infrastructure/auth/console"
 	"github.com/shibayama-club/keyhub/internal/infrastructure/sqlc"
+	consolev1 "github.com/shibayama-club/keyhub/internal/interface/console/v1"
+	"github.com/shibayama-club/keyhub/internal/interface/console/v1/interceptor"
+	"github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1/consolev1connect"
 	"github.com/shibayama-club/keyhub/internal/interface/health"
+	"github.com/shibayama-club/keyhub/internal/usecase/console"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
 )
@@ -62,6 +69,11 @@ func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error)
 	e.Use(
 		middleware.Recover(),
 		slogecho.New(slog.Default()),
+		middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins: []string{"http://localhost:5174", "http://localhost:5173"},
+			AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodOptions},
+			AllowHeaders: []string{"*"},
+		}),
 	)
 
 	healthCheckers := make([]healthcheck.HealthChecker, 0)
@@ -72,6 +84,34 @@ func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error)
 	}
 	repo := sqlc.NewRepository(pool)
 	healthCheckers = append(healthCheckers, healthcheck.NewHealthCheckFunc("repository", repo.Ping))
+
+	jwtSecret := config.Console.JWTSecret
+	if jwtSecret == "" {
+		jwtSecret = console.DEFAULT_JWT_SECRET
+	}
+	consoleAuth, err := consoleauth.NewAuthService(jwtSecret)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create console auth service")
+	}
+
+	consoleUseCase, err := console.NewUseCase(ctx, repo, config, consoleAuth)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create console use case")
+	}
+
+	authInterceptor := interceptor.NewAuthInterceptor(consoleUseCase)
+
+	consoleHandler, err := consolev1.NewHandler(consoleUseCase, jwtSecret)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create console handler")
+	}
+
+	// ConsoleAuthServiceをConnectRPCに登録
+	authPath, authHandler := consolev1connect.NewConsoleAuthServiceHandler(
+		consoleHandler,
+		connect.WithInterceptors(authInterceptor),
+	)
+	e.Any(authPath+"*", echo.WrapHandler(authHandler))
 
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.console.v1.HealthService/Check", healthHandler.Check)

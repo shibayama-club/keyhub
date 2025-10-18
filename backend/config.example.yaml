@@ -14,3 +14,4 @@ auth:
 console:
   organization_id:
   organization_key:
+  jwt_secret:
