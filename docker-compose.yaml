@@ -1,11 +1,9 @@
-version: "3.8"
-
 services:
   postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_DB: keyhub
-      POSTGRES_USER: keyhub
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: keyhub
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -13,7 +11,7 @@ services:
       - ./backend/db/init:/docker-entrypoint-initdb.d
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keyhub -d keyhub"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d keyhub"]
       interval: 10s
       timeout: 5s
       retries: 3
