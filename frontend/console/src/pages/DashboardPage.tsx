@@ -24,7 +24,7 @@ export default function DashboardPage() {
           toast.error('Error logging out');
           navigate('/login');
         },
-      }
+      },
     );
   };
 
