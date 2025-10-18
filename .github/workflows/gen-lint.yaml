@@ -56,8 +56,6 @@ jobs:
           key: "go-build-cache-v2-${{runner.os}}-${{runner.arch}}-${{ hashFiles('backend/go.sum') }}"
           restore-keys: |
             go-build-cache-v2-${{runner.os}}-${{runner.arch}}-
-      - run: gofmt -w .
-        working-directory: ./backend
       - run: buf dep update
         working-directory: ./proto
       - run: buf generate
