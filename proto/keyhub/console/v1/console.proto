@@ -56,8 +56,8 @@ message CreateTenantResponse {
 
 enum TenantType {
   TENANT_TYPE_UNSPECIFIED = 0;
-  TENANT_TYPE_TEAM = 1;        // チーム
-  TENANT_TYPE_DEPARTMENT = 2;  // 部署
-  TENANT_TYPE_PROJECT = 3;     // プロジェクト
-  TENANT_TYPE_LABORATORY = 4;  // 研究室
+  TENANT_TYPE_TEAM = 1; // チーム
+  TENANT_TYPE_DEPARTMENT = 2; // 部署
+  TENANT_TYPE_PROJECT = 3; // プロジェクト
+  TENANT_TYPE_LABORATORY = 4; // 研究室
 }

@@ -10,6 +10,7 @@ import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -21,6 +22,61 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type TenantType int32
+
+const (
+	TenantType_TENANT_TYPE_UNSPECIFIED TenantType = 0
+	TenantType_TENANT_TYPE_TEAM        TenantType = 1 // チーム
+	TenantType_TENANT_TYPE_DEPARTMENT  TenantType = 2 // 部署
+	TenantType_TENANT_TYPE_PROJECT     TenantType = 3 // プロジェクト
+	TenantType_TENANT_TYPE_LABORATORY  TenantType = 4 // 研究室
+)
+
+// Enum value maps for TenantType.
+var (
+	TenantType_name = map[int32]string{
+		0: "TENANT_TYPE_UNSPECIFIED",
+		1: "TENANT_TYPE_TEAM",
+		2: "TENANT_TYPE_DEPARTMENT",
+		3: "TENANT_TYPE_PROJECT",
+		4: "TENANT_TYPE_LABORATORY",
+	}
+	TenantType_value = map[string]int32{
+		"TENANT_TYPE_UNSPECIFIED": 0,
+		"TENANT_TYPE_TEAM":        1,
+		"TENANT_TYPE_DEPARTMENT":  2,
+		"TENANT_TYPE_PROJECT":     3,
+		"TENANT_TYPE_LABORATORY":  4,
+	}
+)
+
+func (x TenantType) Enum() *TenantType {
+	p := new(TenantType)
+	*p = x
+	return p
+}
+
+func (x TenantType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TenantType) Descriptor() protoreflect.EnumDescriptor {
+	return file_keyhub_console_v1_console_proto_enumTypes[0].Descriptor()
+}
+
+func (TenantType) Type() protoreflect.EnumType {
+	return &file_keyhub_console_v1_console_proto_enumTypes[0]
+}
+
+func (x TenantType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TenantType.Descriptor instead.
+func (TenantType) EnumDescriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{0}
+}
 
 type LoginWithOrgIdRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
@@ -206,11 +262,207 @@ func (x *LogoutResponse) GetSuccess() bool {
 	return false
 }
 
+type Tenant struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	OrganizationId string                 `protobuf:"bytes,2,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
+	Name           string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Description    string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	TenantType     TenantType             `protobuf:"varint,5,opt,name=tenant_type,json=tenantType,proto3,enum=keyhub.console.v1.TenantType" json:"tenant_type,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Tenant) Reset() {
+	*x = Tenant{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Tenant) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tenant) ProtoMessage() {}
+
+func (x *Tenant) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Tenant.ProtoReflect.Descriptor instead.
+func (*Tenant) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *Tenant) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Tenant) GetOrganizationId() string {
+	if x != nil {
+		return x.OrganizationId
+	}
+	return ""
+}
+
+func (x *Tenant) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Tenant) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Tenant) GetTenantType() TenantType {
+	if x != nil {
+		return x.TenantType
+	}
+	return TenantType_TENANT_TYPE_UNSPECIFIED
+}
+
+func (x *Tenant) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Tenant) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+type CreateTenantRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	TenantType    TenantType             `protobuf:"varint,3,opt,name=tenant_type,json=tenantType,proto3,enum=keyhub.console.v1.TenantType" json:"tenant_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTenantRequest) Reset() {
+	*x = CreateTenantRequest{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTenantRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTenantRequest) ProtoMessage() {}
+
+func (x *CreateTenantRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTenantRequest.ProtoReflect.Descriptor instead.
+func (*CreateTenantRequest) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *CreateTenantRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateTenantRequest) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *CreateTenantRequest) GetTenantType() TenantType {
+	if x != nil {
+		return x.TenantType
+	}
+	return TenantType_TENANT_TYPE_UNSPECIFIED
+}
+
+type CreateTenantResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateTenantResponse) Reset() {
+	*x = CreateTenantResponse{}
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateTenantResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateTenantResponse) ProtoMessage() {}
+
+func (x *CreateTenantResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_console_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateTenantResponse.ProtoReflect.Descriptor instead.
+func (*CreateTenantResponse) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *CreateTenantResponse) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 var File_keyhub_console_v1_console_proto protoreflect.FileDescriptor
 
 const file_keyhub_console_v1_console_proto_rawDesc = "" +
 	"\n" +
-	"\x1fkeyhub/console/v1/console.proto\x12\x11keyhub.console.v1\x1a\x1bbuf/validate/validate.proto\"u\n" +
+	"\x1fkeyhub/console/v1/console.proto\x12\x11keyhub.console.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"u\n" +
 	"\x15LoginWithOrgIdRequest\x121\n" +
 	"\x0forganization_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x0eorganizationId\x12)\n" +
 	"\x10organization_key\x18\x02 \x01(\tR\x0forganizationKey\"\\\n" +
@@ -220,10 +472,37 @@ const file_keyhub_console_v1_console_proto_rawDesc = "" +
 	"expires_in\x18\x02 \x01(\x03R\texpiresIn\"\x0f\n" +
 	"\rLogoutRequest\"*\n" +
 	"\x0eLogoutResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\xca\x01\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xb7\x02\n" +
+	"\x06Tenant\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12'\n" +
+	"\x0forganization_id\x18\x02 \x01(\tR\x0eorganizationId\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x12>\n" +
+	"\vtenant_type\x18\x05 \x01(\x0e2\x1d.keyhub.console.v1.TenantTypeR\n" +
+	"tenantType\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x8b\x01\n" +
+	"\x13CreateTenantRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12>\n" +
+	"\vtenant_type\x18\x03 \x01(\x0e2\x1d.keyhub.console.v1.TenantTypeR\n" +
+	"tenantType\"0\n" +
+	"\x14CreateTenantResponse\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id*\x90\x01\n" +
+	"\n" +
+	"TenantType\x12\x1b\n" +
+	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
+	"\x10TENANT_TYPE_TEAM\x10\x01\x12\x1a\n" +
+	"\x16TENANT_TYPE_DEPARTMENT\x10\x02\x12\x17\n" +
+	"\x13TENANT_TYPE_PROJECT\x10\x03\x12\x1a\n" +
+	"\x16TENANT_TYPE_LABORATORY\x10\x042\xca\x01\n" +
 	"\x12ConsoleAuthService\x12e\n" +
 	"\x0eLoginWithOrgId\x12(.keyhub.console.v1.LoginWithOrgIdRequest\x1a).keyhub.console.v1.LoginWithOrgIdResponse\x12M\n" +
-	"\x06Logout\x12 .keyhub.console.v1.LogoutRequest\x1a!.keyhub.console.v1.LogoutResponseB\xe0\x01\n" +
+	"\x06Logout\x12 .keyhub.console.v1.LogoutRequest\x1a!.keyhub.console.v1.LogoutResponse2q\n" +
+	"\x0eConsoleService\x12_\n" +
+	"\fCreateTenant\x12&.keyhub.console.v1.CreateTenantRequest\x1a'.keyhub.console.v1.CreateTenantResponseB\xe0\x01\n" +
 	"\x15com.keyhub.console.v1B\fConsoleProtoP\x01ZSgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1;consolev1\xa2\x02\x03KCX\xaa\x02\x11Keyhub.Console.V1\xca\x02\x11Keyhub\\Console\\V1\xe2\x02\x1dKeyhub\\Console\\V1\\GPBMetadata\xea\x02\x13Keyhub::Console::V1b\x06proto3"
 
 var (
@@ -238,23 +517,35 @@ func file_keyhub_console_v1_console_proto_rawDescGZIP() []byte {
 	return file_keyhub_console_v1_console_proto_rawDescData
 }
 
-var file_keyhub_console_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_keyhub_console_v1_console_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_keyhub_console_v1_console_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_keyhub_console_v1_console_proto_goTypes = []any{
-	(*LoginWithOrgIdRequest)(nil),  // 0: keyhub.console.v1.LoginWithOrgIdRequest
-	(*LoginWithOrgIdResponse)(nil), // 1: keyhub.console.v1.LoginWithOrgIdResponse
-	(*LogoutRequest)(nil),          // 2: keyhub.console.v1.LogoutRequest
-	(*LogoutResponse)(nil),         // 3: keyhub.console.v1.LogoutResponse
+	(TenantType)(0),                // 0: keyhub.console.v1.TenantType
+	(*LoginWithOrgIdRequest)(nil),  // 1: keyhub.console.v1.LoginWithOrgIdRequest
+	(*LoginWithOrgIdResponse)(nil), // 2: keyhub.console.v1.LoginWithOrgIdResponse
+	(*LogoutRequest)(nil),          // 3: keyhub.console.v1.LogoutRequest
+	(*LogoutResponse)(nil),         // 4: keyhub.console.v1.LogoutResponse
+	(*Tenant)(nil),                 // 5: keyhub.console.v1.Tenant
+	(*CreateTenantRequest)(nil),    // 6: keyhub.console.v1.CreateTenantRequest
+	(*CreateTenantResponse)(nil),   // 7: keyhub.console.v1.CreateTenantResponse
+	(*timestamppb.Timestamp)(nil),  // 8: google.protobuf.Timestamp
 }
 var file_keyhub_console_v1_console_proto_depIdxs = []int32{
-	0, // 0: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:input_type -> keyhub.console.v1.LoginWithOrgIdRequest
-	2, // 1: keyhub.console.v1.ConsoleAuthService.Logout:input_type -> keyhub.console.v1.LogoutRequest
-	1, // 2: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:output_type -> keyhub.console.v1.LoginWithOrgIdResponse
-	3, // 3: keyhub.console.v1.ConsoleAuthService.Logout:output_type -> keyhub.console.v1.LogoutResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0, // 0: keyhub.console.v1.Tenant.tenant_type:type_name -> keyhub.console.v1.TenantType
+	8, // 1: keyhub.console.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
+	8, // 2: keyhub.console.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
+	0, // 3: keyhub.console.v1.CreateTenantRequest.tenant_type:type_name -> keyhub.console.v1.TenantType
+	1, // 4: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:input_type -> keyhub.console.v1.LoginWithOrgIdRequest
+	3, // 5: keyhub.console.v1.ConsoleAuthService.Logout:input_type -> keyhub.console.v1.LogoutRequest
+	6, // 6: keyhub.console.v1.ConsoleService.CreateTenant:input_type -> keyhub.console.v1.CreateTenantRequest
+	2, // 7: keyhub.console.v1.ConsoleAuthService.LoginWithOrgId:output_type -> keyhub.console.v1.LoginWithOrgIdResponse
+	4, // 8: keyhub.console.v1.ConsoleAuthService.Logout:output_type -> keyhub.console.v1.LogoutResponse
+	7, // 9: keyhub.console.v1.ConsoleService.CreateTenant:output_type -> keyhub.console.v1.CreateTenantResponse
+	7, // [7:10] is the sub-list for method output_type
+	4, // [4:7] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_console_v1_console_proto_init() }
@@ -267,13 +558,14 @@ func file_keyhub_console_v1_console_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_console_proto_rawDesc), len(file_keyhub_console_v1_console_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   4,
+			NumEnums:      1,
+			NumMessages:   7,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_keyhub_console_v1_console_proto_goTypes,
 		DependencyIndexes: file_keyhub_console_v1_console_proto_depIdxs,
+		EnumInfos:         file_keyhub_console_v1_console_proto_enumTypes,
 		MessageInfos:      file_keyhub_console_v1_console_proto_msgTypes,
 	}.Build()
 	File_keyhub_console_v1_console_proto = out.File

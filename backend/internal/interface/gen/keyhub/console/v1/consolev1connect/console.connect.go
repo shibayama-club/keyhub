@@ -23,6 +23,8 @@ const _ = connect.IsAtLeastVersion1_13_0
 const (
 	// ConsoleAuthServiceName is the fully-qualified name of the ConsoleAuthService service.
 	ConsoleAuthServiceName = "keyhub.console.v1.ConsoleAuthService"
+	// ConsoleServiceName is the fully-qualified name of the ConsoleService service.
+	ConsoleServiceName = "keyhub.console.v1.ConsoleService"
 )
 
 // These constants are the fully-qualified names of the RPCs defined in this package. They're
@@ -39,6 +41,9 @@ const (
 	// ConsoleAuthServiceLogoutProcedure is the fully-qualified name of the ConsoleAuthService's Logout
 	// RPC.
 	ConsoleAuthServiceLogoutProcedure = "/keyhub.console.v1.ConsoleAuthService/Logout"
+	// ConsoleServiceCreateTenantProcedure is the fully-qualified name of the ConsoleService's
+	// CreateTenant RPC.
+	ConsoleServiceCreateTenantProcedure = "/keyhub.console.v1.ConsoleService/CreateTenant"
 )
 
 // ConsoleAuthServiceClient is a client for the keyhub.console.v1.ConsoleAuthService service.
@@ -140,4 +145,76 @@ func (UnimplementedConsoleAuthServiceHandler) LoginWithOrgId(context.Context, *c
 
 func (UnimplementedConsoleAuthServiceHandler) Logout(context.Context, *connect.Request[v1.LogoutRequest]) (*connect.Response[v1.LogoutResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleAuthService.Logout is not implemented"))
+}
+
+// ConsoleServiceClient is a client for the keyhub.console.v1.ConsoleService service.
+type ConsoleServiceClient interface {
+	// Tenant作成
+	CreateTenant(context.Context, *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error)
+}
+
+// NewConsoleServiceClient constructs a client for the keyhub.console.v1.ConsoleService service. By
+// default, it uses the Connect protocol with the binary Protobuf Codec, asks for gzipped responses,
+// and sends uncompressed requests. To use the gRPC or gRPC-Web protocols, supply the
+// connect.WithGRPC() or connect.WithGRPCWeb() options.
+//
+// The URL supplied here should be the base URL for the Connect or gRPC server (for example,
+// http://api.acme.com or https://acme.com/grpc).
+func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) ConsoleServiceClient {
+	baseURL = strings.TrimRight(baseURL, "/")
+	consoleServiceMethods := v1.File_keyhub_console_v1_console_proto.Services().ByName("ConsoleService").Methods()
+	return &consoleServiceClient{
+		createTenant: connect.NewClient[v1.CreateTenantRequest, v1.CreateTenantResponse](
+			httpClient,
+			baseURL+ConsoleServiceCreateTenantProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("CreateTenant")),
+			connect.WithClientOptions(opts...),
+		),
+	}
+}
+
+// consoleServiceClient implements ConsoleServiceClient.
+type consoleServiceClient struct {
+	createTenant *connect.Client[v1.CreateTenantRequest, v1.CreateTenantResponse]
+}
+
+// CreateTenant calls keyhub.console.v1.ConsoleService.CreateTenant.
+func (c *consoleServiceClient) CreateTenant(ctx context.Context, req *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error) {
+	return c.createTenant.CallUnary(ctx, req)
+}
+
+// ConsoleServiceHandler is an implementation of the keyhub.console.v1.ConsoleService service.
+type ConsoleServiceHandler interface {
+	// Tenant作成
+	CreateTenant(context.Context, *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error)
+}
+
+// NewConsoleServiceHandler builds an HTTP handler from the service implementation. It returns the
+// path on which to mount the handler and the handler itself.
+//
+// By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
+// and JSON codecs. They also support gzip compression.
+func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	consoleServiceMethods := v1.File_keyhub_console_v1_console_proto.Services().ByName("ConsoleService").Methods()
+	consoleServiceCreateTenantHandler := connect.NewUnaryHandler(
+		ConsoleServiceCreateTenantProcedure,
+		svc.CreateTenant,
+		connect.WithSchema(consoleServiceMethods.ByName("CreateTenant")),
+		connect.WithHandlerOptions(opts...),
+	)
+	return "/keyhub.console.v1.ConsoleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case ConsoleServiceCreateTenantProcedure:
+			consoleServiceCreateTenantHandler.ServeHTTP(w, r)
+		default:
+			http.NotFound(w, r)
+		}
+	})
+}
+
+// UnimplementedConsoleServiceHandler returns CodeUnimplemented from all methods.
+type UnimplementedConsoleServiceHandler struct{}
+
+func (UnimplementedConsoleServiceHandler) CreateTenant(context.Context, *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.CreateTenant is not implemented"))
 }

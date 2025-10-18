@@ -2,16 +2,18 @@
 // @generated from file keyhub/console/v1/console.proto (package keyhub.console.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_buf_validate_validate } from "../../../buf/validate/validate_pb";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
+import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file keyhub/console/v1/console.proto.
  */
 export const file_keyhub_console_v1_console: GenFile = /*@__PURE__*/
-  fileDesc("Ch9rZXlodWIvY29uc29sZS92MS9jb25zb2xlLnByb3RvEhFrZXlodWIuY29uc29sZS52MSJUChVMb2dpbldpdGhPcmdJZFJlcXVlc3QSIQoPb3JnYW5pemF0aW9uX2lkGAEgASgJQgi6SAVyA7ABARIYChBvcmdhbml6YXRpb25fa2V5GAIgASgJIkMKFkxvZ2luV2l0aE9yZ0lkUmVzcG9uc2USFQoNc2Vzc2lvbl90b2tlbhgBIAEoCRISCgpleHBpcmVzX2luGAIgASgDIg8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCDLKAQoSQ29uc29sZUF1dGhTZXJ2aWNlEmUKDkxvZ2luV2l0aE9yZ0lkEigua2V5aHViLmNvbnNvbGUudjEuTG9naW5XaXRoT3JnSWRSZXF1ZXN0Gikua2V5aHViLmNvbnNvbGUudjEuTG9naW5XaXRoT3JnSWRSZXNwb25zZRJNCgZMb2dvdXQSIC5rZXlodWIuY29uc29sZS52MS5Mb2dvdXRSZXF1ZXN0GiEua2V5aHViLmNvbnNvbGUudjEuTG9nb3V0UmVzcG9uc2VC4AEKFWNvbS5rZXlodWIuY29uc29sZS52MUIMQ29uc29sZVByb3RvUAFaU2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2NvbnNvbGUvdjE7Y29uc29sZXYxogIDS0NYqgIRS2V5aHViLkNvbnNvbGUuVjHKAhFLZXlodWJcQ29uc29sZVxWMeICHUtleWh1YlxDb25zb2xlXFYxXEdQQk1ldGFkYXRh6gITS2V5aHViOjpDb25zb2xlOjpWMWIGcHJvdG8z", [file_buf_validate_validate]);
+  fileDesc("Ch9rZXlodWIvY29uc29sZS92MS9jb25zb2xlLnByb3RvEhFrZXlodWIuY29uc29sZS52MSJUChVMb2dpbldpdGhPcmdJZFJlcXVlc3QSIQoPb3JnYW5pemF0aW9uX2lkGAEgASgJQgi6SAVyA7ABARIYChBvcmdhbml6YXRpb25fa2V5GAIgASgJIkMKFkxvZ2luV2l0aE9yZ0lkUmVzcG9uc2USFQoNc2Vzc2lvbl90b2tlbhgBIAEoCRISCgpleHBpcmVzX2luGAIgASgDIg8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCLuAQoGVGVuYW50EhQKAmlkGAEgASgJQgi6SAVyA7ABARIXCg9vcmdhbml6YXRpb25faWQYAiABKAkSDAoEbmFtZRgDIAEoCRITCgtkZXNjcmlwdGlvbhgEIAEoCRIyCgt0ZW5hbnRfdHlwZRgFIAEoDjIdLmtleWh1Yi5jb25zb2xlLnYxLlRlbmFudFR5cGUSLgoKY3JlYXRlZF9hdBgGIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAibAoTQ3JlYXRlVGVuYW50UmVxdWVzdBIMCgRuYW1lGAEgASgJEhMKC2Rlc2NyaXB0aW9uGAIgASgJEjIKC3RlbmFudF90eXBlGAMgASgOMh0ua2V5aHViLmNvbnNvbGUudjEuVGVuYW50VHlwZSIsChRDcmVhdGVUZW5hbnRSZXNwb25zZRIUCgJpZBgBIAEoCUIIukgFcgOwAQEqkAEKClRlbmFudFR5cGUSGwoXVEVOQU5UX1RZUEVfVU5TUEVDSUZJRUQQABIUChBURU5BTlRfVFlQRV9URUFNEAESGgoWVEVOQU5UX1RZUEVfREVQQVJUTUVOVBACEhcKE1RFTkFOVF9UWVBFX1BST0pFQ1QQAxIaChZURU5BTlRfVFlQRV9MQUJPUkFUT1JZEAQyygEKEkNvbnNvbGVBdXRoU2VydmljZRJlCg5Mb2dpbldpdGhPcmdJZBIoLmtleWh1Yi5jb25zb2xlLnYxLkxvZ2luV2l0aE9yZ0lkUmVxdWVzdBopLmtleWh1Yi5jb25zb2xlLnYxLkxvZ2luV2l0aE9yZ0lkUmVzcG9uc2USTQoGTG9nb3V0EiAua2V5aHViLmNvbnNvbGUudjEuTG9nb3V0UmVxdWVzdBohLmtleWh1Yi5jb25zb2xlLnYxLkxvZ291dFJlc3BvbnNlMnEKDkNvbnNvbGVTZXJ2aWNlEl8KDENyZWF0ZVRlbmFudBImLmtleWh1Yi5jb25zb2xlLnYxLkNyZWF0ZVRlbmFudFJlcXVlc3QaJy5rZXlodWIuY29uc29sZS52MS5DcmVhdGVUZW5hbnRSZXNwb25zZULgAQoVY29tLmtleWh1Yi5jb25zb2xlLnYxQgxDb25zb2xlUHJvdG9QAVpTZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvY29uc29sZS92MTtjb25zb2xldjGiAgNLQ1iqAhFLZXlodWIuQ29uc29sZS5WMcoCEUtleWh1YlxDb25zb2xlXFYx4gIdS2V5aHViXENvbnNvbGVcVjFcR1BCTWV0YWRhdGHqAhNLZXlodWI6OkNvbnNvbGU6OlYxYgZwcm90bzM", [file_buf_validate_validate, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message keyhub.console.v1.LoginWithOrgIdRequest
@@ -94,6 +96,141 @@ export const LogoutResponseSchema: GenMessage<LogoutResponse> = /*@__PURE__*/
   messageDesc(file_keyhub_console_v1_console, 3);
 
 /**
+ * @generated from message keyhub.console.v1.Tenant
+ */
+export type Tenant = Message<"keyhub.console.v1.Tenant"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string organization_id = 2;
+   */
+  organizationId: string;
+
+  /**
+   * @generated from field: string name = 3;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string description = 4;
+   */
+  description: string;
+
+  /**
+   * @generated from field: keyhub.console.v1.TenantType tenant_type = 5;
+   */
+  tenantType: TenantType;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 6;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 7;
+   */
+  updatedAt?: Timestamp;
+};
+
+/**
+ * Describes the message keyhub.console.v1.Tenant.
+ * Use `create(TenantSchema)` to create a new message.
+ */
+export const TenantSchema: GenMessage<Tenant> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 4);
+
+/**
+ * @generated from message keyhub.console.v1.CreateTenantRequest
+ */
+export type CreateTenantRequest = Message<"keyhub.console.v1.CreateTenantRequest"> & {
+  /**
+   * @generated from field: string name = 1;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string description = 2;
+   */
+  description: string;
+
+  /**
+   * @generated from field: keyhub.console.v1.TenantType tenant_type = 3;
+   */
+  tenantType: TenantType;
+};
+
+/**
+ * Describes the message keyhub.console.v1.CreateTenantRequest.
+ * Use `create(CreateTenantRequestSchema)` to create a new message.
+ */
+export const CreateTenantRequestSchema: GenMessage<CreateTenantRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 5);
+
+/**
+ * @generated from message keyhub.console.v1.CreateTenantResponse
+ */
+export type CreateTenantResponse = Message<"keyhub.console.v1.CreateTenantResponse"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+};
+
+/**
+ * Describes the message keyhub.console.v1.CreateTenantResponse.
+ * Use `create(CreateTenantResponseSchema)` to create a new message.
+ */
+export const CreateTenantResponseSchema: GenMessage<CreateTenantResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_console, 6);
+
+/**
+ * @generated from enum keyhub.console.v1.TenantType
+ */
+export enum TenantType {
+  /**
+   * @generated from enum value: TENANT_TYPE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * チーム
+   *
+   * @generated from enum value: TENANT_TYPE_TEAM = 1;
+   */
+  TEAM = 1,
+
+  /**
+   * 部署
+   *
+   * @generated from enum value: TENANT_TYPE_DEPARTMENT = 2;
+   */
+  DEPARTMENT = 2,
+
+  /**
+   * プロジェクト
+   *
+   * @generated from enum value: TENANT_TYPE_PROJECT = 3;
+   */
+  PROJECT = 3,
+
+  /**
+   * 研究室
+   *
+   * @generated from enum value: TENANT_TYPE_LABORATORY = 4;
+   */
+  LABORATORY = 4,
+}
+
+/**
+ * Describes the enum keyhub.console.v1.TenantType.
+ */
+export const TenantTypeSchema: GenEnum<TenantType> = /*@__PURE__*/
+  enumDesc(file_keyhub_console_v1_console, 0);
+
+/**
  * @generated from service keyhub.console.v1.ConsoleAuthService
  */
 export const ConsoleAuthService: GenService<{
@@ -119,4 +256,21 @@ export const ConsoleAuthService: GenService<{
   },
 }> = /*@__PURE__*/
   serviceDesc(file_keyhub_console_v1_console, 0);
+
+/**
+ * @generated from service keyhub.console.v1.ConsoleService
+ */
+export const ConsoleService: GenService<{
+  /**
+   * Tenant作成
+   *
+   * @generated from rpc keyhub.console.v1.ConsoleService.CreateTenant
+   */
+  createTenant: {
+    methodKind: "unary";
+    input: typeof CreateTenantRequestSchema;
+    output: typeof CreateTenantResponseSchema;
+  },
+}> = /*@__PURE__*/
+  serviceDesc(file_keyhub_console_v1_console, 1);
 
