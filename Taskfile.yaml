@@ -81,19 +81,19 @@ tasks:
     cmds:
       - goose -dir . create _ sql
   datamigrate:build:
-    dir: ./backend/datamigrations
+    dir: ./backend/migration
     cmds:
       - go build -o goose-custom *.go && chmod 755 goose-custom
   datamigrate:up:
-    dir: ./backend/datamigrations
+    dir: ./backend/migration
     cmds:
       - ./goose-custom -dir . postgres '{{.pgconn}}' up
   datamigrate:up-by-one:
-    dir: ./backend/datamigrations
+    dir: ./backend/migration
     cmds:
       - ./goose-custom -dir . postgres '{{.pgconn}}' up-by-one
   datamigrate:down:
-    dir: ./backend/datamigrations
+    dir: ./backend/migration
     cmds:
       - ./goose-custom -dir . postgres '{{.pgconn}}' down
 
