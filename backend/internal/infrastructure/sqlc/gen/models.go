@@ -35,12 +35,13 @@ type Session struct {
 }
 
 type Tenant struct {
-	ID          uuid.UUID
-	Name        string
-	Description string
-	TenantType  string
-	CreatedAt   pgtype.Timestamptz
-	UpdatedAt   pgtype.Timestamptz
+	ID             uuid.UUID
+	Name           string
+	Description    string
+	TenantType     string
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+	OrganizationID uuid.UUID
 }
 
 type TenantJoinCode struct {

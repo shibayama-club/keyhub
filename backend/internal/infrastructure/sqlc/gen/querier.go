@@ -6,14 +6,18 @@ package gen
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CleanupExpiredConsoleSessions(ctx context.Context) error
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (ConsoleSession, error)
+	CreateTenant(ctx context.Context, arg CreateTenantParams) (Tenant, error)
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
 	GetConsoleSession(ctx context.Context, sessionID string) (ConsoleSession, error)
-	InsertTenant(ctx context.Context, arg InsertTenantParams) (Tenant, error)
+	GetTenant(ctx context.Context, id uuid.UUID) (Tenant, error)
+	GetTenantsByOrganization(ctx context.Context, organizationID uuid.UUID) ([]Tenant, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 }
 
