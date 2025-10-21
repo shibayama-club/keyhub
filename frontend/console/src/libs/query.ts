@@ -2,6 +2,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { useMutation } from '@connectrpc/connect-query';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { loginWithOrgId, logout } from '../../../gen/src/keyhub/console/v1/console-ConsoleAuthService_connectquery';
+import { createTenant } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -36,4 +37,8 @@ export const useMutationLoginWithOrgId = () => {
 
 export const useMutationLogout = () => {
   return useMutation(logout);
+};
+
+export const useMutationCreateTenant = () => {
+  return useMutation(createTenant);
 };
