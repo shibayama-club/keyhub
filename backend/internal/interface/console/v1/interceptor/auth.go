@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
-	"github.com/shibayama-club/keyhub/internal/usecase/console"
+	"github.com/shibayama-club/keyhub/internal/usecase/console/iface"
 )
 
 type contextKey string
@@ -13,10 +13,10 @@ type contextKey string
 const ConsoleSessionKey contextKey = "console_session"
 
 type authInterceptor struct {
-	useCase console.IUseCase
+	useCase iface.IUseCase
 }
 
-func NewAuthInterceptor(useCase console.IUseCase) connect.Interceptor {
+func NewAuthInterceptor(useCase iface.IUseCase) connect.Interceptor {
 	return &authInterceptor{useCase: useCase}
 }
 
