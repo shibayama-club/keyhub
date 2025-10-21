@@ -8,7 +8,3 @@ type CreateTenantInput struct {
 	Description    string
 	TenantType     string
 }
-
-type CreateTenantOutput struct {
-	ID string
-}
