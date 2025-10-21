@@ -11,5 +11,5 @@ type IUseCase interface {
 	LoginWithOrgId(ctx context.Context, orgID, orgKey string) (string, int64, error)
 	Logout(ctx context.Context, sessionID string) error
 	ValidateSession(ctx context.Context, token string) (model.ConsoleSession, error)
-	CreateTenant(ctx context.Context, input dto.CreateTenantInput) (dto.CreateTenantOutput, error)
+	CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error)
 }

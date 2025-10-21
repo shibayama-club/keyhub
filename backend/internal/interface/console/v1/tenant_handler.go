@@ -5,8 +5,8 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
+	"github.com/shibayama-club/keyhub/internal/domain"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
-	"github.com/shibayama-club/keyhub/internal/interface/console/v1/interceptor"
 	consolev1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1"
 	"github.com/shibayama-club/keyhub/internal/usecase/console/dto"
 )
@@ -30,10 +30,10 @@ func (h *Handler) CreateTenant(
 	ctx context.Context,
 	req *connect.Request[consolev1.CreateTenantRequest],
 ) (*connect.Response[consolev1.CreateTenantResponse], error) {
-	session, ok := ctx.Value(interceptor.ConsoleSessionKey).(model.ConsoleSession)
+	orgID, ok := domain.Value[model.OrganizationID](ctx)
 	if !ok {
-		h.l.Warn("session not found in context")
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("session not found"))
+		h.l.Warn("organization ID not found in context")
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("organization not found"))
 	}
 
 	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
@@ -41,8 +41,8 @@ func (h *Handler) CreateTenant(
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	output, err := h.useCase.CreateTenant(ctx, dto.CreateTenantInput{
-		OrganizationID: session.OrganizationID,
+	tenantID, err := h.useCase.CreateTenant(ctx, dto.CreateTenantInput{
+		OrganizationID: orgID,
 		Name:           req.Msg.Name,
 		Description:    req.Msg.Description,
 		TenantType:     tenantTypeStr,
@@ -53,6 +53,6 @@ func (h *Handler) CreateTenant(
 	}
 
 	return connect.NewResponse(&consolev1.CreateTenantResponse{
-		Id: output.ID,
+		Id: tenantID,
 	}), nil
 }
