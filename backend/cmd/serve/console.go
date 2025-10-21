@@ -113,6 +113,13 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	)
 	e.Any(authPath+"*", echo.WrapHandler(authHandler))
 
+	// ConsoleServiceをConnectRPCに登録
+	servicePath, serviceHandler := consolev1connect.NewConsoleServiceHandler(
+		consoleHandler,
+		connect.WithInterceptors(authInterceptor),
+	)
+	e.Any(servicePath+"*", echo.WrapHandler(serviceHandler))
+
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.console.v1.HealthService/Check", healthHandler.Check)
 
