@@ -1,6 +1,6 @@
 import { createConnectTransport } from '@connectrpc/connect-web';
 import { createClient } from '@connectrpc/connect';
-import { ConsoleAuthService } from '../../../gen/src/keyhub/console/v1/console_pb';
+import { ConsoleAuthService, ConsoleService } from '../../../gen/src/keyhub/console/v1/console_pb';
 import { IS_PRODUCTION } from './env';
 
 const STORAGE_TOKEN_KEY = 'console_token';
@@ -45,3 +45,4 @@ export const transport = createConnectTransport({
 });
 
 export const consoleAuthClient = createClient(ConsoleAuthService, transport);
+export const consoleClient = createClient(ConsoleService, transport);
