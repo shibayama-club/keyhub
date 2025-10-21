@@ -77,10 +77,11 @@ func NewTenantDescription(value string) (TenantDescription, error) {
 type TenantType string
 
 const (
-	TenantTypeDepartment TenantType = "department"
-	TenantTypeLaboratory TenantType = "laboratory"
-	TenantTypeProject    TenantType = "project"
-	TenantTypeTeam       TenantType = "team"
+	TenantTypeUnspecified TenantType = "TENANT_TYPE_UNSPECIFIED"
+	TenantTypeTeam        TenantType = "TENANT_TYPE_TEAM"
+	TenantTypeDepartment  TenantType = "TENANT_TYPE_DEPARTMENT"
+	TenantTypeProject     TenantType = "TENANT_TYPE_PROJECT"
+	TenantTypeLaboratory  TenantType = "TENANT_TYPE_LABORATORY"
 )
 
 func (t TenantType) String() string {
@@ -89,12 +90,17 @@ func (t TenantType) String() string {
 
 func (t TenantType) Validate() error {
 	switch t {
-	case TenantTypeDepartment, TenantTypeLaboratory, TenantTypeProject, TenantTypeTeam:
+	case TenantTypeTeam, TenantTypeDepartment, TenantTypeProject, TenantTypeLaboratory:
 		return nil
-	default:
+	case TenantTypeUnspecified:
 		return errors.WithHint(
-			errors.Newf("invalid tenant type: %s", t),
-			"テナントタイプは department, laboratory, division のいずれかである必要があります。",
+			errors.New("tenant type must be specified"),
+			"テナントタイプを指定してください。",
+		)
+	default:
+		return errors.WithHintf(
+			errors.New("invalid tenant type"),
+			"無効なテナントタイプです: %s", t,
 		)
 	}
 }
@@ -108,12 +114,71 @@ func NewTenantType(value string) (TenantType, error) {
 }
 
 type Tenant struct {
-	ID          TenantID
-	Name        TenantName
-	Description TenantDescription
-	Type        TenantType
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID             TenantID
+	OrganizationID OrganizationID
+	Name           TenantName
+	Description    TenantDescription
+	Type           TenantType
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+}
+
+func (t Tenant) Validate() error {
+	if err := t.OrganizationID.Validate(); err != nil {
+		return err
+	}
+
+	if err := t.Name.Validate(); err != nil {
+		return err
+	}
+
+	if err := t.Description.Validate(); err != nil {
+		return err
+	}
+
+	if err := t.Type.Validate(); err != nil {
+		return err
+	}
+
+	if t.CreatedAt.IsZero() {
+		return errors.WithHint(
+			errors.New("created_at is required"),
+			"作成日時は必須です。",
+		)
+	}
+
+	if t.UpdatedAt.IsZero() {
+		return errors.WithHint(
+			errors.New("updated_at is required"),
+			"更新日時は必須です。",
+		)
+	}
+
+	return nil
+}
+
+func NewTenant(
+	organizationID OrganizationID,
+	name TenantName,
+	description TenantDescription,
+	tenantType TenantType,
+) (Tenant, error) {
+	now := time.Now()
+	tenant := Tenant{
+		ID:             TenantID(uuid.New()),
+		OrganizationID: organizationID,
+		Name:           name,
+		Description:    description,
+		Type:           tenantType,
+		CreatedAt:      now,
+		UpdatedAt:      now,
+	}
+
+	if err := tenant.Validate(); err != nil {
+		return Tenant{}, err
+	}
+
+	return tenant, nil
 }
 
 var isSlugFormatRegex = regexp.MustCompile(`^[a-z0-9]+(?:-[a-z0-9]+)*$`)
