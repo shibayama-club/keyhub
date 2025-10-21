@@ -5,12 +5,9 @@ import (
 	"strings"
 
 	"connectrpc.com/connect"
+	"github.com/shibayama-club/keyhub/internal/domain"
 	"github.com/shibayama-club/keyhub/internal/usecase/console/iface"
 )
-
-type contextKey string
-
-const ConsoleSessionKey contextKey = "console_session"
 
 type authInterceptor struct {
 	useCase iface.IUseCase
@@ -39,7 +36,8 @@ func (i *authInterceptor) authenticate(ctx context.Context, procedure string, au
 		return ctx, connect.NewError(connect.CodeUnauthenticated, err)
 	}
 
-	return context.WithValue(ctx, ConsoleSessionKey, session), nil
+	ctx = domain.WithValue(ctx, session.OrganizationID)
+	return ctx, nil
 }
 
 func (i *authInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
