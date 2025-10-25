@@ -18,13 +18,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: app; Type: SCHEMA; Schema: -; Owner: -
---
-
-CREATE SCHEMA app;
-
-
---
 -- Name: uuid-ossp; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -39,26 +32,37 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 
 
 --
--- Name: current_membership_id(); Type: FUNCTION; Schema: app; Owner: -
+-- Name: current_membership_id(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION app.current_membership_id() RETURNS uuid
+CREATE FUNCTION public.current_membership_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
-  SELECT current_setting('app.membership_id', true)::uuid
+  SELECT current_setting('keyhub.membership_id', true)::uuid
 $$;
 
 
 --
--- Name: current_tenant_id(); Type: FUNCTION; Schema: app; Owner: -
+-- Name: current_organization_id(); Type: FUNCTION; Schema: public; Owner: -
 --
 
-CREATE FUNCTION app.current_tenant_id() RETURNS uuid
+CREATE FUNCTION public.current_organization_id() RETURNS uuid
+    LANGUAGE sql STABLE
+    AS $$
+  SELECT current_setting('keyhub.organization_id', true)::uuid
+$$;
+
+
+--
+-- Name: current_tenant_id(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.current_tenant_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
   SELECT tm.tenant_id
   FROM tenant_memberships tm
-  WHERE tm.id = app.current_membership_id()
+  WHERE tm.id = current_membership_id()
 $$;
 
 
@@ -186,6 +190,7 @@ CREATE TABLE public.tenant_memberships (
 
 CREATE TABLE public.tenants (
     id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    organization_id uuid DEFAULT '550e8400-e29b-41d4-a716-446655440000'::uuid NOT NULL,
     name text NOT NULL,
     description text DEFAULT ''::text NOT NULL,
     tenant_type text NOT NULL,
@@ -397,6 +402,13 @@ CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btr
 
 
 --
+-- Name: idx_tenants_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_tenants_organization_id ON public.tenants USING btree (organization_id);
+
+
+--
 -- Name: tenants refresh_tenants_updated_at; Type: TRIGGER; Schema: public; Owner: -
 --
 
@@ -464,45 +476,6 @@ ALTER TABLE ONLY public.tenant_memberships
 ALTER TABLE ONLY public.user_identities
     ADD CONSTRAINT user_identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
-
---
--- Name: tenant_join_codes tenant_is_current; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY tenant_is_current ON public.tenant_join_codes USING ((tenant_id = app.current_tenant_id()));
-
-
---
--- Name: tenant_memberships tenant_is_current; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY tenant_is_current ON public.tenant_memberships USING ((tenant_id = app.current_tenant_id()));
-
-
---
--- Name: tenants tenant_is_current; Type: POLICY; Schema: public; Owner: -
---
-
-CREATE POLICY tenant_is_current ON public.tenants USING ((id = app.current_tenant_id()));
-
-
---
--- Name: tenant_join_codes; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.tenant_join_codes ENABLE ROW LEVEL SECURITY;
-
---
--- Name: tenant_memberships; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.tenant_memberships ENABLE ROW LEVEL SECURITY;
-
---
--- Name: tenants; Type: ROW SECURITY; Schema: public; Owner: -
---
-
-ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 
 --
 -- PostgreSQL database dump complete
