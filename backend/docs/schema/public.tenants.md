@@ -7,6 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | id | uuid | uuid_generate_v4() | false | [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) |  |  |
+| organization_id | uuid | '550e8400-e29b-41d4-a716-446655440000'::uuid | false |  |  |  |
 | name | text |  | false |  |  |  |
 | description | text | ''::text | false |  |  |  |
 | tenant_type | text |  | false |  |  |  |
@@ -26,6 +27,7 @@
 | ---- | ---------- |
 | tenants_pkey | CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id) |
 | tenants_name_key | CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name) |
+| idx_tenants_organization_id | CREATE INDEX idx_tenants_organization_id ON public.tenants USING btree (organization_id) |
 | idx_tenants_description_nonempty | CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description <> ''::text) |
 
 ## Triggers
