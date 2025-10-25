@@ -19,6 +19,10 @@ RETURNS uuid LANGUAGE sql STABLE AS $$
   SELECT current_setting('keyhub.organization_id', true)::uuid
 $$;
 
+GRANT EXECUTE ON FUNCTION current_membership_id() TO keyhub;
+GRANT EXECUTE ON FUNCTION current_tenant_id() TO keyhub;
+GRANT EXECUTE ON FUNCTION current_organization_id() TO keyhub;
+
 -- +goose StatementEnd
 
 -- +goose Down
