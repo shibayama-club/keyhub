@@ -4,6 +4,8 @@ import AuthGuard from '../components/AuthGuard';
 import ErrorFallback from '../components/ErrorFallback';
 import LoginPage from '../pages/LoginPage';
 import DashboardPage from '../pages/DashboardPage';
+import TenantsPage from '../pages/TenantsPage';
+import CreateTenantPage from '../pages/CreateTenantPage';
 
 // SentryでラップされたcreateBrowserRouter
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
@@ -27,6 +29,14 @@ export const router = sentryCreateBrowserRouter(
         {
           path: 'dashboard',
           element: <DashboardPage />,
+        },
+        {
+          path: 'tenants',
+          element: <TenantsPage />,
+        },
+        {
+          path: 'tenants/create',
+          element: <CreateTenantPage />,
         },
       ],
     },
