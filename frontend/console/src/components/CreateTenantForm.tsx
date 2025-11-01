@@ -36,7 +36,7 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
           テナント名 <span className="text-red-500">*</span>
         </label>
         <input
@@ -45,14 +45,14 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
           value={nameField.value || ''}
           onChange={nameField.onChange}
           onBlur={nameField.onBlur}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           disabled={isSubmitting}
         />
         {nameField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{nameField.error[0]}</p>}
       </div>
 
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="description" className="mb-2 block text-sm font-medium text-gray-700">
           説明
         </label>
         <textarea
@@ -61,14 +61,14 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
           value={descriptionField.value || ''}
           onChange={descriptionField.onChange}
           onBlur={descriptionField.onBlur}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           disabled={isSubmitting}
         />
         {descriptionField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{descriptionField.error[0]}</p>}
       </div>
 
       <div>
-        <label htmlFor="tenantType" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="tenantType" className="mb-2 block text-sm font-medium text-gray-700">
           テナントタイプ <span className="text-red-500">*</span>
         </label>
         <select
@@ -76,7 +76,7 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
           value={tenantTypeField.value ?? TenantType.TEAM}
           onChange={tenantTypeField.onChange}
           onBlur={tenantTypeField.onBlur}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-3"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           disabled={isSubmitting}
         >
           {TENANT_TYPE_OPTIONS.map((type) => (

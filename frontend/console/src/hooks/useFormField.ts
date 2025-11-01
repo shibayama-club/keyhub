@@ -18,9 +18,7 @@ export const useFormField = <T extends z.ZodObject<z.ZodRawShape>, F extends key
   return {
     value: form.state[field],
     onChange: (e) => {
-      const value = options?.transform
-        ? options.transform(e.target.value)
-        : (e.target.value as z.infer<T>[F]);
+      const value = options?.transform ? options.transform(e.target.value) : (e.target.value as z.infer<T>[F]);
       form.updateField(field, value);
     },
     onBlur: () => {

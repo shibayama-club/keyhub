@@ -14,9 +14,7 @@ export const TenantsPage = () => {
           <div className="mb-8 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">テナント</h2>
-              <p className="mt-1 text-sm text-gray-600">
-                組織のテナントを管理します。
-              </p>
+              <p className="mt-1 text-sm text-gray-600">組織のテナントを管理します。</p>
             </div>
             <button
               onClick={() => navigate('/tenants/create')}
@@ -32,9 +30,7 @@ export const TenantsPage = () => {
               <h3 className="text-lg leading-6 font-medium text-gray-900">既存のテナント</h3>
             </div>
             <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-              <p className="text-gray-600">
-                テナントが見つかりません。最初のテナントを作成して始めましょう。
-              </p>
+              <p className="text-gray-600">テナントが見つかりません。最初のテナントを作成して始めましょう。</p>
             </div>
           </div>
         </div>
