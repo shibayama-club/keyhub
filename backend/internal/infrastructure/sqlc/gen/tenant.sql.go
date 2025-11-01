@@ -30,7 +30,7 @@ VALUES(
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 )
-RETURNING id, name, description, tenant_type, created_at, updated_at, organization_id
+RETURNING id, organization_id, name, description, tenant_type, created_at, updated_at
 `
 
 type CreateTenantParams struct {
@@ -52,18 +52,18 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Ten
 	var i Tenant
 	err := row.Scan(
 		&i.ID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.TenantType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
 	)
 	return i, err
 }
 
 const getTenant = `-- name: GetTenant :one
-SELECT id, name, description, tenant_type, created_at, updated_at, organization_id FROM tenants
+SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
 WHERE id = $1
 `
 
@@ -72,18 +72,18 @@ func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (Tenant, error) {
 	var i Tenant
 	err := row.Scan(
 		&i.ID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.TenantType,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.OrganizationID,
 	)
 	return i, err
 }
 
 const getTenantsByOrganization = `-- name: GetTenantsByOrganization :many
-SELECT id, name, description, tenant_type, created_at, updated_at, organization_id FROM tenants
+SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
 WHERE organization_id = $1
 ORDER BY created_at DESC
 `
@@ -99,12 +99,12 @@ func (q *Queries) GetTenantsByOrganization(ctx context.Context, organizationID u
 		var i Tenant
 		if err := rows.Scan(
 			&i.ID,
+			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
 			&i.TenantType,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.OrganizationID,
 		); err != nil {
 			return nil, err
 		}
