@@ -57,10 +57,10 @@ func (d TenantDescription) String() string {
 }
 
 func (d TenantDescription) Validate() error {
-	if utf8.RuneCountInString(string(d)) > 500 {
+	if utf8.RuneCountInString(string(d)) > 300 {
 		return errors.WithHint(
-			errors.New("Please enter a tenant description within 500 characters"),
-			"テナントの説明は500文字以内で入力してください。",
+			errors.New("Please enter a tenant description within 300 characters"),
+			"テナントの説明は300文字以内で入力してください。",
 		)
 	}
 	return nil
