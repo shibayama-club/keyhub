@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import * as Sentry from '@sentry/react';
 import { useMutationLogout } from '../libs/query';
 import { useAuthStore } from '../libs/auth';
 
@@ -15,14 +16,15 @@ export const Navbar = () => {
       {
         onSuccess: () => {
           clearAuth();
-          toast.success('Logged out successfully');
+          toast.success('ログアウトしました');
           navigate('/login');
         },
         onError: (error) => {
+          Sentry.captureException(error);
           console.error('Logout error:', error);
           // エラーが発生してもローカルの認証情報はクリア
           clearAuth();
-          toast.error('Error logging out');
+          toast.error('ログアウト中にエラーが発生しました');
           navigate('/login');
         },
       },
