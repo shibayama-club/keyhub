@@ -39,7 +39,7 @@ export const CreateTenantPage = () => {
           <p className="mt-2 text-sm text-gray-600">組織の新しいテナントを作成します。以下の詳細を入力してください。</p>
         </div>
 
-        <div className="rounded-lg bg-white p-6 shadow">
+        <div className="rounded-lg border-2 border-gray-200 bg-white p-8 shadow-md">
           <CreateTenantForm onSubmit={handleSubmit} isSubmitting={isPending} />
         </div>
       </div>
