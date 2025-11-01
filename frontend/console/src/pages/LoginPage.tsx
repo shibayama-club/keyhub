@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import * as Sentry from '@sentry/react';
 import { Code, ConnectError } from '@connectrpc/connect';
 import { useMutationLoginWithOrgId } from '../libs/query';
 import { useAuthStore } from '../libs/auth';
@@ -21,12 +22,12 @@ export const LoginPage = () => {
 
     // Validation
     if (!organizationId.trim() || !organizationKey.trim()) {
-      toast.error('Please enter Organization ID and Key');
+      toast.error('組織IDとキーを入力してください');
       return;
     }
 
     if (!UUID_REGEX.test(organizationId.trim())) {
-      toast.error('Organization ID must be a valid UUID');
+      toast.error('組織IDは有効なUUID形式である必要があります');
       return;
     }
 
@@ -42,19 +43,20 @@ export const LoginPage = () => {
         onSuccess: (data) => {
           // 認証データを保存
           setAuthData(data.sessionToken, Number(data.expiresIn), orgId);
-          toast.success('Login successful!');
+          toast.success('ログインしました');
           navigate('/dashboard');
         },
         onError: (error) => {
           // Handle specific error types
+          Sentry.captureException(error);
           if (error instanceof ConnectError) {
             if (error.code === Code.Unauthenticated) {
-              toast.error('Invalid Organization ID or Key');
+              toast.error('組織IDまたはキーが無効です');
             } else {
-              toast.error(`Login failed: ${error.message}`);
+              toast.error(`ログインに失敗しました: ${error.message}`);
             }
           } else {
-            toast.error('An unexpected error occurred');
+            toast.error('予期しないエラーが発生しました');
           }
           console.error('Login error:', error);
         },
