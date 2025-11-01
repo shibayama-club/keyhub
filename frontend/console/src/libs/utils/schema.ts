@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { isBlankOrInvisible } from './string';
+import { TenantType } from '../../../../gen/src/keyhub/console/v1/console_pb';
 
 export const tenantnameValidation = z.preprocess(
   (val) => (typeof val === 'string' ? val.trim() : val),
@@ -21,3 +22,10 @@ export const descriptionValidation = z.preprocess(
       message: 'テナント説明を1文字以上で入力してください',
     }),
 );
+
+export const tenanttypeValidation = z
+  .number({ message: 'テナントタイプを選択してください' })
+  .int({ message: 'テナントタイプは整数である必要があります' })
+  .refine((val) => Object.values(TenantType).includes(val), {
+    message: '有効なテナントタイプを選択してください',
+  });
