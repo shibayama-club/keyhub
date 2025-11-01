@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRouteError } from 'react-router-dom';
 import { logError } from '../libs/sentry';
 
-export default function ErrorFallback() {
+export const ErrorFallback = () => {
   const error = useRouteError();
 
   useEffect(() => {
@@ -28,4 +28,4 @@ export default function ErrorFallback() {
       </div>
     </div>
   );
-}
+};

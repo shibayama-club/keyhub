@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '../libs/auth';
 
-export default function AuthGuard() {
+export const AuthGuard = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const checkAuth = useAuthStore((state) => state.checkAuth);
 
@@ -17,4 +17,4 @@ export default function AuthGuard() {
   }
 
   return <Outlet />;
-}
+};

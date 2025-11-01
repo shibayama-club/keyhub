@@ -1,6 +1,6 @@
-import Navbar from '../components/Navbar';
+import { Navbar } from '../components/Navbar';
 
-export default function DashboardPage() {
+export const DashboardPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
@@ -51,4 +51,4 @@ export default function DashboardPage() {
       </div>
     </div>
   );
-}
+};

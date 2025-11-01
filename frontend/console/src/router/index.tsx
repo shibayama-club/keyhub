@@ -1,11 +1,11 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import * as Sentry from '@sentry/react';
-import AuthGuard from '../components/AuthGuard';
-import ErrorFallback from '../components/ErrorFallback';
-import LoginPage from '../pages/LoginPage';
-import DashboardPage from '../pages/DashboardPage';
-import TenantsPage from '../pages/TenantsPage';
-import CreateTenantPage from '../pages/CreateTenantPage';
+import { AuthGuard } from '../components/AuthGuard';
+import { ErrorFallback } from '../components/ErrorFallback';
+import { LoginPage } from '../pages/LoginPage';
+import { DashboardPage } from '../pages/DashboardPage';
+import { TenantsPage } from '../pages/TenantsPage';
+import { CreateTenantPage } from '../pages/CreateTenantPage';
 
 // SentryでラップされたcreateBrowserRouter
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);

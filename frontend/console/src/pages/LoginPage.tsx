@@ -8,7 +8,7 @@ import { useAuthStore } from '../libs/auth';
 // UUID validation regex
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default function LoginPage() {
+export const LoginPage = () => {
   const navigate = useNavigate();
   const { mutate: loginMutation, isPending } = useMutationLoginWithOrgId();
   const setAuthData = useAuthStore((state) => state.setAuthData);
@@ -139,4 +139,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};
