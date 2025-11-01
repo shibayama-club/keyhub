@@ -29,3 +29,12 @@ export const tenanttypeValidation = z
   .refine((val) => Object.values(TenantType).includes(val), {
     message: '有効なテナントタイプを選択してください',
   });
+
+// テナント作成・編集フォームのスキーマ
+export const tenantSchema = z.object({
+  name: tenantnameValidation,
+  description: descriptionValidation.optional(),
+  tenantType: tenanttypeValidation,
+});
+
+export type TenantFormData = z.infer<typeof tenantSchema>;
