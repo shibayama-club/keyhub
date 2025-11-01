@@ -356,6 +356,12 @@
           "default": "uuid_generate_v4()"
         },
         {
+          "name": "organization_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "'550e8400-e29b-41d4-a716-446655440000'::uuid"
+        },
+        {
           "name": "name",
           "type": "text",
           "nullable": false
@@ -399,6 +405,14 @@
           "table": "public.tenants",
           "columns": [
             "name"
+          ]
+        },
+        {
+          "name": "idx_tenants_organization_id",
+          "def": "CREATE INDEX idx_tenants_organization_id ON public.tenants USING btree (organization_id)",
+          "table": "public.tenants",
+          "columns": [
+            "organization_id"
           ]
         },
         {
@@ -923,13 +937,19 @@
       "type": "FUNCTION"
     },
     {
-      "name": "app.current_membership_id",
+      "name": "public.current_membership_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"
     },
     {
-      "name": "app.current_tenant_id",
+      "name": "public.current_tenant_id",
+      "return_type": "uuid",
+      "arguments": "",
+      "type": "FUNCTION"
+    },
+    {
+      "name": "public.current_organization_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"

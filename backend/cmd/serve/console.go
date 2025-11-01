@@ -32,7 +32,7 @@ func ServeConsole() *cobra.Command {
 		RunE:    runConsole,
 	}
 	flags := cmd.Flags()
-	flags.Int("port", 8081, "port number to listen")
+	flags.Int("port", 8081, "Listen port")
 
 	config.ConfigFlags(flags)
 
@@ -112,6 +112,13 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		connect.WithInterceptors(authInterceptor),
 	)
 	e.Any(authPath+"*", echo.WrapHandler(authHandler))
+
+	// ConsoleServiceをConnectRPCに登録
+	servicePath, serviceHandler := consolev1connect.NewConsoleServiceHandler(
+		consoleHandler,
+		connect.WithInterceptors(authInterceptor),
+	)
+	e.Any(servicePath+"*", echo.WrapHandler(serviceHandler))
 
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.console.v1.HealthService/Check", healthHandler.Check)

@@ -9,12 +9,12 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const insertTenant = `-- name: InsertTenant :one
+const createTenant = `-- name: CreateTenant :one
 INSERT INTO tenants(
     id,
+    organization_id,
     name,
     description,
     tenant_type,
@@ -27,32 +27,32 @@ VALUES(
     $3,
     $4,
     $5,
-    $6
+    CURRENT_TIMESTAMP,
+    CURRENT_TIMESTAMP
 )
-RETURNING id, name, description, tenant_type, created_at, updated_at
+RETURNING id, organization_id, name, description, tenant_type, created_at, updated_at
 `
 
-type InsertTenantParams struct {
-	ID           uuid.UUID
-	Name         string
-	Slug         string
-	PasswordHash string
-	CreatedAt    pgtype.Timestamptz
-	UpdatedAt    pgtype.Timestamptz
+type CreateTenantParams struct {
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
+	Name           string
+	Description    string
+	TenantType     string
 }
 
-func (q *Queries) InsertTenant(ctx context.Context, arg InsertTenantParams) (Tenant, error) {
-	row := q.db.QueryRow(ctx, insertTenant,
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Tenant, error) {
+	row := q.db.QueryRow(ctx, createTenant,
 		arg.ID,
+		arg.OrganizationID,
 		arg.Name,
-		arg.Slug,
-		arg.PasswordHash,
-		arg.CreatedAt,
-		arg.UpdatedAt,
+		arg.Description,
+		arg.TenantType,
 	)
 	var i Tenant
 	err := row.Scan(
 		&i.ID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.TenantType,
@@ -60,4 +60,58 @@ func (q *Queries) InsertTenant(ctx context.Context, arg InsertTenantParams) (Ten
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const getTenant = `-- name: GetTenant :one
+SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
+WHERE id = $1
+`
+
+func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (Tenant, error) {
+	row := q.db.QueryRow(ctx, getTenant, id)
+	var i Tenant
+	err := row.Scan(
+		&i.ID,
+		&i.OrganizationID,
+		&i.Name,
+		&i.Description,
+		&i.TenantType,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getTenantsByOrganization = `-- name: GetTenantsByOrganization :many
+SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
+WHERE organization_id = $1
+ORDER BY created_at DESC
+`
+
+func (q *Queries) GetTenantsByOrganization(ctx context.Context, organizationID uuid.UUID) ([]Tenant, error) {
+	rows, err := q.db.Query(ctx, getTenantsByOrganization, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Tenant
+	for rows.Next() {
+		var i Tenant
+		if err := rows.Scan(
+			&i.ID,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.TenantType,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

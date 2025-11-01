@@ -6,6 +6,7 @@ import (
 	"github.com/shibayama-club/keyhub/cmd/config"
 	"github.com/shibayama-club/keyhub/internal/domain/authenticator"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
+	"github.com/shibayama-club/keyhub/internal/usecase/console/iface"
 )
 
 // 開発用環境変数
@@ -21,14 +22,14 @@ type UseCase struct {
 	authService authenticator.ConsoleAuthenticator
 }
 
-var _ IUseCase = (*UseCase)(nil)
+var _ iface.IUseCase = (*UseCase)(nil)
 
 func NewUseCase(
 	ctx context.Context,
 	repo repository.Repository,
 	cf config.Config,
 	auth authenticator.ConsoleAuthenticator,
-) (IUseCase, error) {
+) (iface.IUseCase, error) {
 	return &UseCase{
 		repo:        repo,
 		config:      cf,
