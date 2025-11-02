@@ -99,6 +99,7 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		return nil, errors.Wrap(err, "failed to create console use case")
 	}
 
+	sentryInterceptor := interceptor.NewSentryInterceptor()
 	authInterceptor := interceptor.NewAuthInterceptor(consoleUseCase)
 
 	consoleHandler, err := consolev1.NewHandler(consoleUseCase, jwtSecret)
@@ -109,14 +110,14 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	// ConsoleAuthServiceをConnectRPCに登録
 	authPath, authHandler := consolev1connect.NewConsoleAuthServiceHandler(
 		consoleHandler,
-		connect.WithInterceptors(authInterceptor),
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
 	)
 	e.Any(authPath+"*", echo.WrapHandler(authHandler))
 
 	// ConsoleServiceをConnectRPCに登録
 	servicePath, serviceHandler := consolev1connect.NewConsoleServiceHandler(
 		consoleHandler,
-		connect.WithInterceptors(authInterceptor),
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
 	)
 	e.Any(servicePath+"*", echo.WrapHandler(serviceHandler))
 
