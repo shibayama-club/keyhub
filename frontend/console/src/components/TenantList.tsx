@@ -10,7 +10,6 @@ export const TenantList = ({
   isLoading: boolean;
   isError: boolean;
 }) => {
-
   if (isLoading) {
     return (
       <div className="px-4 py-12 text-center">
