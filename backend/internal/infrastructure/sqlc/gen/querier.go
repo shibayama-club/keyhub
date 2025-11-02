@@ -15,9 +15,9 @@ type Querier interface {
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (ConsoleSession, error)
 	CreateTenant(ctx context.Context, arg CreateTenantParams) (Tenant, error)
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
+	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (ConsoleSession, error)
-	GetTenant(ctx context.Context, id uuid.UUID) (Tenant, error)
-	GetTenantsByOrganization(ctx context.Context, organizationID uuid.UUID) ([]Tenant, error)
+	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
 	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
 }
 

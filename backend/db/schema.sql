@@ -395,13 +395,6 @@ CREATE INDEX idx_sessions_user ON public.sessions USING btree (user_id);
 
 
 --
--- Name: idx_tenants_description_nonempty; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description <> ''::text);
-
-
---
 -- Name: idx_tenants_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 

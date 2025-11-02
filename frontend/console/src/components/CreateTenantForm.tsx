@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useForm } from '../hooks/useForm';
 import { useFormField } from '../hooks/useFormField';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
@@ -10,13 +11,19 @@ type CreateTenantFormProps = {
 };
 
 export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenantFormProps) => {
-  const form = useForm(tenantSchema, {
-    revalidate: true,
-    initialValues: {
+  // initialValuesをメモ化して無限ループを防ぐ
+  const initialValues = useMemo(
+    () => ({
       name: '',
       description: '',
       tenantType: TenantType.TEAM,
-    },
+    }),
+    [],
+  );
+
+  const form = useForm(tenantSchema, {
+    revalidate: true,
+    initialValues,
   });
 
   const nameField = useFormField(form, 'name');

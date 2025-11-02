@@ -36,21 +36,21 @@ func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.Creat
 }
 
 func (t *SqlcTransaction) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
-	sqlcTenant, err := t.queries.GetTenant(ctx, id.UUID())
+	row, err := t.queries.GetTenant(ctx, id.UUID())
 	if err != nil {
 		return model.Tenant{}, err
 	}
-	return parseSqlcTenant(sqlcTenant)
+	return parseSqlcTenant(row.Tenant)
 }
 
-func (t *SqlcTransaction) GetTenantsByOrganization(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
-	sqlcTenants, err := t.queries.GetTenantsByOrganization(ctx, organizationID.UUID())
+func (t *SqlcTransaction) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
+	rows, err := t.queries.GetAllTenants(ctx, organizationID.UUID())
 	if err != nil {
 		return nil, err
 	}
 
-	tenants := lo.Map(sqlcTenants, func(sqlcTenant sqlcgen.Tenant, _ int) model.Tenant {
-		tenant, _ := parseSqlcTenant(sqlcTenant)
+	tenants := lo.Map(rows, func(row sqlcgen.GetAllTenantsRow, _ int) model.Tenant {
+		tenant, _ := parseSqlcTenant(row.Tenant)
 		return tenant
 	})
 

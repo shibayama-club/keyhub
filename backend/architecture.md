@@ -59,7 +59,9 @@ backend/
 │   ├── interface/             # インターフェース層（外部との境界）
 │   │   ├── app/v1/            # App API v1ハンドラー
 │   │   ├── console/v1/        # Console API v1ハンドラー
-│   │   │   └── interceptor/   # gRPCインターセプター
+│   │   │   └── interceptor/   # Connect RPCインターセプター
+│   │   │       ├── auth.go    # 認証インターセプター
+│   │   │       └── sentry.go  # Sentryエラー送信インターセプター
 │   │   ├── gen/               # 自動生成コード（Protobuf）
 │   │   └── health/            # ヘルスチェックハンドラー
 │   │
@@ -68,8 +70,6 @@ backend/
 │       │   ├── claim/         # クレームベース認証
 │       │   └── console/       # コンソール認証
 │       ├── jwt/               # JWT実装
-│       ├── middleware/        # HTTPミドルウェア
-│       │   └── sentry.go      # Sentryエラー送信
 │       └── sqlc/              # データベースアクセス
 │           └── gen/           # SQLC自動生成コード
 │
@@ -215,13 +215,23 @@ func SetupConsole(ctx context.Context, config config.Config) (*echo.Echo, error)
     // 3. UseCase層に依存性を注入
     consoleUseCase := console.NewUseCase(ctx, repo, config, consoleAuth)
 
-    // 4. Interface層にユースケースを注入
+    // 4. Interface層にインターセプターとハンドラーを作成
+    sentryInterceptor := interceptor.NewSentryInterceptor()
+    authInterceptor := interceptor.NewAuthInterceptor(consoleUseCase)
     consoleHandler := consolev1.NewHandler(consoleUseCase, jwtSecret)
 
-    // 5. ミドルウェアとルーティングの設定
+    // 5. Connect RPCサービスにインターセプターを登録
     e := echo.New()
-    e.Use(custommiddleware.SentryErrorMiddleware())
+    authPath, authHandler := consolev1connect.NewConsoleAuthServiceHandler(
+        consoleHandler,
+        connect.WithInterceptors(sentryInterceptor, authInterceptor),
+    )
+    servicePath, serviceHandler := consolev1connect.NewConsoleServiceHandler(
+        consoleHandler,
+        connect.WithInterceptors(sentryInterceptor, authInterceptor),
+    )
     e.Any(authPath+"*", echo.WrapHandler(authHandler))
+    e.Any(servicePath+"*", echo.WrapHandler(serviceHandler))
 
     return e, nil
 }
@@ -399,28 +409,48 @@ func (a *AuthService) GenerateToken(orgID string) (string, error) {
 }
 ```
 
-#### 5-3. infrastructure/middleware/ - HTTPミドルウェア
+#### 5-3. interface/console/v1/interceptor/ - Connect RPCインターセプター
 
 ```go
-// infrastructure/middleware/sentry.go
-func SentryErrorMiddleware() echo.MiddlewareFunc {
-    return func(next echo.HandlerFunc) echo.HandlerFunc {
-        return func(c echo.Context) error {
-            err := next(c)
-            if err != nil && shouldReport(err) {
-                sentry.CaptureException(err)
+// interface/console/v1/interceptor/sentry.go
+type sentryInterceptor struct{}
+
+func NewSentryInterceptor() connect.Interceptor {
+    return &sentryInterceptor{}
+}
+
+func (i *sentryInterceptor) WrapUnary(next connect.UnaryFunc) connect.UnaryFunc {
+    return func(ctx context.Context, req connect.AnyRequest) (connect.AnyResponse, error) {
+        resp, err := next(ctx, req)
+        if err != nil {
+            // 5xxエラー（サーバー内部エラー）のみSentryに送信
+            if connectErr, ok := err.(*connect.Error); ok {
+                if connectErr.Code() == connect.CodeInternal ||
+                    connectErr.Code() == connect.CodeUnknown ||
+                    connectErr.Code() == connect.CodeDataLoss {
+
+                    hub := sentry.CurrentHub().Clone()
+                    hub.WithScope(func(scope *sentry.Scope) {
+                        scope.SetTag("rpc_method", req.Spec().Procedure)
+                        scope.SetContext("request", map[string]interface{}{
+                            "procedure": req.Spec().Procedure,
+                            "peer":      req.Peer(),
+                        })
+                        hub.CaptureException(err)
+                    })
+                }
             }
-            return err
         }
+        return resp, err
     }
 }
 ```
 
 **特徴**:
-- ✅ ドメインのインターフェースを実装
-- ✅ 外部ライブラリ・サービスに依存
-- ✅ データ変換（外部形式 ↔ ドメインモデル）
-- ✅ 技術的詳細を隠蔽
+- ✅ Connect RPCのインターセプターインターフェースを実装
+- ✅ 5xxエラー（Internal、Unknown、DataLoss）のみをSentryに送信
+- ✅ RPCメソッド名やピア情報などのコンテキストを付与
+- ✅ Unary（単一リクエスト）とStreaming（ストリーミング）の両方に対応
 
 ---
 
@@ -863,31 +893,36 @@ KeyHub Backendでは、DDDの以下のパターンを積極的に活用してい
 ```
 1. HTTPリクエスト受信
         ↓
-2. Middleware処理
-   - SentryErrorMiddleware (エラー監視)
+2. Echo Middleware処理
    - Recover (パニック復旧)
    - Logging (ログ出力)
+   - CORS (クロスオリジン)
         ↓
-3. Interface層 (Handler)
+3. Connect RPC Interceptor処理
+   - SentryInterceptor (5xxエラー監視)
+   - AuthInterceptor (認証・認可)
+        ↓
+4. Interface層 (Handler)
    - リクエストバリデーション
    - DTOからドメインモデルへ変換
         ↓
-4. UseCase層
+5. UseCase層
    - ビジネスロジック実行
    - Repositoryでデータ取得
    - ドメインルール適用
         ↓
-5. Infrastructure層
+6. Infrastructure層
    - データベースアクセス
    - 外部API呼び出し
         ↓
-6. Domain層
+7. Domain層
    - ドメインモデルの操作
    - ビジネスルール検証
         ↓
-7. レスポンス返却（逆順）
+8. レスポンス返却（逆順）
    - ドメインモデル → DTO
    - HTTPレスポンス構築
+   - Interceptorでエラーをキャプチャ（5xxのみSentryへ）
 ```
 
 ### 具体例: ログインフロー
@@ -895,7 +930,9 @@ KeyHub Backendでは、DDDの以下のパターンを積極的に活用してい
 ```
 [Client] POST /keyhub.console.v1.ConsoleAuthService/LoginWithOrgId
     ↓
-[Middleware] SentryErrorMiddleware
+[Echo Middleware] Recover, Logging, CORS
+    ↓
+[Interceptor] SentryInterceptor, AuthInterceptor
     ↓
 [Interface] consolev1.Handler.LoginWithOrgId()
     ├─ リクエストバリデーション

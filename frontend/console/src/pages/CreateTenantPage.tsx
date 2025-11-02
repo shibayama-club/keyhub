@@ -3,31 +3,32 @@ import toast from 'react-hot-toast';
 import * as Sentry from '@sentry/react';
 import { Navbar } from '../components/Navbar';
 import { CreateTenantForm } from '../components/CreateTenantForm';
-import { useMutationCreateTenant } from '../libs/query';
+import { useMutationCreateTenant, queryClient } from '../libs/query';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
 
 export const CreateTenantPage = () => {
   const navigate = useNavigate();
-  const { mutate: createTenant, isPending } = useMutationCreateTenant();
+  const { mutateAsync: createTenant, isPending } = useMutationCreateTenant();
 
-  const handleSubmit = (data: { name: string; description?: string; tenantType: TenantType }) => {
-    createTenant(
-      {
+  const handleSubmit = async (data: { name: string; description?: string; tenantType: TenantType }) => {
+    try {
+      await createTenant({
         name: data.name,
         description: data.description || '',
         tenantType: data.tenantType,
-      },
-      {
-        onSuccess: () => {
-          toast.success('テナントを作成しました');
-          navigate('/tenants');
-        },
-        onError: (error) => {
-          Sentry.captureException(error);
-          toast.error('テナントの作成に失敗しました');
-        },
-      },
-    );
+      });
+
+      // TanStack Queryのキャッシュを無効化してテナント一覧を最新に保つ
+      await queryClient.invalidateQueries();
+
+      toast.success('テナントを作成しました');
+      // 成功後はテナント一覧に戻る
+      navigate('/tenants', { replace: true });
+    } catch (error) {
+      // Sentryでエラーをキャプチャ
+      Sentry.captureException(error);
+      toast.error('テナントの作成に失敗しました');
+    }
   };
 
   return (
