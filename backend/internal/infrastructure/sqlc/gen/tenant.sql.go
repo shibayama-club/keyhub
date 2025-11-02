@@ -62,49 +62,34 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Ten
 	return i, err
 }
 
-const getTenant = `-- name: GetTenant :one
-SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
-WHERE id = $1
-`
-
-func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (Tenant, error) {
-	row := q.db.QueryRow(ctx, getTenant, id)
-	var i Tenant
-	err := row.Scan(
-		&i.ID,
-		&i.OrganizationID,
-		&i.Name,
-		&i.Description,
-		&i.TenantType,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
-}
-
-const getTenantsByOrganization = `-- name: GetTenantsByOrganization :many
-SELECT id, organization_id, name, description, tenant_type, created_at, updated_at FROM tenants
+const getAllTenants = `-- name: GetAllTenants :many
+SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
+FROM tenants t
 WHERE organization_id = $1
 ORDER BY created_at DESC
 `
 
-func (q *Queries) GetTenantsByOrganization(ctx context.Context, organizationID uuid.UUID) ([]Tenant, error) {
-	rows, err := q.db.Query(ctx, getTenantsByOrganization, organizationID)
+type GetAllTenantsRow struct {
+	Tenant Tenant
+}
+
+func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error) {
+	rows, err := q.db.Query(ctx, getAllTenants, organizationID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Tenant
+	var items []GetAllTenantsRow
 	for rows.Next() {
-		var i Tenant
+		var i GetAllTenantsRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.OrganizationID,
-			&i.Name,
-			&i.Description,
-			&i.TenantType,
-			&i.CreatedAt,
-			&i.UpdatedAt,
+			&i.Tenant.ID,
+			&i.Tenant.OrganizationID,
+			&i.Tenant.Name,
+			&i.Tenant.Description,
+			&i.Tenant.TenantType,
+			&i.Tenant.CreatedAt,
+			&i.Tenant.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -114,4 +99,29 @@ func (q *Queries) GetTenantsByOrganization(ctx context.Context, organizationID u
 		return nil, err
 	}
 	return items, nil
+}
+
+const getTenant = `-- name: GetTenant :one
+SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
+FROM tenants t
+WHERE id = $1
+`
+
+type GetTenantRow struct {
+	Tenant Tenant
+}
+
+func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error) {
+	row := q.db.QueryRow(ctx, getTenant, id)
+	var i GetTenantRow
+	err := row.Scan(
+		&i.Tenant.ID,
+		&i.Tenant.OrganizationID,
+		&i.Tenant.Name,
+		&i.Tenant.Description,
+		&i.Tenant.TenantType,
+		&i.Tenant.CreatedAt,
+		&i.Tenant.UpdatedAt,
+	)
+	return i, err
 }
