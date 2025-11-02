@@ -1,5 +1,7 @@
 package iface
 
+//go:generate go run go.uber.org/mock/mockgen@latest -source=$GOFILE -destination=../mock/mock_usecase.go -package=mock
+
 import (
 	"context"
 
