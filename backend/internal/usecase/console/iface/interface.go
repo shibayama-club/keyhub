@@ -12,4 +12,5 @@ type IUseCase interface {
 	Logout(ctx context.Context, sessionID string) error
 	ValidateSession(ctx context.Context, token string) (model.ConsoleSession, error)
 	CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error)
+	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
 }
