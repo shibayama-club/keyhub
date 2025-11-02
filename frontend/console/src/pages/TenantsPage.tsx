@@ -1,8 +1,11 @@
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
+import { TenantList } from '../components/TenantList';
+import { useQueryGetAllTenants } from '../libs/query';
 
 export const TenantsPage = () => {
   const navigate = useNavigate();
+  const { data, isLoading, isError } = useQueryGetAllTenants();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -27,10 +30,10 @@ export const TenantsPage = () => {
           {/* Tenants List */}
           <div className="overflow-hidden bg-white shadow sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">既存のテナント</h3>
+              <h3 className="text-lg font-medium leading-6 text-gray-900">既存のテナント</h3>
             </div>
-            <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-              <p className="text-gray-600">テナントが見つかりません。最初のテナントを作成して始めましょう。</p>
+            <div className="border-t border-gray-200">
+              <TenantList tenants={data?.tenants || []} isLoading={isLoading} isError={isError} />
             </div>
           </div>
         </div>
