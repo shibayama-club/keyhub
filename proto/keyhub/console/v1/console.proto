@@ -32,6 +32,8 @@ message LogoutResponse {
 service ConsoleService {
   // Tenant作成
   rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse);
+  // Tenant一覧取得
+  rpc GetAllTenants(GetAllTenantsRequest) returns (GetAllTenantsResponse);
 }
 
 message Tenant {
@@ -52,6 +54,12 @@ message CreateTenantRequest {
 
 message CreateTenantResponse {
   string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetAllTenantsRequest {}
+
+message GetAllTenantsResponse {
+  repeated Tenant tenants = 1;
 }
 
 enum TenantType {
