@@ -17,10 +17,6 @@ GRANT SELECT,INSERT,UPDATE ON TABLE tenants TO keyhub;
 
 CREATE INDEX idx_tenants_organization_id ON tenants(organization_id);
 
-CREATE UNIQUE INDEX idx_tenants_description_nonempty
-  ON tenants (description)
-  WHERE description <> '';
-
 CREATE TRIGGER refresh_tenants_updated_at
 BEFORE UPDATE ON tenants
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -32,7 +28,6 @@ SELECT 'down SQL query - tenants table rollback';
 
 DROP TRIGGER IF EXISTS refresh_tenants_updated_at ON tenants;
 
-DROP INDEX IF EXISTS idx_tenants_description_nonempty;
 DROP INDEX IF EXISTS idx_tenants_organization_id;
 
 DROP TABLE IF EXISTS tenants;
