@@ -414,14 +414,6 @@
           "columns": [
             "organization_id"
           ]
-        },
-        {
-          "name": "idx_tenants_description_nonempty",
-          "def": "CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description \u003c\u003e ''::text)",
-          "table": "public.tenants",
-          "columns": [
-            "description"
-          ]
         }
       ],
       "constraints": [

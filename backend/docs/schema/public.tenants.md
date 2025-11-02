@@ -28,7 +28,6 @@
 | tenants_pkey | CREATE UNIQUE INDEX tenants_pkey ON public.tenants USING btree (id) |
 | tenants_name_key | CREATE UNIQUE INDEX tenants_name_key ON public.tenants USING btree (name) |
 | idx_tenants_organization_id | CREATE INDEX idx_tenants_organization_id ON public.tenants USING btree (organization_id) |
-| idx_tenants_description_nonempty | CREATE UNIQUE INDEX idx_tenants_description_nonempty ON public.tenants USING btree (description) WHERE (description <> ''::text) |
 
 ## Triggers
 
