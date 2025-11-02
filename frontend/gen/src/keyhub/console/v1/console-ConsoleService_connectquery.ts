@@ -10,3 +10,10 @@ import { ConsoleService } from "./console_pb";
  * @generated from rpc keyhub.console.v1.ConsoleService.CreateTenant
  */
 export const createTenant = ConsoleService.method.createTenant;
+
+/**
+ * Tenant一覧取得
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleService.GetAllTenants
+ */
+export const getAllTenants = ConsoleService.method.getAllTenants;
