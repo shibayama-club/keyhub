@@ -20,10 +20,12 @@ VALUES(
 RETURNING *;
 
 -- name: GetTenant :one
-SELECT * FROM tenants
+SELECT sqlc.embed(t) 
+FROM tenants t
 WHERE id = $1;
 
--- name: GetTenantsByOrganization :many
-SELECT * FROM tenants
+-- name: GetAllTenants :many
+SELECT sqlc.embed(t) 
+FROM tenants t
 WHERE organization_id = $1
 ORDER BY created_at DESC;
