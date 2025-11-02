@@ -17,5 +17,5 @@ type CreateTenantArg struct {
 type TenantRepository interface {
 	CreateTenant(ctx context.Context, arg CreateTenantArg) (model.Tenant, error)
 	GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error)
-	GetTenantsByOrganization(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
+	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
 }
