@@ -28,7 +28,6 @@ type Querier interface {
 	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 	GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error)
-	InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error)
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
 	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
