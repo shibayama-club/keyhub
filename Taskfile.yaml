@@ -127,6 +127,66 @@ tasks:
     cmds:
       - sqlc generate -f sqlc.yaml
 
+  mock:
+    desc: "Generate all mocks"
+    deps:
+      - mock:install
+      - mock:console
+      - mock:repository
+  mock:install:
+    desc: "Install mockgen if not present"
+    cmds:
+      - |
+        if ! command -v mockgen &> /dev/null; then
+          echo "Installing mockgen..."
+          go install go.uber.org/mock/mockgen@latest
+        else
+          echo "mockgen is already installed"
+        fi
+    silent: true
+  mock:console:
+    desc: "Generate mocks for console usecase"
+    dir: ./backend/internal/usecase/console/iface
+    sources:
+      - interface.go
+    generates:
+      - ../mock/mock_usecase.go
+    cmds:
+      - go generate
+  mock:repository:
+    desc: "Generate mocks for repository"
+    dir: ./backend/internal/domain/repository
+    sources:
+      - repository.go
+    generates:
+      - mock/mock_repository.go
+    cmds:
+      - go generate
+  mock:clean:
+    desc: "Clean all generated mocks"
+    dir: ./backend
+    cmds:
+      - rm -rf internal/usecase/console/mock/mock_usecase.go
+      - rm -rf internal/domain/repository/mock/mock_repository.go
+  mock:refresh:
+    desc: "Clean and regenerate all mocks"
+    cmds:
+      - task: mock:clean
+      - task: mock
+
+  test:
+    desc: "Run all backend tests"
+    dir: ./backend
+    cmds:
+      - go test -v ./...
+  test:coverage:
+    desc: "Run backend tests with coverage"
+    dir: ./backend
+    cmds:
+      - go test -coverprofile=coverage.out ./...
+      - go tool cover -html=coverage.out -o coverage.html
+      - echo "Coverage report generated at backend/coverage.html"
+
   dump:schema:
     deps: [compose:up]
     cmds:

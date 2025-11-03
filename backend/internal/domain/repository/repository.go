@@ -1,5 +1,7 @@
 package repository
 
+//go:generate go run go.uber.org/mock/mockgen@latest -source=$GOFILE -destination=mock/mock_repository.go -package=mock
+
 import "context"
 
 type Repository interface {
