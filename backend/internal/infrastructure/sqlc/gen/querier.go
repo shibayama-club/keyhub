@@ -11,14 +11,27 @@ import (
 )
 
 type Querier interface {
+	// 期限切れまたは無効化されたセッションを物理削除する（バッチ処理用）
+	CleanupExpiredAppSessions(ctx context.Context) error
 	CleanupExpiredConsoleSessions(ctx context.Context) error
-	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (ConsoleSession, error)
-	CreateTenant(ctx context.Context, arg CreateTenantParams) (Tenant, error)
+	CleanupExpiredOAuthStates(ctx context.Context) error
+	ConsumeOAuthState(ctx context.Context, state string) error
+	CreateAppSession(ctx context.Context, arg CreateAppSessionParams) (CreateAppSessionRow, error)
+	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (CreateConsoleSessionRow, error)
+	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
+	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
-	GetConsoleSession(ctx context.Context, sessionID string) (ConsoleSession, error)
+	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
+	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
+	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
-	InsertUser(ctx context.Context, arg InsertUserParams) (User, error)
+	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
+	GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error)
+	InsertUser(ctx context.Context, arg InsertUserParams) (InsertUserRow, error)
+	RevokeAppSession(ctx context.Context, sessionID string) error
+	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
+	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
 }
 
 var _ Querier = (*Queries)(nil)

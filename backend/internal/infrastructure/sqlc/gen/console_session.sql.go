@@ -29,7 +29,7 @@ INSERT INTO console_sessions (
     expires_at
 ) VALUES (
     $1, $2, NOW(), NOW() + INTERVAL '24 hours'
-) RETURNING session_id, organization_id, created_at, expires_at
+) RETURNING console_sessions.session_id, console_sessions.organization_id, console_sessions.created_at, console_sessions.expires_at
 `
 
 type CreateConsoleSessionParams struct {
@@ -37,14 +37,18 @@ type CreateConsoleSessionParams struct {
 	OrganizationID uuid.UUID
 }
 
-func (q *Queries) CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (ConsoleSession, error) {
+type CreateConsoleSessionRow struct {
+	ConsoleSession ConsoleSession
+}
+
+func (q *Queries) CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (CreateConsoleSessionRow, error) {
 	row := q.db.QueryRow(ctx, createConsoleSession, arg.SessionID, arg.OrganizationID)
-	var i ConsoleSession
+	var i CreateConsoleSessionRow
 	err := row.Scan(
-		&i.SessionID,
-		&i.OrganizationID,
-		&i.CreatedAt,
-		&i.ExpiresAt,
+		&i.ConsoleSession.SessionID,
+		&i.ConsoleSession.OrganizationID,
+		&i.ConsoleSession.CreatedAt,
+		&i.ConsoleSession.ExpiresAt,
 	)
 	return i, err
 }
@@ -60,19 +64,24 @@ func (q *Queries) DeleteConsoleSession(ctx context.Context, sessionID string) er
 }
 
 const getConsoleSession = `-- name: GetConsoleSession :one
-SELECT session_id, organization_id, created_at, expires_at FROM console_sessions
-WHERE session_id = $1
-AND expires_at > NOW()
+SELECT cs.session_id, cs.organization_id, cs.created_at, cs.expires_at
+FROM console_sessions cs
+WHERE cs.session_id = $1
+AND cs.expires_at > NOW()
 `
 
-func (q *Queries) GetConsoleSession(ctx context.Context, sessionID string) (ConsoleSession, error) {
+type GetConsoleSessionRow struct {
+	ConsoleSession ConsoleSession
+}
+
+func (q *Queries) GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error) {
 	row := q.db.QueryRow(ctx, getConsoleSession, sessionID)
-	var i ConsoleSession
+	var i GetConsoleSessionRow
 	err := row.Scan(
-		&i.SessionID,
-		&i.OrganizationID,
-		&i.CreatedAt,
-		&i.ExpiresAt,
+		&i.ConsoleSession.SessionID,
+		&i.ConsoleSession.OrganizationID,
+		&i.ConsoleSession.CreatedAt,
+		&i.ConsoleSession.ExpiresAt,
 	)
 	return i, err
 }
