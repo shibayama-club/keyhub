@@ -30,7 +30,7 @@ VALUES(
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 )
-RETURNING id, organization_id, name, description, tenant_type, created_at, updated_at
+RETURNING tenants.id, tenants.organization_id, tenants.name, tenants.description, tenants.tenant_type, tenants.created_at, tenants.updated_at
 `
 
 type CreateTenantParams struct {
@@ -41,7 +41,11 @@ type CreateTenantParams struct {
 	TenantType     string
 }
 
-func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Tenant, error) {
+type CreateTenantRow struct {
+	Tenant Tenant
+}
+
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error) {
 	row := q.db.QueryRow(ctx, createTenant,
 		arg.ID,
 		arg.OrganizationID,
@@ -49,15 +53,15 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Ten
 		arg.Description,
 		arg.TenantType,
 	)
-	var i Tenant
+	var i CreateTenantRow
 	err := row.Scan(
-		&i.ID,
-		&i.OrganizationID,
-		&i.Name,
-		&i.Description,
-		&i.TenantType,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.Tenant.ID,
+		&i.Tenant.OrganizationID,
+		&i.Tenant.Name,
+		&i.Tenant.Description,
+		&i.Tenant.TenantType,
+		&i.Tenant.CreatedAt,
+		&i.Tenant.UpdatedAt,
 	)
 	return i, err
 }

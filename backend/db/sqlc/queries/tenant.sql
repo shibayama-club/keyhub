@@ -17,7 +17,7 @@ VALUES(
     CURRENT_TIMESTAMP,
     CURRENT_TIMESTAMP
 )
-RETURNING *;
+RETURNING sqlc.embed(tenants);
 
 -- name: GetTenant :one
 SELECT sqlc.embed(t) 
