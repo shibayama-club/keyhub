@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log/slog"
 
+	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
 	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
@@ -12,8 +13,13 @@ import (
 	slogecho "github.com/samber/slog-echo"
 	"github.com/shibayama-club/keyhub/cmd/config"
 	"github.com/shibayama-club/keyhub/internal/domain/healthcheck"
+	"github.com/shibayama-club/keyhub/internal/infrastructure/auth/google"
 	"github.com/shibayama-club/keyhub/internal/infrastructure/sqlc"
+	appv1 "github.com/shibayama-club/keyhub/internal/interface/app/v1"
+	"github.com/shibayama-club/keyhub/internal/interface/app/v1/interceptor"
+	"github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1/appv1connect"
 	"github.com/shibayama-club/keyhub/internal/interface/health"
+	"github.com/shibayama-club/keyhub/internal/usecase/app"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
 )
@@ -46,10 +52,10 @@ func runApp(cmd *cobra.Command, args []string) error {
 	return e.StartH2CServer(fmt.Sprintf(":%d", cfg.Port), &http2.Server{})
 }
 
-func SetupApp(ctx context.Context, config config.Config) (*echo.Echo, error) {
+func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              config.Sentry.DSN,
-		Environment:      config.Env,
+		Dsn:              cfg.Sentry.DSN,
+		Environment:      cfg.Env,
 		TracesSampleRate: 1.0,
 		EnableTracing:    true,
 		AttachStacktrace: true,
@@ -61,18 +67,52 @@ func SetupApp(ctx context.Context, config config.Config) (*echo.Echo, error) {
 	e.Use(
 		middleware.Recover(),
 		slogecho.New(slog.Default()),
+		middleware.CORSWithConfig(middleware.CORSConfig{
+			AllowOrigins:     []string{"http://localhost:5173"},
+			AllowMethods:     []string{echo.GET, echo.POST, echo.OPTIONS},
+			AllowHeaders:     []string{"*"},
+			AllowCredentials: true,
+		}),
 	)
 
 	healthCheckers := make([]healthcheck.HealthChecker, 0)
 
-	pool, err := sqlc.NewPool(ctx, config.Postgres)
+	pool, err := sqlc.NewPool(ctx, cfg.Postgres)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create postgres pool")
 	}
 	repo := sqlc.NewRepository(pool)
 	healthCheckers = append(healthCheckers, healthcheck.NewHealthCheckFunc("repository", repo.Ping))
 
+	oauthService, err := google.NewOAuthService(google.OAuthConfig{
+		ClientID:     cfg.Auth.Google.ClientID,
+		ClientSecret: cfg.Auth.Google.ClientSecret,
+		RedirectURI:  "http://localhost:8080/auth/google/callback",
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create OAuth service")
+	}
+
+	appUseCase, err := app.NewUseCase(ctx, repo, cfg, oauthService)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create app use case")
+	}
+
+	appHandler := appv1.NewHandler(appUseCase)
+
+	e.GET("/auth/google/login", appHandler.GoogleLogin)
+	e.GET("/auth/google/callback", appHandler.GoogleCallback)
+
+	authInterceptor := interceptor.NewAuthInterceptor(appUseCase)
+
+	authPath, authHandler := appv1connect.NewAuthServiceHandler(
+		appHandler,
+		connect.WithInterceptors(authInterceptor),
+	)
+	e.Any(authPath+"*", echo.WrapHandler(authHandler))
+
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.app.v1.HealthService/Check", healthHandler.Check)
+
 	return e, nil
 }
