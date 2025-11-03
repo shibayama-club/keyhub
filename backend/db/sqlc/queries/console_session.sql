@@ -6,12 +6,13 @@ INSERT INTO console_sessions (
     expires_at
 ) VALUES (
     $1, $2, NOW(), NOW() + INTERVAL '24 hours'
-) RETURNING *;
+) RETURNING sqlc.embed(console_sessions);
 
 -- name: GetConsoleSession :one
-SELECT * FROM console_sessions
-WHERE session_id = $1
-AND expires_at > NOW();
+SELECT sqlc.embed(cs)
+FROM console_sessions cs
+WHERE cs.session_id = $1
+AND cs.expires_at > NOW();
 
 -- name: DeleteConsoleSession :exec
 DELETE FROM console_sessions
