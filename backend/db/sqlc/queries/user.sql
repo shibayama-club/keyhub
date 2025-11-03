@@ -1,18 +1,33 @@
--- name: InsertUser :one
+-- name: GetUser :one
+SELECT sqlc.embed(u)
+FROM users u
+WHERE u.id = $1;
+
+-- name: GetUserByProviderIdentity :one
+SELECT sqlc.embed(u)
+FROM users u
+INNER JOIN user_identities ui ON u.id = ui.user_id
+WHERE ui.provider = $1 AND ui.provider_sub = $2;
+
+-- name: CreateUser :one
 INSERT INTO users (
-    id,
     email,
     name,
-    icon,
-    created_at,
-    updated_at
+    icon
+) VALUES (
+    $1, $2, $3
 )
-VALUES (
-    @id,
-    @email,
-    @name,
-    @icon,
-    @created_at,
-    @updated_at
+RETURNING sqlc.embed(users);
+
+-- name: UpsertUserIdentity :exec
+INSERT INTO user_identities (
+    user_id,
+    provider,
+    provider_sub
+) VALUES (
+    $1, $2, $3
 )
-RETURNING *;
+ON CONFLICT (provider, provider_sub)
+DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    updated_at = NOW();
