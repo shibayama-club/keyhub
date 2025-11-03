@@ -132,6 +132,7 @@ tasks:
     deps:
       - mock:install
       - mock:console
+      - mock:repository
   mock:install:
     desc: "Install mockgen if not present"
     cmds:
@@ -152,11 +153,21 @@ tasks:
       - ../mock/mock_usecase.go
     cmds:
       - go generate
+  mock:repository:
+    desc: "Generate mocks for repository"
+    dir: ./backend/internal/domain/repository
+    sources:
+      - repository.go
+    generates:
+      - mock/mock_repository.go
+    cmds:
+      - go generate
   mock:clean:
     desc: "Clean all generated mocks"
     dir: ./backend
     cmds:
-      - rm -rf internal/usecase/console/mock
+      - rm -rf internal/usecase/console/mock/mock_usecase.go
+      - rm -rf internal/domain/repository/mock/mock_repository.go
   mock:refresh:
     desc: "Clean and regenerate all mocks"
     cmds:
