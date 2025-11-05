@@ -28,12 +28,11 @@ INSERT INTO sessions (
     session_id,
     user_id,
     active_membership_id,
-    created_at,
     expires_at,
     csrf_token,
     revoked
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, FALSE
+    $1, $2, $3, $4, $5, FALSE
 ) RETURNING sessions.session_id, sessions.user_id, sessions.active_membership_id, sessions.created_at, sessions.expires_at, sessions.csrf_token, sessions.revoked
 `
 
@@ -41,7 +40,6 @@ type CreateAppSessionParams struct {
 	SessionID          string
 	UserID             uuid.UUID
 	ActiveMembershipID *uuid.UUID
-	CreatedAt          pgtype.Timestamptz
 	ExpiresAt          pgtype.Timestamptz
 	CsrfToken          *string
 }
@@ -55,7 +53,6 @@ func (q *Queries) CreateAppSession(ctx context.Context, arg CreateAppSessionPara
 		arg.SessionID,
 		arg.UserID,
 		arg.ActiveMembershipID,
-		arg.CreatedAt,
 		arg.ExpiresAt,
 		arg.CsrfToken,
 	)
