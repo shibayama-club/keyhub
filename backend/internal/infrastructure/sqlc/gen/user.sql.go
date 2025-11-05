@@ -9,55 +9,123 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const insertUser = `-- name: InsertUser :one
-INSERT INTO users (
-    id,
-    email,
-    name,
-    icon,
-    created_at,
-    updated_at
-)
-VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6
-)
-RETURNING id, email, name, icon, created_at, updated_at
+const getUser = `-- name: GetUser :one
+SELECT u.id, u.email, u.name, u.icon, u.created_at, u.updated_at
+FROM users u
+WHERE u.id = $1
 `
 
-type InsertUserParams struct {
-	ID        uuid.UUID
-	Email     string
-	Name      string
-	Icon      string
-	CreatedAt pgtype.Timestamp
-	UpdatedAt pgtype.Timestamp
+type GetUserRow struct {
+	User User
 }
 
-func (q *Queries) InsertUser(ctx context.Context, arg InsertUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, insertUser,
-		arg.ID,
-		arg.Email,
-		arg.Name,
-		arg.Icon,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-	)
-	var i User
+func (q *Queries) GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error) {
+	row := q.db.QueryRow(ctx, getUser, id)
+	var i GetUserRow
 	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Name,
-		&i.Icon,
-		&i.CreatedAt,
-		&i.UpdatedAt,
+		&i.User.ID,
+		&i.User.Email,
+		&i.User.Name,
+		&i.User.Icon,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
 	)
 	return i, err
+}
+
+const getUserByProviderIdentity = `-- name: GetUserByProviderIdentity :one
+SELECT u.id, u.email, u.name, u.icon, u.created_at, u.updated_at
+FROM users u
+INNER JOIN user_identities ui ON u.id = ui.user_id
+WHERE ui.provider = $1 AND ui.provider_sub = $2
+`
+
+type GetUserByProviderIdentityParams struct {
+	Provider    string
+	ProviderSub string
+}
+
+type GetUserByProviderIdentityRow struct {
+	User User
+}
+
+func (q *Queries) GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error) {
+	row := q.db.QueryRow(ctx, getUserByProviderIdentity, arg.Provider, arg.ProviderSub)
+	var i GetUserByProviderIdentityRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Email,
+		&i.User.Name,
+		&i.User.Icon,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertUser = `-- name: UpsertUser :one
+INSERT INTO users (
+    email,
+    name,
+    icon
+) VALUES (
+    $1, $2, $3
+)
+ON CONFLICT (email)
+DO UPDATE SET
+    name = EXCLUDED.name,
+    icon = EXCLUDED.icon,
+    updated_at = NOW()
+RETURNING users.id, users.email, users.name, users.icon, users.created_at, users.updated_at
+`
+
+type UpsertUserParams struct {
+	Email string
+	Name  string
+	Icon  string
+}
+
+type UpsertUserRow struct {
+	User User
+}
+
+func (q *Queries) UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error) {
+	row := q.db.QueryRow(ctx, upsertUser, arg.Email, arg.Name, arg.Icon)
+	var i UpsertUserRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Email,
+		&i.User.Name,
+		&i.User.Icon,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+	)
+	return i, err
+}
+
+const upsertUserIdentity = `-- name: UpsertUserIdentity :exec
+INSERT INTO user_identities (
+    user_id,
+    provider,
+    provider_sub
+) VALUES (
+    $1, $2, $3
+)
+ON CONFLICT (provider, provider_sub)
+DO UPDATE SET
+    user_id = EXCLUDED.user_id,
+    updated_at = NOW()
+`
+
+type UpsertUserIdentityParams struct {
+	UserID      uuid.UUID
+	Provider    string
+	ProviderSub string
+}
+
+func (q *Queries) UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error {
+	_, err := q.db.Exec(ctx, upsertUserIdentity, arg.UserID, arg.Provider, arg.ProviderSub)
+	return err
 }

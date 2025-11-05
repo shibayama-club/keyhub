@@ -9,7 +9,7 @@ FROM users u
 INNER JOIN user_identities ui ON u.id = ui.user_id
 WHERE ui.provider = $1 AND ui.provider_sub = $2;
 
--- name: CreateUser :one
+-- name: UpsertUser :one
 INSERT INTO users (
     email,
     name,
@@ -17,6 +17,11 @@ INSERT INTO users (
 ) VALUES (
     $1, $2, $3
 )
+ON CONFLICT (email)
+DO UPDATE SET
+    name = EXCLUDED.name,
+    icon = EXCLUDED.icon,
+    updated_at = NOW()
 RETURNING sqlc.embed(users);
 
 -- name: UpsertUserIdentity :exec
