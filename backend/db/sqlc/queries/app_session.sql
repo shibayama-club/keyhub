@@ -3,12 +3,11 @@ INSERT INTO sessions (
     session_id,
     user_id,
     active_membership_id,
-    created_at,
     expires_at,
     csrf_token,
     revoked
 ) VALUES (
-    $1, $2, $3, $4, $5, $6, FALSE
+    $1, $2, $3, $4, $5, FALSE
 ) RETURNING sqlc.embed(sessions);
 
 -- name: GetAppSession :one
