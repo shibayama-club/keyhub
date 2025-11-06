@@ -11,7 +11,6 @@ import (
 )
 
 type Querier interface {
-	// 期限切れまたは無効化されたセッションを物理削除する（バッチ処理用）
 	CleanupExpiredAppSessions(ctx context.Context) error
 	CleanupExpiredConsoleSessions(ctx context.Context) error
 	CleanupExpiredOAuthStates(ctx context.Context) error
@@ -19,7 +18,6 @@ type Querier interface {
 	CreateAppSession(ctx context.Context, arg CreateAppSessionParams) (CreateAppSessionRow, error)
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (CreateConsoleSessionRow, error)
 	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
-	CreateUser(ctx context.Context, arg CreateUserParams) (CreateUserRow, error)
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
@@ -30,6 +28,7 @@ type Querier interface {
 	GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error)
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
+	UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error)
 	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
 }
 
