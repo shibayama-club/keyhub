@@ -7,13 +7,7 @@ import (
 )
 
 type OAuthStateRepository interface {
-	SaveOAuthState(ctx context.Context, arg SaveOAuthStateArg) error
+	SaveOAuthState(ctx context.Context, oauthState model.OAuthState) error
 	GetOAuthState(ctx context.Context, state string) (model.OAuthState, error)
 	ConsumeOAuthState(ctx context.Context, state string) error
-}
-
-type SaveOAuthStateArg struct {
-	State        string
-	CodeVerifier string
-	Nonce        string
 }
