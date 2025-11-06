@@ -235,17 +235,17 @@ func (mr *MockRepositoryMockRecorder) RevokeAppSession(ctx, sessionID any) *gomo
 }
 
 // SaveOAuthState mocks base method.
-func (m *MockRepository) SaveOAuthState(ctx context.Context, arg repository.SaveOAuthStateArg) error {
+func (m *MockRepository) SaveOAuthState(ctx context.Context, oauthState model.OAuthState) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, arg)
+	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, oauthState)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveOAuthState indicates an expected call of SaveOAuthState.
-func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, arg any) *gomock.Call {
+func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockRepository)(nil).SaveOAuthState), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockRepository)(nil).SaveOAuthState), ctx, oauthState)
 }
 
 // UpsertUser mocks base method.
@@ -508,17 +508,17 @@ func (mr *MockTransactionMockRecorder) RevokeAppSession(ctx, sessionID any) *gom
 }
 
 // SaveOAuthState mocks base method.
-func (m *MockTransaction) SaveOAuthState(ctx context.Context, arg repository.SaveOAuthStateArg) error {
+func (m *MockTransaction) SaveOAuthState(ctx context.Context, oauthState model.OAuthState) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, arg)
+	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, oauthState)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // SaveOAuthState indicates an expected call of SaveOAuthState.
-func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, arg any) *gomock.Call {
+func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockTransaction)(nil).SaveOAuthState), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockTransaction)(nil).SaveOAuthState), ctx, oauthState)
 }
 
 // UpsertUser mocks base method.
