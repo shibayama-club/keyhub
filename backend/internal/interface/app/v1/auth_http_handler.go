@@ -43,5 +43,5 @@ func (h *Handler) GoogleCallback(c echo.Context) error {
 	}
 	c.SetCookie(cookie)
 
-	return c.Redirect(http.StatusFound, "/app")
+	return c.Redirect(http.StatusFound, "/home")
 }
