@@ -42,12 +42,17 @@ sequenceDiagram
         HTTP->>DB: sessions に INSERT [session_id 生成]
     end
 
-    HTTP-->>FE: 302 /app + Set-Cookie session_id [HttpOnly]
+    HTTP-->>FE: 302 /home + Set-Cookie session_id [HttpOnly]
 
-    Note over FE: 初回レンダリング
+    Note over FE: ホーム画面表示
     FE->>RPC: AuthService.GetMe() [Cookie送信]
     RPC->>DB: sessions検証、users取得
     RPC-->>FE: ユーザー情報返却
+
+    Note over FE: テナント選択/参加画面へ
+    FE->>RPC: TenantService.GetMyTenants()
+    RPC->>DB: SELECT tenant_memberships WHERE user_id
+    RPC-->>FE: 参加済みテナント一覧
 
     Note over FE: ログアウト
     FE->>RPC: AuthService.Logout()
@@ -277,9 +282,47 @@ AND expires_at > NOW();
 
 ---
 
-## 3. Tenant参加フロー
+## 3. Tenant参加フロー（改訂版）
 
-### 3.1 Tenant参加完全フロー
+### 3.1 UIフローと画面遷移
+
+#### 初回ログイン時のフロー
+
+```
+1. Google認証完了
+   ↓
+2. /home へリダイレクト（ホーム画面）
+   ↓
+3. テナント選択画面
+   - 参加済みテナント: なし
+   - 選択肢:
+     a) 公開テナントから選択
+     b) 参加コードを入力
+   ↓
+4. テナント参加
+   ↓
+5. アプリケーションメイン画面へ
+```
+
+#### 2回目以降のログイン時のフロー
+
+```
+1. Google認証完了
+   ↓
+2. /home へリダイレクト（ホーム画面）
+   ↓
+3. テナント選択画面
+   - 参加済みテナント一覧を表示
+   - 最後に使用したテナントがデフォルト選択
+   - オプション:
+     a) 既存テナントを選択
+     b) 新規テナント追加
+     c) テナントの切り替え
+   ↓
+4. アプリケーションメイン画面へ
+```
+
+### 3.2 Tenant参加完全フロー（新設計）
 
 ```mermaid
 sequenceDiagram
@@ -288,33 +331,99 @@ sequenceDiagram
     participant ARPC as App RPC
     participant DB as Shared PostgreSQL
 
-    Note over AFE: 初回ロード時に候補テナントを提示
+    Note over AFE: Google認証後、ホーム画面へリダイレクト
     AFE->>ARPC: AuthService.GetMe
     ARPC->>DB: SELECT users and sessions
     ARPC-->>AFE: user
 
-    AFE->>ARPC: TenantService.ListTenants
-    ARPC->>DB: SELECT tenants WHERE organization_id = 'ORG-DEFAULT-001'
-    ARPC-->>AFE: 利用可能なTenant一覧
+    Note over AFE: テナント管理画面表示
+    AFE->>ARPC: TenantService.GetMyTenants
+    ARPC->>DB: SELECT tenant_memberships WHERE user_id AND status='active'
+    ARPC-->>AFE: 参加済みTenant一覧
 
-    alt ユーザーがTenantを選択
-        AFE->>ARPC: TenantService.JoinTenant with tenant_id
-        ARPC->>DB: INSERT tenant_memberships (user_id, tenant_id, role='member', status='active')
-        ARPC->>DB: UPDATE sessions SET active_membership_id = membership_id WHERE session_id
-        ARPC-->>AFE: OK
-    else 参加コード使用
-        AFE->>ARPC: TenantService.JoinByCode with code
-        ARPC->>DB: SELECT tenant_join_codes WHERE code and valid
-        ARPC->>DB: INSERT tenant_memberships
-        ARPC->>DB: UPDATE tenant_join_codes SET used_count = used_count + 1
-        ARPC->>DB: UPDATE sessions SET active_membership_id
-        ARPC-->>AFE: OK
-    else スキップ
-        ARPC-->>AFE: skip OK with active_membership_id NULL
+    alt 参加済みテナントがある場合
+        Note over AFE: 参加済みテナント一覧を表示
+        AFE->>AFE: テナント選択UI表示
+
+        alt ユーザーが既存テナントを選択
+            AFE->>ARPC: TenantService.SetActiveTenant with membership_id
+            ARPC->>DB: UPDATE sessions SET active_membership_id WHERE session_id
+            ARPC-->>AFE: OK
+            AFE-->>AFE: アプリケーション画面へ遷移
+        else 新規テナント追加
+            AFE-->>AFE: テナント追加画面へ
+        end
+    else 参加済みテナントがない場合
+        AFE->>ARPC: TenantService.ListAvailableTenants
+        ARPC->>DB: SELECT tenants WHERE organization_id = 'ORG-DEFAULT-001'
+        ARPC-->>AFE: 利用可能なTenant一覧
+
+        AFE-->>AFE: テナント選択/参加画面表示
+    end
+
+    alt 新規テナント参加
+        alt 公開テナントから選択
+            AFE->>ARPC: TenantService.JoinTenant with tenant_id
+            ARPC->>DB: INSERT tenant_memberships (user_id, tenant_id, role='member', status='active')
+            ARPC->>DB: UPDATE sessions SET active_membership_id = membership_id WHERE session_id
+            ARPC-->>AFE: membership_id
+        else 参加コード使用
+            AFE->>ARPC: TenantService.JoinByCode with code
+            ARPC->>DB: SELECT tenant_join_codes WHERE code and valid
+            ARPC->>DB: INSERT tenant_memberships
+            ARPC->>DB: UPDATE tenant_join_codes SET used_count = used_count + 1
+            ARPC->>DB: UPDATE sessions SET active_membership_id
+            ARPC-->>AFE: membership_id
+        end
+
+        AFE->>ARPC: TenantService.GetMyTenants
+        ARPC->>DB: SELECT updated tenant_memberships
+        ARPC-->>AFE: 更新された参加済みTenant一覧
     end
 ```
 
-### 3.2 Tenant選択処理
+### 3.2 複数テナント管理
+
+#### ユーザーの参加済みテナント取得
+
+```sql
+SELECT
+    tm.id as membership_id,
+    tm.tenant_id,
+    tm.role,
+    tm.status,
+    tm.joined_via,
+    tm.created_at as joined_at,
+    t.name as tenant_name,
+    t.slug as tenant_slug,
+    t.description,
+    t.tenant_type,
+    (tm.id = s.active_membership_id) as is_active
+FROM tenant_memberships tm
+JOIN tenants t ON tm.tenant_id = t.id
+LEFT JOIN sessions s ON s.user_id = tm.user_id AND s.session_id = $1
+WHERE tm.user_id = $2
+AND tm.status = 'active'
+ORDER BY tm.created_at DESC;
+```
+
+#### アクティブテナントの切り替え
+
+```sql
+-- 切り替え権限の確認
+SELECT id FROM tenant_memberships
+WHERE id = $1
+AND user_id = $2
+AND status = 'active';
+
+-- セッションのアクティブテナント更新
+UPDATE sessions
+SET active_membership_id = $1
+WHERE session_id = $2
+AND user_id = $3;
+```
+
+### 3.3 Tenant選択処理
 
 #### 利用可能Tenant取得
 
@@ -359,7 +468,7 @@ WHERE session_id = $2
 AND user_id = $3;
 ```
 
-### 3.3 参加コード処理
+### 3.4 参加コード処理
 
 #### コード検証
 
@@ -396,7 +505,7 @@ WHERE code = $1;
 COMMIT;
 ```
 
-### 3.4 Tenant切り替え
+### 3.5 Tenant切り替え
 
 #### アクティブTenant変更
 
@@ -455,3 +564,109 @@ func GetTenantContext(ctx context.Context) (*TenantContext, error) {
 - ログイン試行: 5回/分
 - 参加コード試行: 10回/時
 - API全般: 1000回/時
+
+---
+
+## 4. 実装ガイドライン
+
+### 4.1 フロントエンド実装
+
+#### 必要なページ/コンポーネント
+
+1. **ホーム画面 (/home)**
+   - Google認証後の初期ランディングページ
+   - ユーザー情報の表示
+   - テナント管理への導線
+
+2. **テナント選択画面 (/tenants)**
+   - 参加済みテナント一覧（カード or リスト形式）
+   - 最後に使用したテナントのハイライト
+   - 「新規テナント追加」ボタン
+   - テナント切り替え機能
+
+3. **テナント参加画面 (/tenants/join)**
+   - 公開テナント一覧
+   - 参加コード入力フォーム
+   - 参加確認ダイアログ
+
+#### 状態管理
+
+```typescript
+interface TenantState {
+  myTenants: Tenant[]           // 参加済みテナント
+  activeTenant: Tenant | null    // 現在アクティブなテナント
+  availableTenants: Tenant[]     // 参加可能な公開テナント
+}
+
+interface Tenant {
+  membershipId: string
+  tenantId: string
+  name: string
+  slug: string
+  description: string
+  role: 'admin' | 'member'
+  isActive: boolean
+}
+```
+
+### 4.2 バックエンド実装
+
+#### 必要なAPIエンドポイント
+
+1. **TenantService.GetMyTenants**
+   - 参加済みテナント一覧取得
+   - アクティブテナントのマーキング
+
+2. **TenantService.ListAvailableTenants**
+   - 公開テナント一覧取得
+   - 参加可否の判定
+
+3. **TenantService.JoinTenant**
+   - テナントへの新規参加
+   - membership作成
+
+4. **TenantService.JoinByCode**
+   - 参加コードによる参加
+   - コード検証と使用回数更新
+
+5. **TenantService.SetActiveTenant**
+   - アクティブテナントの切り替え
+   - セッション更新
+
+6. **TenantService.LeaveTenant**
+   - テナントからの離脱
+   - membership status更新
+
+#### データベース考慮事項
+
+- `tenant_memberships`テーブルのユニーク制約により、同一ユーザーは同じテナントに複数回参加不可
+- `sessions.active_membership_id`でアクティブテナントを管理
+- テナント切り替え時はセッションの更新のみ（新規セッション作成は不要）
+
+### 4.3 セキュリティ考慮事項
+
+1. **テナント分離**
+   - APIレスポンスは現在のactive_membership_idに基づいてフィルタリング
+   - テナント間のデータ漏洩防止
+
+2. **権限管理**
+   - テナント内での役割（admin/member）に基づくアクセス制御
+   - テナント切り替え時の権限再検証
+
+3. **セッション管理**
+   - テナント切り替えはセッション継続（再ログイン不要）
+   - active_membership_idの整合性チェック
+
+### 4.4 UX改善ポイント
+
+1. **スムーズな遷移**
+   - 参加済みテナントが1つの場合は自動選択
+   - 最後に使用したテナントの記憶と自動選択オプション
+
+2. **視覚的フィードバック**
+   - 現在のアクティブテナントの明示的表示
+   - テナント切り替え時のローディング表示
+
+3. **エラーハンドリング**
+   - 無効な参加コードの適切なエラーメッセージ
+   - テナント満員時の案内
