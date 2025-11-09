@@ -28,6 +28,7 @@ type (
 	GoogleAuthConfig struct {
 		ClientID     string `mapstructure:"client_id"`
 		ClientSecret string `mapstructure:"client_secret"`
+		RedirectURI  string `mapstructure:"redirect_uri"`
 	}
 
 	AuthConfig struct {

@@ -87,7 +87,7 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	oauthService, err := google.NewOAuthService(google.OAuthConfig{
 		ClientID:     cfg.Auth.Google.ClientID,
 		ClientSecret: cfg.Auth.Google.ClientSecret,
-		RedirectURI:  "http://localhost:8080/auth/google/callback",
+		RedirectURI:  cfg.Auth.Google.RedirectURI,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create OAuth service")
