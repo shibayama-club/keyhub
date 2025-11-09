@@ -11,6 +11,7 @@ auth:
   google:
     client_id:
     client_secret:
+    redirect_uri:
 console:
   organization_id:
   organization_key:
