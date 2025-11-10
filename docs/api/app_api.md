@@ -23,10 +23,10 @@ service AuthService {
 ```proto
 message GetMeResponse {
     User user = 1;
-    Tenant active_tenant = 2;  // 現在アクティブなテナント
-    repeated Tenant tenants = 3;  // 所属する全テナント
 }
 ```
+
+**注意**: テナント情報は取得しません。テナント情報が必要な場合は `TenantService.GetMyTenants` または `TenantService.GetActiveTenant` を使用してください。
 
 ### Logout
 ユーザーをログアウトさせ、セッションを無効化します。
@@ -39,40 +39,93 @@ message GetMeResponse {
 
 ```proto
 service TenantService {
-    // Tenant一覧取得
-    rpc ListTenants(ListTenantsRequest) returns (ListTenantsResponse);
+    // 参加可能なTenant一覧取得
+    rpc ListAvailableTenants(ListAvailableTenantsRequest) returns (ListAvailableTenantsResponse);
+
+    // 自分が所属するTenant一覧
+    rpc GetMyTenants(GetMyTenantsRequest) returns (GetMyTenantsResponse);
+
+    // 現在アクティブなTenant取得
+    rpc GetActiveTenant(GetActiveTenantRequest) returns (GetActiveTenantResponse);
+
+    // アクティブTenant切り替え
+    rpc SetActiveTenant(SetActiveTenantRequest) returns (SetActiveTenantResponse);
 
     // Tenant参加
     rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
 
     // 参加コードでTenant参加
-    rpc JoinTenantByCode(JoinTenantByCodeRequest) returns (JoinTenantResponse);
-
-    // 自分が所属するTenant一覧
-    rpc ListMyTenants(ListMyTenantsRequest) returns (ListMyTenantsResponse);
+    rpc JoinByCode(JoinByCodeRequest) returns (JoinTenantResponse);
 
     // Tenantメンバー一覧
     rpc ListTenantMembers(ListTenantMembersRequest) returns (ListTenantMembersResponse);
+
+    // Tenantから退出
+    rpc LeaveTenant(LeaveTenantRequest) returns (LeaveTenantResponse);
+
+    // Tenant詳細取得
+    rpc GetTenant(GetTenantRequest) returns (GetTenantResponse);
 }
 ```
 
-### ListTenants
-参加可能な全テナント一覧を取得します。
+### ListAvailableTenants
+参加可能な公開テナント一覧を取得します。ユーザーが参加可能なテナントのみが返されます。
 
 **リクエスト**:
 ```proto
-message ListTenantsRequest {
-    // ページネーション（オプション）
-    int32 page_size = 1;
+message ListAvailableTenantsRequest {
+    int32 page_size = 1 [(buf.validate.field).int32 = {gte: 1, lte: 100}];
     string page_token = 2;
 }
 ```
 
 **レスポンス**:
 ```proto
-message ListTenantsResponse {
+message ListAvailableTenantsResponse {
     repeated Tenant tenants = 1;
     string next_page_token = 2;
+}
+```
+
+### GetMyTenants
+現在ログイン中のユーザーが所属する全テナントの一覧を取得します。
+
+**リクエスト**: なし
+
+**レスポンス**:
+```proto
+message GetMyTenantsResponse {
+    repeated TenantMembership memberships = 1;
+}
+```
+
+### GetActiveTenant
+現在アクティブなテナント情報を取得します。テナントが設定されていない場合はエラーを返します。
+
+**リクエスト**: なし
+
+**レスポンス**:
+```proto
+message GetActiveTenantResponse {
+    Tenant tenant = 1;
+    TenantMembership membership = 2;
+}
+```
+
+### SetActiveTenant
+アクティブなテナントを切り替えます。指定したテナントに所属している必要があります。
+
+**リクエスト**:
+```proto
+message SetActiveTenantRequest {
+    string membership_id = 1 [(buf.validate.field).string.uuid = true];
+}
+```
+
+**レスポンス**:
+```proto
+message SetActiveTenantResponse {
+    Tenant tenant = 1;
 }
 ```
 
@@ -93,29 +146,17 @@ message JoinTenantResponse {
 }
 ```
 
-### JoinTenantByCode
+### JoinByCode
 参加コードを使用してテナントに参加します。
 
 **リクエスト**:
 ```proto
-message JoinTenantByCodeRequest {
+message JoinByCodeRequest {
     string code = 1 [(buf.validate.field).string = {pattern: "^KH-[A-Z0-9]{5}-[A-Z0-9]{2}$"}];
 }
 ```
 
 **レスポンス**: `JoinTenantResponse`と同じ
-
-### ListMyTenants
-自分が所属するテナント一覧を取得します。
-
-**リクエスト**: なし
-
-**レスポンス**:
-```proto
-message ListMyTenantsResponse {
-    repeated TenantMembership memberships = 1;
-}
-```
 
 ### ListTenantMembers
 指定したテナントのメンバー一覧を取得します。
@@ -363,8 +404,6 @@ message GetMeRequest {}
 
 message GetMeResponse {
     User user = 1;
-    Tenant active_tenant = 2;
-    repeated Tenant tenants = 3;
 }
 
 message LogoutRequest {}
@@ -380,29 +419,26 @@ message ValidateSessionResponse {
     User user = 2;
 }
 
-message SwitchTenantRequest {
-    string tenant_id = 1 [(buf.validate.field).string.uuid = true];
-}
-
-message SwitchTenantResponse {
-    bool success = 1;
-    Tenant tenant = 2;
-}
-
 // ========== TenantService ==========
 
 service TenantService {
-    // Tenant一覧取得
-    rpc ListTenants(ListTenantsRequest) returns (ListTenantsResponse);
+    // 参加可能なTenant一覧取得
+    rpc ListAvailableTenants(ListAvailableTenantsRequest) returns (ListAvailableTenantsResponse);
+
+    // 自分が所属するTenant一覧
+    rpc GetMyTenants(GetMyTenantsRequest) returns (GetMyTenantsResponse);
+
+    // 現在アクティブなTenant取得
+    rpc GetActiveTenant(GetActiveTenantRequest) returns (GetActiveTenantResponse);
+
+    // アクティブTenant切り替え
+    rpc SetActiveTenant(SetActiveTenantRequest) returns (SetActiveTenantResponse);
 
     // Tenant参加
     rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
 
     // 参加コードでTenant参加
-    rpc JoinTenantByCode(JoinTenantByCodeRequest) returns (JoinTenantResponse);
-
-    // 自分が所属するTenant一覧
-    rpc ListMyTenants(ListMyTenantsRequest) returns (ListMyTenantsResponse);
+    rpc JoinByCode(JoinByCodeRequest) returns (JoinTenantResponse);
 
     // Tenantメンバー一覧
     rpc ListTenantMembers(ListTenantMembersRequest) returns (ListTenantMembersResponse);
@@ -414,14 +450,35 @@ service TenantService {
     rpc GetTenant(GetTenantRequest) returns (GetTenantResponse);
 }
 
-message ListTenantsRequest {
+message ListAvailableTenantsRequest {
     int32 page_size = 1 [(buf.validate.field).int32 = {gte: 1, lte: 100}];
     string page_token = 2;
 }
 
-message ListTenantsResponse {
+message ListAvailableTenantsResponse {
     repeated Tenant tenants = 1;
     string next_page_token = 2;
+}
+
+message GetMyTenantsRequest {}
+
+message GetMyTenantsResponse {
+    repeated TenantMembership memberships = 1;
+}
+
+message GetActiveTenantRequest {}
+
+message GetActiveTenantResponse {
+    Tenant tenant = 1;
+    TenantMembership membership = 2;
+}
+
+message SetActiveTenantRequest {
+    string membership_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message SetActiveTenantResponse {
+    Tenant tenant = 1;
 }
 
 message JoinTenantRequest {
@@ -432,14 +489,8 @@ message JoinTenantResponse {
     TenantMembership membership = 1;
 }
 
-message JoinTenantByCodeRequest {
+message JoinByCodeRequest {
     string code = 1 [(buf.validate.field).string = {pattern: "^KH-[A-Z0-9]{5}-[A-Z0-9]{2}$"}];
-}
-
-message ListMyTenantsRequest {}
-
-message ListMyTenantsResponse {
-    repeated TenantMembership memberships = 1;
 }
 
 message ListTenantMembersRequest {
