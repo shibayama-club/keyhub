@@ -18,12 +18,14 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | users_pkey | PRIMARY KEY | PRIMARY KEY (id) |
+| users_email_key | UNIQUE | UNIQUE (email) |
 
 ## Indexes
 
 | Name | Definition |
 | ---- | ---------- |
 | users_pkey | CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id) |
+| users_email_key | CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email) |
 
 ## Triggers
 

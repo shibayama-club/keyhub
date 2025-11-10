@@ -47,6 +47,14 @@
           "columns": [
             "id"
           ]
+        },
+        {
+          "name": "users_email_key",
+          "def": "CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)",
+          "table": "public.users",
+          "columns": [
+            "email"
+          ]
         }
       ],
       "constraints": [
@@ -58,6 +66,16 @@
           "referenced_table": "",
           "columns": [
             "id"
+          ]
+        },
+        {
+          "name": "users_email_key",
+          "type": "UNIQUE",
+          "def": "UNIQUE (email)",
+          "table": "public.users",
+          "referenced_table": "",
+          "columns": [
+            "email"
           ]
         }
       ],
