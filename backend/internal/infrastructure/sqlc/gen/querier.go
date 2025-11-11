@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	// 期限切れまたは無効化されたセッションを物理削除する（バッチ処理用）
 	CleanupExpiredAppSessions(ctx context.Context) error
 	CleanupExpiredConsoleSessions(ctx context.Context) error
 	CleanupExpiredOAuthStates(ctx context.Context) error
