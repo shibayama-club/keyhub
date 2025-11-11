@@ -7,13 +7,17 @@ import (
 )
 
 type Handler struct {
-	l       *slog.Logger
-	useCase iface.IUseCase
+	l           *slog.Logger
+	useCase     iface.IUseCase
+	env         string
+	frontendURL string
 }
 
-func NewHandler(useCase iface.IUseCase) *Handler {
+func NewHandler(useCase iface.IUseCase, env, frontendURL string) *Handler {
 	return &Handler{
-		l:       slog.Default(),
-		useCase: useCase,
+		l:           slog.Default(),
+		useCase:     useCase,
+		env:         env,
+		frontendURL: frontendURL,
 	}
 }

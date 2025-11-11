@@ -36,10 +36,11 @@ type (
 	}
 
 	Config struct {
-		Port     int      `mapstructure:"port"`
-		Env      string   `mapstructure:"env"`
-		Postgres DBConfig `mapstructure:"postgres"`
-		Sentry   struct {
+		Port        int      `mapstructure:"port"`
+		Env         string   `mapstructure:"env"`
+		FrontendURL string   `mapstructure:"frontend_url"`
+		Postgres    DBConfig `mapstructure:"postgres"`
+		Sentry      struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
 		Console ConsoleConfig `mapstructure:"console"`
@@ -49,6 +50,7 @@ type (
 
 func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("env", "dev", "Environment (dev, prod)")
+	flags.String("frontend_url", "http://localhost:5173", "Frontend URL")
 	flags.String("postgres.host", "localhost", "DB host")
 	flags.Int("postgres.port", 5432, "DB port")
 	flags.String("postgres.user", "", "DB user")

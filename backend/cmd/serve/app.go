@@ -98,7 +98,7 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		return nil, errors.Wrap(err, "failed to create app use case")
 	}
 
-	appHandler := appv1.NewHandler(appUseCase)
+	appHandler := appv1.NewHandler(appUseCase, cfg.Env, cfg.FrontendURL)
 
 	e.GET("/auth/google/login", appHandler.GoogleLogin)
 	e.GET("/auth/google/callback", appHandler.GoogleCallback)
