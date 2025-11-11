@@ -160,19 +160,19 @@ func (u *UseCase) GoogleCallback(ctx context.Context, code, state string) (sessi
 	return sessionIDStr, nil
 }
 
-func (u *UseCase) GetMe(ctx context.Context, sessionID string) (*model.User, error) {
+func (u *UseCase) GetMe(ctx context.Context, sessionID string) (model.User, error) {
 	appSessionID, err := model.NewAppSessionID(sessionID)
 	if err != nil {
-		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid session ID")
+		return model.User{}, errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid session ID")
 	}
 
 	session, err := u.repo.GetAppSession(ctx, appSessionID)
 	if err != nil {
-		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "session not found")
+		return model.User{}, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "session not found")
 	}
 
 	if !session.IsValid() {
-		return nil, errors.WithHint(
+		return model.User{}, errors.WithHint(
 			errors.Mark(errors.New("session is invalid or expired"), domainerrors.ErrUnAuthorized),
 			"セッションが無効または期限切れです。再度ログインしてください。",
 		)
@@ -180,19 +180,19 @@ func (u *UseCase) GetMe(ctx context.Context, sessionID string) (*model.User, err
 
 	user, err := u.repo.GetUser(ctx, session.UserID)
 	if err != nil {
-		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "user not found")
+		return model.User{}, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "user not found")
 	}
 
-	return &user, nil
+	return user, nil
 }
 
-func (u *UseCase) GetUserByID(ctx context.Context, userID model.UserID) (*model.User, error) {
+func (u *UseCase) GetUserByID(ctx context.Context, userID model.UserID) (model.User, error) {
 	user, err := u.repo.GetUser(ctx, userID)
 	if err != nil {
-		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "user not found")
+		return model.User{}, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "user not found")
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (u *UseCase) Logout(ctx context.Context, sessionID string) error {
