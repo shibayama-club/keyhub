@@ -25,6 +25,9 @@ importers:
       '@keyhub/gen':
         specifier: workspace:*
         version: link:../gen
+      '@sentry/react':
+        specifier: ^10.20.0
+        version: 10.20.0(react@19.2.0)
       '@tailwindcss/vite':
         specifier: ^4.1.14
         version: 4.1.14(vite@7.1.9(@types/node@24.7.1)(jiti@2.6.1)(lightningcss@1.30.1))
@@ -37,9 +40,18 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.2.0(react@19.2.0)
+      react-hot-toast:
+        specifier: ^2.6.0
+        version: 2.6.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react-router-dom:
+        specifier: ^7.9.4
+        version: 7.9.4(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       tailwindcss:
         specifier: ^4.1.14
         version: 4.1.14
+      zustand:
+        specifier: ^5.0.8
+        version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
     devDependencies:
       '@eslint/js':
         specifier: ^9.36.0
