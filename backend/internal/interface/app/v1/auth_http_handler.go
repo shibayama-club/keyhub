@@ -32,17 +32,21 @@ func (h *Handler) GoogleCallback(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Authentication failed")
 	}
 
-	isSecure := h.env != "local"
+	isLocal := h.env == "local"
 
 	cookie := &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   isSecure,
-		SameSite: http.SameSiteLaxMode,
+		Secure:   !isLocal,
 		MaxAge:   24 * 60 * 60,
 	}
+
+	if !isLocal {
+		cookie.SameSite = http.SameSiteNoneMode
+	}
+
 	c.SetCookie(cookie)
 
 	redirectURL := h.frontendURL + "/app"
