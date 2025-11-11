@@ -49,6 +49,6 @@ func (h *Handler) GoogleCallback(c echo.Context) error {
 
 	c.SetCookie(cookie)
 
-	redirectURL := h.frontendURL + "/app"
+	redirectURL := h.frontendURL + "/callback"
 	return c.Redirect(http.StatusFound, redirectURL)
 }
