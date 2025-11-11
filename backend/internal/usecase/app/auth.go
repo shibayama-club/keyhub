@@ -186,6 +186,15 @@ func (u *UseCase) GetMe(ctx context.Context, sessionID string) (*model.User, err
 	return &user, nil
 }
 
+func (u *UseCase) GetUserByID(ctx context.Context, userID model.UserID) (*model.User, error) {
+	user, err := u.repo.GetUser(ctx, userID)
+	if err != nil {
+		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrNotFound), "user not found")
+	}
+
+	return &user, nil
+}
+
 func (u *UseCase) Logout(ctx context.Context, sessionID string) error {
 	appSessionID, err := model.NewAppSessionID(sessionID)
 	if err != nil {
