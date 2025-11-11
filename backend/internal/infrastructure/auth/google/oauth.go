@@ -137,7 +137,9 @@ func (s *OAuthService) ExchangeCode(ctx context.Context, code, codeVerifier stri
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to exchange code for token")
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	if resp.StatusCode != http.StatusOK {
 		body, _ := io.ReadAll(resp.Body)
