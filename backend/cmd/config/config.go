@@ -35,11 +35,16 @@ type (
 		Google GoogleAuthConfig `mapstructure:"google"`
 	}
 
+	FrontendURLConfig struct {
+		App     string `mapstructure:"app"`
+		Console string `mapstructure:"console"`
+	}
+
 	Config struct {
-		Port        int      `mapstructure:"port"`
-		Env         string   `mapstructure:"env"`
-		FrontendURL string   `mapstructure:"frontend_url"`
-		Postgres    DBConfig `mapstructure:"postgres"`
+		Port        int               `mapstructure:"port"`
+		Env         string            `mapstructure:"env"`
+		FrontendURL FrontendURLConfig `mapstructure:"frontend_url"`
+		Postgres    DBConfig          `mapstructure:"postgres"`
 		Sentry      struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
@@ -50,7 +55,8 @@ type (
 
 func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("env", "dev", "Environment (dev, prod)")
-	flags.String("frontend_url", "http://localhost:5173", "Frontend URL")
+	flags.String("frontend_url.app", "http://localhost:5173", "App Frontend URL")
+	flags.String("frontend_url.console", "http://localhost:5174", "Console Frontend URL")
 	flags.String("postgres.host", "localhost", "DB host")
 	flags.Int("postgres.port", 5432, "DB port")
 	flags.String("postgres.user", "", "DB user")

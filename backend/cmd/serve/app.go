@@ -68,10 +68,22 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		middleware.Recover(),
 		slogecho.New(slog.Default()),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins:     []string{"http://localhost:5173"},
-			AllowMethods:     []string{echo.GET, echo.POST, echo.OPTIONS},
-			AllowHeaders:     []string{"*"},
+			AllowOrigins: []string{cfg.FrontendURL.App},
+			AllowMethods: []string{echo.GET, echo.POST, echo.OPTIONS},
+			AllowHeaders: []string{
+				"Accept",
+				"Accept-Encoding",
+				"Content-Type",
+				"Connect-Protocol-Version",
+				"Connect-Timeout-Ms",
+				"Grpc-Timeout",
+				"X-Grpc-Web",
+				"X-User-Agent",
+				"Cookie",
+			},
+			ExposeHeaders:    []string{"Content-Length", "Content-Type"},
 			AllowCredentials: true,
+			MaxAge:           3600,
 		}),
 	)
 
@@ -98,7 +110,7 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		return nil, errors.Wrap(err, "failed to create app use case")
 	}
 
-	appHandler := appv1.NewHandler(appUseCase, cfg.Env, cfg.FrontendURL)
+	appHandler := appv1.NewHandler(appUseCase, cfg.Env, cfg.FrontendURL.App)
 
 	e.GET("/auth/google/login", appHandler.GoogleLogin)
 	e.GET("/auth/google/callback", appHandler.GoogleCallback)

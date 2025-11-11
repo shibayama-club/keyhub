@@ -70,7 +70,7 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 		middleware.Recover(),
 		slogecho.New(slog.Default()),
 		middleware.CORSWithConfig(middleware.CORSConfig{
-			AllowOrigins: []string{"http://localhost:5174", "http://localhost:5173"},
+			AllowOrigins: []string{cfg.FrontendURL.Console},
 			AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodOptions},
 			AllowHeaders: []string{"*"},
 		}),
