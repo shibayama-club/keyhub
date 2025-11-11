@@ -7,6 +7,7 @@ postgres:
 sentry:
   dsn: ""
 env: "local"
+frontend_url: "http://localhost:5173"
 auth:
   google:
     client_id:
