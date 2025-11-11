@@ -117,8 +117,6 @@ func (*GetMeRequest) Descriptor() ([]byte, []int) {
 type GetMeResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	ActiveTenant  *Tenant                `protobuf:"bytes,2,opt,name=active_tenant,json=activeTenant,proto3" json:"active_tenant,omitempty"`
-	Tenants       []*Tenant              `protobuf:"bytes,3,rep,name=tenants,proto3" json:"tenants,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -156,20 +154,6 @@ func (*GetMeResponse) Descriptor() ([]byte, []int) {
 func (x *GetMeResponse) GetUser() *User {
 	if x != nil {
 		return x.User
-	}
-	return nil
-}
-
-func (x *GetMeResponse) GetActiveTenant() *Tenant {
-	if x != nil {
-		return x.ActiveTenant
-	}
-	return nil
-}
-
-func (x *GetMeResponse) GetTenants() []*Tenant {
-	if x != nil {
-		return x.Tenants
 	}
 	return nil
 }
@@ -443,11 +427,9 @@ var File_keyhub_app_v1_app_proto protoreflect.FileDescriptor
 const file_keyhub_app_v1_app_proto_rawDesc = "" +
 	"\n" +
 	"\x17keyhub/app/v1/app.proto\x12\rkeyhub.app.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x0e\n" +
-	"\fGetMeRequest\"\xa5\x01\n" +
+	"\fGetMeRequest\"8\n" +
 	"\rGetMeResponse\x12'\n" +
-	"\x04user\x18\x01 \x01(\v2\x13.keyhub.app.v1.UserR\x04user\x12:\n" +
-	"\ractive_tenant\x18\x02 \x01(\v2\x15.keyhub.app.v1.TenantR\factiveTenant\x12/\n" +
-	"\atenants\x18\x03 \x03(\v2\x15.keyhub.app.v1.TenantR\atenants\"\x0f\n" +
+	"\x04user\x18\x01 \x01(\v2\x13.keyhub.app.v1.UserR\x04user\"\x0f\n" +
 	"\rLogoutRequest\"*\n" +
 	"\x0eLogoutResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"\xd4\x01\n" +
@@ -509,23 +491,21 @@ var file_keyhub_app_v1_app_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_keyhub_app_v1_app_proto_depIdxs = []int32{
-	5,  // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
-	6,  // 1: keyhub.app.v1.GetMeResponse.active_tenant:type_name -> keyhub.app.v1.Tenant
-	6,  // 2: keyhub.app.v1.GetMeResponse.tenants:type_name -> keyhub.app.v1.Tenant
-	7,  // 3: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	7,  // 4: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	0,  // 5: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
-	7,  // 6: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
-	7,  // 7: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
-	1,  // 8: keyhub.app.v1.AuthService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
-	3,  // 9: keyhub.app.v1.AuthService.Logout:input_type -> keyhub.app.v1.LogoutRequest
-	2,  // 10: keyhub.app.v1.AuthService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
-	4,  // 11: keyhub.app.v1.AuthService.Logout:output_type -> keyhub.app.v1.LogoutResponse
-	10, // [10:12] is the sub-list for method output_type
-	8,  // [8:10] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	5, // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
+	7, // 1: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	7, // 2: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	0, // 3: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
+	7, // 4: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
+	7, // 5: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
+	1, // 6: keyhub.app.v1.AuthService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
+	3, // 7: keyhub.app.v1.AuthService.Logout:input_type -> keyhub.app.v1.LogoutRequest
+	2, // 8: keyhub.app.v1.AuthService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
+	4, // 9: keyhub.app.v1.AuthService.Logout:output_type -> keyhub.app.v1.LogoutResponse
+	8, // [8:10] is the sub-list for method output_type
+	6, // [6:8] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_app_v1_app_proto_init() }
