@@ -42,7 +42,7 @@ export const CallbackPage = () => {
           toast.error('ユーザー情報が見つかりませんでした');
           navigate('/login', { replace: true });
         }
-      } catch (error) {
+      } catch {
         toast.error('ログイン中にエラーが発生しました');
         navigate('/login', { replace: true });
       } finally {
@@ -51,6 +51,9 @@ export const CallbackPage = () => {
     };
 
     handleCallback();
+    // fetchMe, navigate, setUserは安定した関数なので依存配列に追加不要
+    // hasRun.currentで1回のみの実行を保証
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

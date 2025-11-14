@@ -55,7 +55,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         user,
         isLoading: false,
       });
-    } catch (error) {
+    } catch {
       get().clearAuth();
     }
   },
