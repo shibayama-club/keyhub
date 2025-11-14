@@ -16,13 +16,12 @@ export const HomePage = () => {
       {
         onSuccess: () => {
           clearAuth();
-          toast.success('Successfully signed out');
+          toast.success('ログアウトしました');
           navigate('/login', { replace: true });
         },
-        onError: (error) => {
-          console.error('Logout error:', error);
+        onError: () => {
           clearAuth();
-          toast.error('Signed out (with errors)');
+          toast.error('ログアウトしました（エラーあり）');
           navigate('/login', { replace: true });
         },
       },
