@@ -3,6 +3,8 @@ package sqlc
 import (
 	"context"
 
+	"github.com/cockroachdb/errors"
+	"github.com/jackc/pgx/v5"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
@@ -19,9 +21,17 @@ func parseSqlcUser(user sqlcgen.User) (model.User, error) {
 	}, nil
 }
 
-func (t *SqlcTransaction) InsertUser(ctx context.Context, arg repository.InsertUserArg) (model.User, error) {
-	sqlcUser, err := t.queries.InsertUser(ctx, sqlcgen.InsertUserParams{
-		ID:    arg.ID.UUID(),
+func (t *SqlcTransaction) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
+	sqlcUserRow, err := t.queries.GetUser(ctx, userID.UUID())
+	if err != nil {
+		return model.User{}, err
+	}
+
+	return parseSqlcUser(sqlcUserRow.User)
+}
+
+func (t *SqlcTransaction) UpsertUser(ctx context.Context, arg repository.UpsertUserArg) (model.User, error) {
+	sqlcUserRow, err := t.queries.UpsertUser(ctx, sqlcgen.UpsertUserParams{
 		Email: arg.Email.String(),
 		Name:  arg.Name.String(),
 		Icon:  arg.Icon.String(),
@@ -29,6 +39,28 @@ func (t *SqlcTransaction) InsertUser(ctx context.Context, arg repository.InsertU
 	if err != nil {
 		return model.User{}, err
 	}
+	return parseSqlcUser(sqlcUserRow.User)
+}
 
-	return parseSqlcUser(sqlcUser)
+func (t *SqlcTransaction) GetUserByProviderIdentity(ctx context.Context, provider, providerSub string) (model.User, error) {
+	sqlcUserRow, err := t.queries.GetUserByProviderIdentity(ctx, sqlcgen.GetUserByProviderIdentityParams{
+		Provider:    provider,
+		ProviderSub: providerSub,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return model.User{}, errors.New("user not found")
+		}
+		return model.User{}, err
+	}
+
+	return parseSqlcUser(sqlcUserRow.User)
+}
+
+func (t *SqlcTransaction) UpsertUserIdentity(ctx context.Context, arg repository.UpsertUserIdentityArg) error {
+	return t.queries.UpsertUserIdentity(ctx, sqlcgen.UpsertUserIdentityParams{
+		UserID:      arg.UserID.UUID(),
+		Provider:    arg.Provider,
+		ProviderSub: arg.ProviderSub,
+	})
 }

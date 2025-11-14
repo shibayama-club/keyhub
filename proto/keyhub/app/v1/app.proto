@@ -17,8 +17,6 @@ message GetMeRequest {}
 
 message GetMeResponse {
   User user = 1;
-  Tenant active_tenant = 2;
-  repeated Tenant tenants = 3;
 }
 
 message LogoutRequest {}

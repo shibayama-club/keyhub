@@ -25,19 +25,38 @@ type (
 		JWTSecret       string `mapstructure:"jwt_secret"`
 	}
 
+	GoogleAuthConfig struct {
+		ClientID     string `mapstructure:"client_id"`
+		ClientSecret string `mapstructure:"client_secret"`
+		RedirectURI  string `mapstructure:"redirect_uri"`
+	}
+
+	AuthConfig struct {
+		Google GoogleAuthConfig `mapstructure:"google"`
+	}
+
+	FrontendURLConfig struct {
+		App     string `mapstructure:"app"`
+		Console string `mapstructure:"console"`
+	}
+
 	Config struct {
-		Port     int      `mapstructure:"port"`
-		Env      string   `mapstructure:"env"`
-		Postgres DBConfig `mapstructure:"postgres"`
-		Sentry   struct {
+		Port        int               `mapstructure:"port"`
+		Env         string            `mapstructure:"env"`
+		FrontendURL FrontendURLConfig `mapstructure:"frontend_url"`
+		Postgres    DBConfig          `mapstructure:"postgres"`
+		Sentry      struct {
 			DSN string `mapstructure:"dsn"`
 		} `mapstructure:"sentry"`
 		Console ConsoleConfig `mapstructure:"console"`
+		Auth    AuthConfig    `mapstructure:"auth"`
 	}
 )
 
 func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("env", "dev", "Environment (dev, prod)")
+	flags.String("frontend_url.app", "http://localhost:5173", "App Frontend URL")
+	flags.String("frontend_url.console", "http://localhost:5174", "Console Frontend URL")
 	flags.String("postgres.host", "localhost", "DB host")
 	flags.Int("postgres.port", 5432, "DB port")
 	flags.String("postgres.user", "", "DB user")
@@ -47,6 +66,8 @@ func ConfigFlags(flags *pflag.FlagSet) {
 	flags.String("console.organization_id", "", "Organization ID(uuid)")
 	flags.String("console.organization_key", "", "Organization Key")
 	flags.String("console.jwt_secret", "", "JWT Secret for console authentication")
+	flags.String("auth.google.client_id", "", "Google OAuth Client ID")
+	flags.String("auth.google.client_secret", "", "Google OAuth Client Secret")
 }
 
 func ParseConfig[T any](cmd *cobra.Command, args []string) error {

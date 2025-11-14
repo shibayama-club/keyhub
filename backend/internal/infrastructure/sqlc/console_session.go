@@ -22,19 +22,19 @@ func (t *SqlcTransaction) CreateSession(ctx context.Context, arg repository.Crea
 		SessionID:      arg.SessionID.String(),
 		OrganizationID: arg.OrganizationID.UUID(),
 	}
-	sqlcConsoleSession, err := t.queries.CreateConsoleSession(ctx, params)
+	sqlcConsoleSessionRow, err := t.queries.CreateConsoleSession(ctx, params)
 	if err != nil {
 		return model.ConsoleSession{}, err
 	}
-	return parseSqlcConsoleSession(sqlcConsoleSession)
+	return parseSqlcConsoleSession(sqlcConsoleSessionRow.ConsoleSession)
 }
 
 func (t *SqlcTransaction) GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error) {
-	sqlcConsoleSession, err := t.queries.GetConsoleSession(ctx, sessionID.String())
+	sqlcConsoleSessionRow, err := t.queries.GetConsoleSession(ctx, sessionID.String())
 	if err != nil {
 		return model.ConsoleSession{}, err
 	}
-	return parseSqlcConsoleSession(sqlcConsoleSession)
+	return parseSqlcConsoleSession(sqlcConsoleSessionRow.ConsoleSession)
 }
 
 func (t *SqlcTransaction) DeleteSession(ctx context.Context, sessionID model.ConsoleSessionID) error {

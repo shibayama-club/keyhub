@@ -22,7 +22,7 @@ func parseSqlcTenant(tenant sqlcgen.Tenant) (model.Tenant, error) {
 }
 
 func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.CreateTenantArg) (model.Tenant, error) {
-	sqlcTenant, err := t.queries.CreateTenant(ctx, sqlcgen.CreateTenantParams{
+	sqlcTenantRow, err := t.queries.CreateTenant(ctx, sqlcgen.CreateTenantParams{
 		ID:             arg.ID.UUID(),
 		OrganizationID: arg.OrganizationID.UUID(),
 		Name:           arg.Name.String(),
@@ -32,7 +32,7 @@ func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.Creat
 	if err != nil {
 		return model.Tenant{}, err
 	}
-	return parseSqlcTenant(sqlcTenant)
+	return parseSqlcTenant(sqlcTenantRow.Tenant)
 }
 
 func (t *SqlcTransaction) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {

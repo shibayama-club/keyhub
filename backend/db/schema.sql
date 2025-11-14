@@ -3,8 +3,6 @@
 --
 
 
--- Dumped from database version 16.10
--- Dumped by pg_dump version 16.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -321,6 +319,14 @@ ALTER TABLE ONLY public.user_identities
 
 ALTER TABLE ONLY public.user_identities
     ADD CONSTRAINT user_identities_provider_provider_sub_key UNIQUE (provider, provider_sub);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_email_key UNIQUE (email);
 
 
 --

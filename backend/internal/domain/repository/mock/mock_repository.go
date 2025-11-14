@@ -42,6 +42,35 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// ConsumeOAuthState mocks base method.
+func (m *MockRepository) ConsumeOAuthState(ctx context.Context, state string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConsumeOAuthState", ctx, state)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConsumeOAuthState indicates an expected call of ConsumeOAuthState.
+func (mr *MockRepositoryMockRecorder) ConsumeOAuthState(ctx, state any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConsumeOAuthState", reflect.TypeOf((*MockRepository)(nil).ConsumeOAuthState), ctx, state)
+}
+
+// CreateAppSession mocks base method.
+func (m *MockRepository) CreateAppSession(ctx context.Context, arg repository.CreateAppSessionArg) (model.AppSession, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAppSession", ctx, arg)
+	ret0, _ := ret[0].(model.AppSession)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateAppSession indicates an expected call of CreateAppSession.
+func (mr *MockRepositoryMockRecorder) CreateAppSession(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAppSession", reflect.TypeOf((*MockRepository)(nil).CreateAppSession), ctx, arg)
+}
+
 // CreateSession mocks base method.
 func (m *MockRepository) CreateSession(ctx context.Context, arg repository.CreateConsoleSessionArg) (model.ConsoleSession, error) {
 	m.ctrl.T.Helper()
@@ -101,6 +130,36 @@ func (mr *MockRepositoryMockRecorder) GetAllTenants(ctx, organizationID any) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockRepository)(nil).GetAllTenants), ctx, organizationID)
 }
 
+// GetAppSession mocks base method.
+func (m *MockRepository) GetAppSession(ctx context.Context, sessionID model.AppSessionID) (model.AppSession, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAppSession", ctx, sessionID)
+	ret0, _ := ret[0].(model.AppSession)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAppSession indicates an expected call of GetAppSession.
+func (mr *MockRepositoryMockRecorder) GetAppSession(ctx, sessionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockRepository)(nil).GetAppSession), ctx, sessionID)
+}
+
+// GetOAuthState mocks base method.
+func (m *MockRepository) GetOAuthState(ctx context.Context, state string) (model.OAuthState, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOAuthState", ctx, state)
+	ret0, _ := ret[0].(model.OAuthState)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOAuthState indicates an expected call of GetOAuthState.
+func (mr *MockRepositoryMockRecorder) GetOAuthState(ctx, state any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOAuthState", reflect.TypeOf((*MockRepository)(nil).GetOAuthState), ctx, state)
+}
+
 // GetSession mocks base method.
 func (m *MockRepository) GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error) {
 	m.ctrl.T.Helper()
@@ -131,19 +190,91 @@ func (mr *MockRepositoryMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockRepository)(nil).GetTenant), ctx, id)
 }
 
-// InsertUser mocks base method.
-func (m *MockRepository) InsertUser(ctx context.Context, arg repository.InsertUserArg) (model.User, error) {
+// GetUser mocks base method.
+func (m *MockRepository) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertUser", ctx, arg)
+	ret := m.ctrl.Call(m, "GetUser", ctx, userID)
 	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// InsertUser indicates an expected call of InsertUser.
-func (mr *MockRepositoryMockRecorder) InsertUser(ctx, arg any) *gomock.Call {
+// GetUser indicates an expected call of GetUser.
+func (mr *MockRepositoryMockRecorder) GetUser(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUser", reflect.TypeOf((*MockRepository)(nil).InsertUser), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockRepository)(nil).GetUser), ctx, userID)
+}
+
+// GetUserByProviderIdentity mocks base method.
+func (m *MockRepository) GetUserByProviderIdentity(ctx context.Context, provider, providerSub string) (model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByProviderIdentity", ctx, provider, providerSub)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByProviderIdentity indicates an expected call of GetUserByProviderIdentity.
+func (mr *MockRepositoryMockRecorder) GetUserByProviderIdentity(ctx, provider, providerSub any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByProviderIdentity", reflect.TypeOf((*MockRepository)(nil).GetUserByProviderIdentity), ctx, provider, providerSub)
+}
+
+// RevokeAppSession mocks base method.
+func (m *MockRepository) RevokeAppSession(ctx context.Context, sessionID model.AppSessionID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAppSession", ctx, sessionID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RevokeAppSession indicates an expected call of RevokeAppSession.
+func (mr *MockRepositoryMockRecorder) RevokeAppSession(ctx, sessionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAppSession", reflect.TypeOf((*MockRepository)(nil).RevokeAppSession), ctx, sessionID)
+}
+
+// SaveOAuthState mocks base method.
+func (m *MockRepository) SaveOAuthState(ctx context.Context, oauthState model.OAuthState) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, oauthState)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveOAuthState indicates an expected call of SaveOAuthState.
+func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockRepository)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpsertUser mocks base method.
+func (m *MockRepository) UpsertUser(ctx context.Context, arg repository.UpsertUserArg) (model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertUser", ctx, arg)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpsertUser indicates an expected call of UpsertUser.
+func (mr *MockRepositoryMockRecorder) UpsertUser(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertUser", reflect.TypeOf((*MockRepository)(nil).UpsertUser), ctx, arg)
+}
+
+// UpsertUserIdentity mocks base method.
+func (m *MockRepository) UpsertUserIdentity(ctx context.Context, arg repository.UpsertUserIdentityArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertUserIdentity", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertUserIdentity indicates an expected call of UpsertUserIdentity.
+func (mr *MockRepositoryMockRecorder) UpsertUserIdentity(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertUserIdentity", reflect.TypeOf((*MockRepository)(nil).UpsertUserIdentity), ctx, arg)
 }
 
 // WithTransaction mocks base method.
@@ -182,6 +313,35 @@ func NewMockTransaction(ctrl *gomock.Controller) *MockTransaction {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransaction) EXPECT() *MockTransactionMockRecorder {
 	return m.recorder
+}
+
+// ConsumeOAuthState mocks base method.
+func (m *MockTransaction) ConsumeOAuthState(ctx context.Context, state string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ConsumeOAuthState", ctx, state)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ConsumeOAuthState indicates an expected call of ConsumeOAuthState.
+func (mr *MockTransactionMockRecorder) ConsumeOAuthState(ctx, state any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ConsumeOAuthState", reflect.TypeOf((*MockTransaction)(nil).ConsumeOAuthState), ctx, state)
+}
+
+// CreateAppSession mocks base method.
+func (m *MockTransaction) CreateAppSession(ctx context.Context, arg repository.CreateAppSessionArg) (model.AppSession, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateAppSession", ctx, arg)
+	ret0, _ := ret[0].(model.AppSession)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateAppSession indicates an expected call of CreateAppSession.
+func (mr *MockTransactionMockRecorder) CreateAppSession(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAppSession", reflect.TypeOf((*MockTransaction)(nil).CreateAppSession), ctx, arg)
 }
 
 // CreateSession mocks base method.
@@ -243,6 +403,36 @@ func (mr *MockTransactionMockRecorder) GetAllTenants(ctx, organizationID any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockTransaction)(nil).GetAllTenants), ctx, organizationID)
 }
 
+// GetAppSession mocks base method.
+func (m *MockTransaction) GetAppSession(ctx context.Context, sessionID model.AppSessionID) (model.AppSession, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAppSession", ctx, sessionID)
+	ret0, _ := ret[0].(model.AppSession)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAppSession indicates an expected call of GetAppSession.
+func (mr *MockTransactionMockRecorder) GetAppSession(ctx, sessionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockTransaction)(nil).GetAppSession), ctx, sessionID)
+}
+
+// GetOAuthState mocks base method.
+func (m *MockTransaction) GetOAuthState(ctx context.Context, state string) (model.OAuthState, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOAuthState", ctx, state)
+	ret0, _ := ret[0].(model.OAuthState)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOAuthState indicates an expected call of GetOAuthState.
+func (mr *MockTransactionMockRecorder) GetOAuthState(ctx, state any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOAuthState", reflect.TypeOf((*MockTransaction)(nil).GetOAuthState), ctx, state)
+}
+
 // GetSession mocks base method.
 func (m *MockTransaction) GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error) {
 	m.ctrl.T.Helper()
@@ -273,17 +463,89 @@ func (mr *MockTransactionMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockTransaction)(nil).GetTenant), ctx, id)
 }
 
-// InsertUser mocks base method.
-func (m *MockTransaction) InsertUser(ctx context.Context, arg repository.InsertUserArg) (model.User, error) {
+// GetUser mocks base method.
+func (m *MockTransaction) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertUser", ctx, arg)
+	ret := m.ctrl.Call(m, "GetUser", ctx, userID)
 	ret0, _ := ret[0].(model.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// InsertUser indicates an expected call of InsertUser.
-func (mr *MockTransactionMockRecorder) InsertUser(ctx, arg any) *gomock.Call {
+// GetUser indicates an expected call of GetUser.
+func (mr *MockTransactionMockRecorder) GetUser(ctx, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertUser", reflect.TypeOf((*MockTransaction)(nil).InsertUser), ctx, arg)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockTransaction)(nil).GetUser), ctx, userID)
+}
+
+// GetUserByProviderIdentity mocks base method.
+func (m *MockTransaction) GetUserByProviderIdentity(ctx context.Context, provider, providerSub string) (model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByProviderIdentity", ctx, provider, providerSub)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByProviderIdentity indicates an expected call of GetUserByProviderIdentity.
+func (mr *MockTransactionMockRecorder) GetUserByProviderIdentity(ctx, provider, providerSub any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByProviderIdentity", reflect.TypeOf((*MockTransaction)(nil).GetUserByProviderIdentity), ctx, provider, providerSub)
+}
+
+// RevokeAppSession mocks base method.
+func (m *MockTransaction) RevokeAppSession(ctx context.Context, sessionID model.AppSessionID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "RevokeAppSession", ctx, sessionID)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// RevokeAppSession indicates an expected call of RevokeAppSession.
+func (mr *MockTransactionMockRecorder) RevokeAppSession(ctx, sessionID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RevokeAppSession", reflect.TypeOf((*MockTransaction)(nil).RevokeAppSession), ctx, sessionID)
+}
+
+// SaveOAuthState mocks base method.
+func (m *MockTransaction) SaveOAuthState(ctx context.Context, oauthState model.OAuthState) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveOAuthState", ctx, oauthState)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SaveOAuthState indicates an expected call of SaveOAuthState.
+func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockTransaction)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpsertUser mocks base method.
+func (m *MockTransaction) UpsertUser(ctx context.Context, arg repository.UpsertUserArg) (model.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertUser", ctx, arg)
+	ret0, _ := ret[0].(model.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpsertUser indicates an expected call of UpsertUser.
+func (mr *MockTransactionMockRecorder) UpsertUser(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertUser", reflect.TypeOf((*MockTransaction)(nil).UpsertUser), ctx, arg)
+}
+
+// UpsertUserIdentity mocks base method.
+func (m *MockTransaction) UpsertUserIdentity(ctx context.Context, arg repository.UpsertUserIdentityArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpsertUserIdentity", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpsertUserIdentity indicates an expected call of UpsertUserIdentity.
+func (mr *MockTransactionMockRecorder) UpsertUserIdentity(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpsertUserIdentity", reflect.TypeOf((*MockTransaction)(nil).UpsertUserIdentity), ctx, arg)
 }
