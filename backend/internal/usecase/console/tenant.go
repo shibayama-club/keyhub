@@ -18,29 +18,24 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 		)
 	}
 
-	tenantType, err := model.NewTenantType(input.TenantType)
-	if err != nil {
-		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to parse tenant type")
-	}
-
-	tenantName, err := model.NewTenantName(input.Name)
-	if err != nil {
-		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant name")
-	}
-
-	tenantDescription, err := model.NewTenantDescription(input.Description)
-	if err != nil {
-		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant description")
-	}
-
 	tenant, err := model.NewTenant(
 		input.OrganizationID,
-		tenantName,
-		tenantDescription,
-		tenantType,
+		input.Name,
+		input.Description,
+		input.TenantType,
 	)
 	if err != nil {
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant")
+	}
+
+	joinCodeEntity, err := model.NewTenantJoinCodeEntity(
+		tenant.ID,
+		input.JoinCode,
+		input.JoinCodeExpiry,
+		input.JoinCodeMaxUse,
+	)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant join code entity")
 	}
 
 	var createdTenant model.Tenant
@@ -55,6 +50,19 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 		if err != nil {
 			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant in repository")
 		}
+
+		_, err = tx.CreateTenantJoinCode(ctx, repository.CreateTenantJoinCodeArg{
+			ID:        joinCodeEntity.ID,
+			TenantID:  joinCodeEntity.TenantID,
+			Code:      joinCodeEntity.Code,
+			ExpiresAt: joinCodeEntity.ExpiresAt,
+			MaxUses:   joinCodeEntity.MaxUses,
+			UsedCount: joinCodeEntity.UsedCount,
+		})
+		if err != nil {
+			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant join code in repository")
+		}
+
 		return nil
 	})
 	if err != nil {
