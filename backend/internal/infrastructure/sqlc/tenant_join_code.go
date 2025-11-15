@@ -56,3 +56,11 @@ func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg reposito
 
 	return parseSqlcTenantJoinCode(sqlcRow.TenantJoinCode)
 }
+
+func (t *SqlcTransaction) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
+	sqlcRow, err := t.queries.GetTenantByJoinCode(ctx, code.String())
+	if err != nil {
+		return model.Tenant{}, err
+	}
+	return parseSqlcTenant(sqlcRow.Tenant)
+}

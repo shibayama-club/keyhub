@@ -5,6 +5,7 @@ import { ErrorFallback } from '../components/ErrorFallback';
 import { LoginPage } from '../pages/LoginPage';
 import { CallbackPage } from '../pages/CallbackPage';
 import { HomePage } from '../pages/HomePage';
+import { JoinTenantPage } from '../pages/JoinTenantPage';
 
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -31,6 +32,10 @@ export const router = sentryCreateBrowserRouter([
       {
         path: 'home',
         element: <HomePage />,
+      },
+      {
+        path: 'join-tenant',
+        element: <JoinTenantPage />,
       },
     ],
   },

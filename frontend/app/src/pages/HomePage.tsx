@@ -1,50 +1,14 @@
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+import { Header } from '../components/Header';
 import { useAuthStore } from '../lib/auth';
-import { useMutationLogout } from '../lib/query';
 
 export const HomePage = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
-
-  const { mutate: logout, isPending: isLoggingOut } = useMutationLogout();
-
-  const handleLogout = () => {
-    logout(
-      {},
-      {
-        onSuccess: () => {
-          clearAuth();
-          toast.success('ログアウトしました');
-          navigate('/login', { replace: true });
-        },
-        onError: () => {
-          clearAuth();
-          toast.error('ログアウトしました（エラーあり）');
-          navigate('/login', { replace: true });
-        },
-      },
-    );
-  };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">KeyHub App</h1>
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 transition-colors ring-inset hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isLoggingOut ? 'Signing out...' : 'Sign out'}
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
@@ -62,6 +26,17 @@ export const HomePage = () => {
         {/* Dashboard Cards */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="text-lg font-semibold text-gray-900">テナントに参加</h3>
+            <p className="mt-2 text-sm text-gray-600">参加コードを使ってテナントに参加できます</p>
+            <button
+              onClick={() => navigate('/join-tenant')}
+              className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              参加する →
+            </button>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow">
             <h3 className="text-lg font-semibold text-gray-900">Profile</h3>
             <p className="mt-2 text-sm text-gray-600">View and edit your profile information</p>
             <button className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500">View Profile →</button>
@@ -73,12 +48,6 @@ export const HomePage = () => {
             <button className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500">
               Go to Settings →
             </button>
-          </div>
-
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-lg font-semibold text-gray-900">Help</h3>
-            <p className="mt-2 text-sm text-gray-600">Get help and support for your account</p>
-            <button className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500">Get Help →</button>
           </div>
         </div>
 

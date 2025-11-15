@@ -68,3 +68,32 @@ func (q *Queries) CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoin
 	)
 	return i, err
 }
+
+const getTenantByJoinCode = `-- name: GetTenantByJoinCode :one
+SELECT
+    t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
+FROM tenant_join_codes tjc
+INNER JOIN tenants t ON tjc.tenant_id = t.id
+WHERE tjc.code = $1
+    AND (tjc.expires_at IS NULL OR tjc.expires_at > CURRENT_TIMESTAMP)
+    AND (tjc.max_uses = 0 OR tjc.used_count < tjc.max_uses)
+`
+
+type GetTenantByJoinCodeRow struct {
+	Tenant Tenant
+}
+
+func (q *Queries) GetTenantByJoinCode(ctx context.Context, code string) (GetTenantByJoinCodeRow, error) {
+	row := q.db.QueryRow(ctx, getTenantByJoinCode, code)
+	var i GetTenantByJoinCodeRow
+	err := row.Scan(
+		&i.Tenant.ID,
+		&i.Tenant.OrganizationID,
+		&i.Tenant.Name,
+		&i.Tenant.Description,
+		&i.Tenant.TenantType,
+		&i.Tenant.CreatedAt,
+		&i.Tenant.UpdatedAt,
+	)
+	return i, err
+}
