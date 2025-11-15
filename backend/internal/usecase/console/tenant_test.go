@@ -52,6 +52,9 @@ func TestUseCase_CreateTenant(t *testing.T) {
 							mockTx.EXPECT().
 								CreateTenant(gomock.Any(), gomock.Any()).
 								Return(expectedTenant, nil)
+							mockTx.EXPECT().
+								CreateTenantJoinCode(gomock.Any(), gomock.Any()).
+								Return(model.TenantJoinCodeEntity{}, nil)
 							return fn(ctx, mockTx)
 						})
 				},
@@ -60,9 +63,12 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				ctx: context.Background(),
 				input: dto.CreateTenantInput{
 					OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-					Name:           "テストテナント",
-					Description:    "テスト説明",
-					TenantType:     "TENANT_TYPE_TEAM",
+					Name:           model.TenantName("テストテナント"),
+					Description:    model.TenantDescription("テスト説明"),
+					TenantType:     model.TenantTypeTeam,
+					JoinCode:       model.TenantJoinCode("testcode123"),
+					JoinCodeExpiry: model.TenantJoinCodeExpiresAt(nil),
+					JoinCodeMaxUse: model.TenantJoinCodeMaxUses(0),
 				},
 			},
 			want:    "550e8400-e29b-41d4-a716-446655440001",
@@ -79,9 +85,12 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				ctx: context.Background(),
 				input: dto.CreateTenantInput{
 					OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-					Name:           "",
-					Description:    "テスト説明",
-					TenantType:     "team",
+					Name:           model.TenantName(""),
+					Description:    model.TenantDescription("テスト説明"),
+					TenantType:     model.TenantTypeTeam,
+					JoinCode:       model.TenantJoinCode("testcode123"),
+					JoinCodeExpiry: model.TenantJoinCodeExpiresAt(nil),
+					JoinCodeMaxUse: model.TenantJoinCodeMaxUses(0),
 				},
 			},
 			want:    "",
@@ -99,9 +108,12 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				ctx: context.Background(),
 				input: dto.CreateTenantInput{
 					OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-					Name:           "テストテナント",
-					Description:    "テスト説明",
-					TenantType:     "invalid_type",
+					Name:           model.TenantName("テストテナント"),
+					Description:    model.TenantDescription("テスト説明"),
+					TenantType:     model.TenantType("invalid_type"),
+					JoinCode:       model.TenantJoinCode("testcode123"),
+					JoinCodeExpiry: model.TenantJoinCodeExpiresAt(nil),
+					JoinCodeMaxUse: model.TenantJoinCodeMaxUses(0),
 				},
 			},
 			want:    "",
@@ -109,7 +121,7 @@ func TestUseCase_CreateTenant(t *testing.T) {
 			errType: domainerrors.ErrValidation,
 		},
 		{
-			name: "異常系: 名前が256文字を超える",
+			name: "異常系: 名前が30文字を超える",
 			fields: fields{
 				setupMock: func(m *mock.MockRepository) {
 					// モックは呼ばれない
@@ -119,9 +131,12 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				ctx: context.Background(),
 				input: dto.CreateTenantInput{
 					OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-					Name:           string(make([]byte, 257)), // 257文字
-					Description:    "テスト説明",
-					TenantType:     "team",
+					Name:           model.TenantName(string(make([]byte, 31))), // 31文字
+					Description:    model.TenantDescription("テスト説明"),
+					TenantType:     model.TenantTypeTeam,
+					JoinCode:       model.TenantJoinCode("testcode123"),
+					JoinCodeExpiry: model.TenantJoinCodeExpiresAt(nil),
+					JoinCodeMaxUse: model.TenantJoinCodeMaxUses(0),
 				},
 			},
 			want:    "",
@@ -147,6 +162,9 @@ func TestUseCase_CreateTenant(t *testing.T) {
 							mockTx.EXPECT().
 								CreateTenant(gomock.Any(), gomock.Any()).
 								Return(expectedTenant, nil)
+							mockTx.EXPECT().
+								CreateTenantJoinCode(gomock.Any(), gomock.Any()).
+								Return(model.TenantJoinCodeEntity{}, nil)
 							return fn(ctx, mockTx)
 						})
 				},
@@ -155,9 +173,12 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				ctx: context.Background(),
 				input: dto.CreateTenantInput{
 					OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-					Name:           "テストテナント2",
-					Description:    "",
-					TenantType:     "TENANT_TYPE_DEPARTMENT",
+					Name:           model.TenantName("テストテナント2"),
+					Description:    model.TenantDescription(""),
+					TenantType:     model.TenantTypeDepartment,
+					JoinCode:       model.TenantJoinCode("testcode456"),
+					JoinCodeExpiry: model.TenantJoinCodeExpiresAt(nil),
+					JoinCodeMaxUse: model.TenantJoinCodeMaxUses(0),
 				},
 			},
 			want:    "550e8400-e29b-41d4-a716-446655440002",
