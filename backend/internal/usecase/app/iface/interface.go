@@ -13,5 +13,5 @@ type IUseCase interface {
 	GetMe(ctx context.Context, sessionID string) (model.User, error)
 	GetUserByID(ctx context.Context, userID model.UserID) (model.User, error)
 	Logout(ctx context.Context, sessionID string) error
-	GetTenantByJoinCode(ctx context.Context, input dto.GetTenantByJoinCodeInput) (dto.GetTenantByJoinCodeOutput, error)
+	GetTenantByJoinCode(ctx context.Context, joinCode string) (dto.GetTenantByJoinCodeOutput, error)
 }
