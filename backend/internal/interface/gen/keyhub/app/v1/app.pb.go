@@ -422,6 +422,102 @@ func (x *Tenant) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type JoinTenantRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	JoinCode      string                 `protobuf:"bytes,1,opt,name=join_code,json=joinCode,proto3" json:"join_code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinTenantRequest) Reset() {
+	*x = JoinTenantRequest{}
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinTenantRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinTenantRequest) ProtoMessage() {}
+
+func (x *JoinTenantRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinTenantRequest.ProtoReflect.Descriptor instead.
+func (*JoinTenantRequest) Descriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *JoinTenantRequest) GetJoinCode() string {
+	if x != nil {
+		return x.JoinCode
+	}
+	return ""
+}
+
+type JoinTenantResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Tenant        *Tenant                `protobuf:"bytes,1,opt,name=tenant,proto3" json:"tenant,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"` // 成功メッセージ
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *JoinTenantResponse) Reset() {
+	*x = JoinTenantResponse{}
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinTenantResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinTenantResponse) ProtoMessage() {}
+
+func (x *JoinTenantResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_app_v1_app_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinTenantResponse.ProtoReflect.Descriptor instead.
+func (*JoinTenantResponse) Descriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_app_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *JoinTenantResponse) GetTenant() *Tenant {
+	if x != nil {
+		return x.Tenant
+	}
+	return nil
+}
+
+func (x *JoinTenantResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_keyhub_app_v1_app_proto protoreflect.FileDescriptor
 
 const file_keyhub_app_v1_app_proto_rawDesc = "" +
@@ -453,7 +549,12 @@ const file_keyhub_app_v1_app_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt*\x90\x01\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"0\n" +
+	"\x11JoinTenantRequest\x12\x1b\n" +
+	"\tjoin_code\x18\x01 \x01(\tR\bjoinCode\"]\n" +
+	"\x12JoinTenantResponse\x12-\n" +
+	"\x06tenant\x18\x01 \x01(\v2\x15.keyhub.app.v1.TenantR\x06tenant\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage*\x90\x01\n" +
 	"\n" +
 	"TenantType\x12\x1b\n" +
 	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
@@ -463,7 +564,10 @@ const file_keyhub_app_v1_app_proto_rawDesc = "" +
 	"\x16TENANT_TYPE_LABORATORY\x10\x042\x98\x01\n" +
 	"\vAuthService\x12B\n" +
 	"\x05GetMe\x12\x1b.keyhub.app.v1.GetMeRequest\x1a\x1c.keyhub.app.v1.GetMeResponse\x12E\n" +
-	"\x06Logout\x12\x1c.keyhub.app.v1.LogoutRequest\x1a\x1d.keyhub.app.v1.LogoutResponseB\xc0\x01\n" +
+	"\x06Logout\x12\x1c.keyhub.app.v1.LogoutRequest\x1a\x1d.keyhub.app.v1.LogoutResponse2b\n" +
+	"\rTenantService\x12Q\n" +
+	"\n" +
+	"JoinTenant\x12 .keyhub.app.v1.JoinTenantRequest\x1a!.keyhub.app.v1.JoinTenantResponseB\xc0\x01\n" +
 	"\x11com.keyhub.app.v1B\bAppProtoP\x01ZKgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1;appv1\xa2\x02\x03KAX\xaa\x02\rKeyhub.App.V1\xca\x02\rKeyhub\\App\\V1\xe2\x02\x19Keyhub\\App\\V1\\GPBMetadata\xea\x02\x0fKeyhub::App::V1b\x06proto3"
 
 var (
@@ -479,7 +583,7 @@ func file_keyhub_app_v1_app_proto_rawDescGZIP() []byte {
 }
 
 var file_keyhub_app_v1_app_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_keyhub_app_v1_app_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_keyhub_app_v1_app_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_keyhub_app_v1_app_proto_goTypes = []any{
 	(TenantType)(0),               // 0: keyhub.app.v1.TenantType
 	(*GetMeRequest)(nil),          // 1: keyhub.app.v1.GetMeRequest
@@ -488,24 +592,29 @@ var file_keyhub_app_v1_app_proto_goTypes = []any{
 	(*LogoutResponse)(nil),        // 4: keyhub.app.v1.LogoutResponse
 	(*User)(nil),                  // 5: keyhub.app.v1.User
 	(*Tenant)(nil),                // 6: keyhub.app.v1.Tenant
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(*JoinTenantRequest)(nil),     // 7: keyhub.app.v1.JoinTenantRequest
+	(*JoinTenantResponse)(nil),    // 8: keyhub.app.v1.JoinTenantResponse
+	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 }
 var file_keyhub_app_v1_app_proto_depIdxs = []int32{
-	5, // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
-	7, // 1: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	7, // 2: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	0, // 3: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
-	7, // 4: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
-	7, // 5: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
-	1, // 6: keyhub.app.v1.AuthService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
-	3, // 7: keyhub.app.v1.AuthService.Logout:input_type -> keyhub.app.v1.LogoutRequest
-	2, // 8: keyhub.app.v1.AuthService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
-	4, // 9: keyhub.app.v1.AuthService.Logout:output_type -> keyhub.app.v1.LogoutResponse
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	5,  // 0: keyhub.app.v1.GetMeResponse.user:type_name -> keyhub.app.v1.User
+	9,  // 1: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 2: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	0,  // 3: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
+	9,  // 4: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
+	9,  // 5: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
+	6,  // 6: keyhub.app.v1.JoinTenantResponse.tenant:type_name -> keyhub.app.v1.Tenant
+	1,  // 7: keyhub.app.v1.AuthService.GetMe:input_type -> keyhub.app.v1.GetMeRequest
+	3,  // 8: keyhub.app.v1.AuthService.Logout:input_type -> keyhub.app.v1.LogoutRequest
+	7,  // 9: keyhub.app.v1.TenantService.JoinTenant:input_type -> keyhub.app.v1.JoinTenantRequest
+	2,  // 10: keyhub.app.v1.AuthService.GetMe:output_type -> keyhub.app.v1.GetMeResponse
+	4,  // 11: keyhub.app.v1.AuthService.Logout:output_type -> keyhub.app.v1.LogoutResponse
+	8,  // 12: keyhub.app.v1.TenantService.JoinTenant:output_type -> keyhub.app.v1.JoinTenantResponse
+	10, // [10:13] is the sub-list for method output_type
+	7,  // [7:10] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_app_v1_app_proto_init() }
@@ -519,9 +628,9 @@ func file_keyhub_app_v1_app_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_app_v1_app_proto_rawDesc), len(file_keyhub_app_v1_app_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_keyhub_app_v1_app_proto_goTypes,
 		DependencyIndexes: file_keyhub_app_v1_app_proto_depIdxs,
