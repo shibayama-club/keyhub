@@ -26,6 +26,7 @@ type Querier interface {
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
+	GetTenantByJoinCode(ctx context.Context, code string) (GetTenantByJoinCodeRow, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 	GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error)
 	RevokeAppSession(ctx context.Context, sessionID string) error
