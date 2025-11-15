@@ -1,7 +1,9 @@
 package model
 
 import (
+	"regexp"
 	"time"
+	"unicode/utf8"
 
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
@@ -15,6 +17,50 @@ func (id TenantJoinCodeID) UUID() uuid.UUID {
 
 func (id TenantJoinCodeID) String() string {
 	return uuid.UUID(id).String()
+}
+
+type TenantJoinCode string
+
+func (c TenantJoinCode) String() string {
+	return string(c)
+}
+
+func (c TenantJoinCode) Validate() error {
+	if c == "" {
+		return errors.WithHint(
+			errors.New("tenant join code is required"),
+			"テナント参加コードは必須です。",
+		)
+	}
+
+	length := utf8.RuneCountInString(string(c))
+	if length < 6 || length > 20 {
+		return errors.WithHint(
+			errors.New("tenant join code must be between 6 and 20 characters"),
+			"テナント参加コードは6文字以上20文字以下で入力してください。",
+		)
+	}
+
+	matched, err := regexp.MatchString(`^[a-zA-Z0-9]+$`, string(c))
+	if err != nil {
+		return errors.Wrap(err, "failed to validate tenant join code format")
+	}
+	if !matched {
+		return errors.WithHint(
+			errors.New("tenant join code must contain only alphanumeric characters"),
+			"テナント参加コードは英数字のみで入力してください。",
+		)
+	}
+
+	return nil
+}
+
+func NewTenantJoinCode(value string) (TenantJoinCode, error) {
+	c := TenantJoinCode(value)
+	if err := c.Validate(); err != nil {
+		return "", err
+	}
+	return c, nil
 }
 
 type TenantJoinCodeMaxUses int
