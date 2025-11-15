@@ -13,7 +13,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file keyhub/app/v1/app.proto.
  */
 export const file_keyhub_app_v1_app: GenFile = /*@__PURE__*/
-  fileDesc("ChdrZXlodWIvYXBwL3YxL2FwcC5wcm90bxINa2V5aHViLmFwcC52MSIOCgxHZXRNZVJlcXVlc3QiMgoNR2V0TWVSZXNwb25zZRIhCgR1c2VyGAEgASgLMhMua2V5aHViLmFwcC52MS5Vc2VyIg8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCKnAQoEVXNlchIUCgJpZBgBIAEoCUIIukgFcgOwAQESDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCRIMCgRpY29uGAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIooCCgZUZW5hbnQSFAoCaWQYASABKAlCCLpIBXIDsAEBEiEKD29yZ2FuaXphdGlvbl9pZBgCIAEoCUIIukgFcgOwAQESDAoEbmFtZRgDIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIuCgt0ZW5hbnRfdHlwZRgGIAEoDjIZLmtleWh1Yi5hcHAudjEuVGVuYW50VHlwZRIUCgxtZW1iZXJfY291bnQYByABKAUSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiJgoRSm9pblRlbmFudFJlcXVlc3QSEQoJam9pbl9jb2RlGAEgASgJIkwKEkpvaW5UZW5hbnRSZXNwb25zZRIlCgZ0ZW5hbnQYASABKAsyFS5rZXlodWIuYXBwLnYxLlRlbmFudBIPCgdtZXNzYWdlGAIgASgJKpABCgpUZW5hbnRUeXBlEhsKF1RFTkFOVF9UWVBFX1VOU1BFQ0lGSUVEEAASFAoQVEVOQU5UX1RZUEVfVEVBTRABEhoKFlRFTkFOVF9UWVBFX0RFUEFSVE1FTlQQAhIXChNURU5BTlRfVFlQRV9QUk9KRUNUEAMSGgoWVEVOQU5UX1RZUEVfTEFCT1JBVE9SWRAEMpgBCgtBdXRoU2VydmljZRJCCgVHZXRNZRIbLmtleWh1Yi5hcHAudjEuR2V0TWVSZXF1ZXN0Ghwua2V5aHViLmFwcC52MS5HZXRNZVJlc3BvbnNlEkUKBkxvZ291dBIcLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVxdWVzdBodLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVzcG9uc2UyYgoNVGVuYW50U2VydmljZRJRCgpKb2luVGVuYW50EiAua2V5aHViLmFwcC52MS5Kb2luVGVuYW50UmVxdWVzdBohLmtleWh1Yi5hcHAudjEuSm9pblRlbmFudFJlc3BvbnNlQsABChFjb20ua2V5aHViLmFwcC52MUIIQXBwUHJvdG9QAVpLZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvYXBwL3YxO2FwcHYxogIDS0FYqgINS2V5aHViLkFwcC5WMcoCDUtleWh1YlxBcHBcVjHiAhlLZXlodWJcQXBwXFYxXEdQQk1ldGFkYXRh6gIPS2V5aHViOjpBcHA6OlYxYgZwcm90bzM", [file_buf_validate_validate, file_google_protobuf_timestamp]);
+  fileDesc("ChdrZXlodWIvYXBwL3YxL2FwcC5wcm90bxINa2V5aHViLmFwcC52MSIOCgxHZXRNZVJlcXVlc3QiMgoNR2V0TWVSZXNwb25zZRIhCgR1c2VyGAEgASgLMhMua2V5aHViLmFwcC52MS5Vc2VyIg8KDUxvZ291dFJlcXVlc3QiIQoOTG9nb3V0UmVzcG9uc2USDwoHc3VjY2VzcxgBIAEoCCKnAQoEVXNlchIUCgJpZBgBIAEoCUIIukgFcgOwAQESDQoFZW1haWwYAiABKAkSDAoEbmFtZRgDIAEoCRIMCgRpY29uGAQgASgJEi4KCmNyZWF0ZWRfYXQYBSABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wIooCCgZUZW5hbnQSFAoCaWQYASABKAlCCLpIBXIDsAEBEiEKD29yZ2FuaXphdGlvbl9pZBgCIAEoCUIIukgFcgOwAQESDAoEbmFtZRgDIAEoCRITCgtkZXNjcmlwdGlvbhgFIAEoCRIuCgt0ZW5hbnRfdHlwZRgGIAEoDjIZLmtleWh1Yi5hcHAudjEuVGVuYW50VHlwZRIUCgxtZW1iZXJfY291bnQYByABKAUSLgoKY3JlYXRlZF9hdBgIIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLgoKdXBkYXRlZF9hdBgJIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiLwoaR2V0VGVuYW50QnlKb2luQ29kZVJlcXVlc3QSEQoJam9pbl9jb2RlGAEgASgJIoYBChtHZXRUZW5hbnRCeUpvaW5Db2RlUmVzcG9uc2USFAoCaWQYASABKAlCCLpIBXIDsAEBEgwKBG5hbWUYAiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSLgoLdGVuYW50X3R5cGUYBCABKA4yGS5rZXlodWIuYXBwLnYxLlRlbmFudFR5cGUiJgoRSm9pblRlbmFudFJlcXVlc3QSEQoJam9pbl9jb2RlGAEgASgJIkwKEkpvaW5UZW5hbnRSZXNwb25zZRIlCgZ0ZW5hbnQYASABKAsyFS5rZXlodWIuYXBwLnYxLlRlbmFudBIPCgdtZXNzYWdlGAIgASgJKpABCgpUZW5hbnRUeXBlEhsKF1RFTkFOVF9UWVBFX1VOU1BFQ0lGSUVEEAASFAoQVEVOQU5UX1RZUEVfVEVBTRABEhoKFlRFTkFOVF9UWVBFX0RFUEFSVE1FTlQQAhIXChNURU5BTlRfVFlQRV9QUk9KRUNUEAMSGgoWVEVOQU5UX1RZUEVfTEFCT1JBVE9SWRAEMpgBCgtBdXRoU2VydmljZRJCCgVHZXRNZRIbLmtleWh1Yi5hcHAudjEuR2V0TWVSZXF1ZXN0Ghwua2V5aHViLmFwcC52MS5HZXRNZVJlc3BvbnNlEkUKBkxvZ291dBIcLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVxdWVzdBodLmtleWh1Yi5hcHAudjEuTG9nb3V0UmVzcG9uc2Uy0AEKDVRlbmFudFNlcnZpY2USbAoTR2V0VGVuYW50QnlKb2luQ29kZRIpLmtleWh1Yi5hcHAudjEuR2V0VGVuYW50QnlKb2luQ29kZVJlcXVlc3QaKi5rZXlodWIuYXBwLnYxLkdldFRlbmFudEJ5Sm9pbkNvZGVSZXNwb25zZRJRCgpKb2luVGVuYW50EiAua2V5aHViLmFwcC52MS5Kb2luVGVuYW50UmVxdWVzdBohLmtleWh1Yi5hcHAudjEuSm9pblRlbmFudFJlc3BvbnNlQsABChFjb20ua2V5aHViLmFwcC52MUIIQXBwUHJvdG9QAVpLZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvYXBwL3YxO2FwcHYxogIDS0FYqgINS2V5aHViLkFwcC5WMcoCDUtleWh1YlxBcHBcVjHiAhlLZXlodWJcQXBwXFYxXEdQQk1ldGFkYXRh6gIPS2V5aHViOjpBcHA6OlYxYgZwcm90bzM", [file_buf_validate_validate, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message keyhub.app.v1.GetMeRequest
@@ -170,6 +170,55 @@ export const TenantSchema: GenMessage<Tenant> = /*@__PURE__*/
   messageDesc(file_keyhub_app_v1_app, 5);
 
 /**
+ * @generated from message keyhub.app.v1.GetTenantByJoinCodeRequest
+ */
+export type GetTenantByJoinCodeRequest = Message<"keyhub.app.v1.GetTenantByJoinCodeRequest"> & {
+  /**
+   * @generated from field: string join_code = 1;
+   */
+  joinCode: string;
+};
+
+/**
+ * Describes the message keyhub.app.v1.GetTenantByJoinCodeRequest.
+ * Use `create(GetTenantByJoinCodeRequestSchema)` to create a new message.
+ */
+export const GetTenantByJoinCodeRequestSchema: GenMessage<GetTenantByJoinCodeRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_app_v1_app, 6);
+
+/**
+ * @generated from message keyhub.app.v1.GetTenantByJoinCodeResponse
+ */
+export type GetTenantByJoinCodeResponse = Message<"keyhub.app.v1.GetTenantByJoinCodeResponse"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string name = 2;
+   */
+  name: string;
+
+  /**
+   * @generated from field: string description = 3;
+   */
+  description: string;
+
+  /**
+   * @generated from field: keyhub.app.v1.TenantType tenant_type = 4;
+   */
+  tenantType: TenantType;
+};
+
+/**
+ * Describes the message keyhub.app.v1.GetTenantByJoinCodeResponse.
+ * Use `create(GetTenantByJoinCodeResponseSchema)` to create a new message.
+ */
+export const GetTenantByJoinCodeResponseSchema: GenMessage<GetTenantByJoinCodeResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_app_v1_app, 7);
+
+/**
  * @generated from message keyhub.app.v1.JoinTenantRequest
  */
 export type JoinTenantRequest = Message<"keyhub.app.v1.JoinTenantRequest"> & {
@@ -184,7 +233,7 @@ export type JoinTenantRequest = Message<"keyhub.app.v1.JoinTenantRequest"> & {
  * Use `create(JoinTenantRequestSchema)` to create a new message.
  */
 export const JoinTenantRequestSchema: GenMessage<JoinTenantRequest> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 6);
+  messageDesc(file_keyhub_app_v1_app, 8);
 
 /**
  * @generated from message keyhub.app.v1.JoinTenantResponse
@@ -208,7 +257,7 @@ export type JoinTenantResponse = Message<"keyhub.app.v1.JoinTenantResponse"> & {
  * Use `create(JoinTenantResponseSchema)` to create a new message.
  */
 export const JoinTenantResponseSchema: GenMessage<JoinTenantResponse> = /*@__PURE__*/
-  messageDesc(file_keyhub_app_v1_app, 7);
+  messageDesc(file_keyhub_app_v1_app, 9);
 
 /**
  * @generated from enum keyhub.app.v1.TenantType
@@ -285,6 +334,16 @@ export const AuthService: GenService<{
  * @generated from service keyhub.app.v1.TenantService
  */
 export const TenantService: GenService<{
+  /**
+   * 参加コードからテナント情報を取得
+   *
+   * @generated from rpc keyhub.app.v1.TenantService.GetTenantByJoinCode
+   */
+  getTenantByJoinCode: {
+    methodKind: "unary";
+    input: typeof GetTenantByJoinCodeRequestSchema;
+    output: typeof GetTenantByJoinCodeResponseSchema;
+  },
   /**
    * テナントに参加
    *

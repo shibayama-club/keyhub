@@ -39,6 +39,9 @@ const (
 	AuthServiceGetMeProcedure = "/keyhub.app.v1.AuthService/GetMe"
 	// AuthServiceLogoutProcedure is the fully-qualified name of the AuthService's Logout RPC.
 	AuthServiceLogoutProcedure = "/keyhub.app.v1.AuthService/Logout"
+	// TenantServiceGetTenantByJoinCodeProcedure is the fully-qualified name of the TenantService's
+	// GetTenantByJoinCode RPC.
+	TenantServiceGetTenantByJoinCodeProcedure = "/keyhub.app.v1.TenantService/GetTenantByJoinCode"
 	// TenantServiceJoinTenantProcedure is the fully-qualified name of the TenantService's JoinTenant
 	// RPC.
 	TenantServiceJoinTenantProcedure = "/keyhub.app.v1.TenantService/JoinTenant"
@@ -146,6 +149,8 @@ func (UnimplementedAuthServiceHandler) Logout(context.Context, *connect.Request[
 
 // TenantServiceClient is a client for the keyhub.app.v1.TenantService service.
 type TenantServiceClient interface {
+	// 参加コードからテナント情報を取得
+	GetTenantByJoinCode(context.Context, *connect.Request[v1.GetTenantByJoinCodeRequest]) (*connect.Response[v1.GetTenantByJoinCodeResponse], error)
 	// テナントに参加
 	JoinTenant(context.Context, *connect.Request[v1.JoinTenantRequest]) (*connect.Response[v1.JoinTenantResponse], error)
 }
@@ -161,6 +166,12 @@ func NewTenantServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 	baseURL = strings.TrimRight(baseURL, "/")
 	tenantServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("TenantService").Methods()
 	return &tenantServiceClient{
+		getTenantByJoinCode: connect.NewClient[v1.GetTenantByJoinCodeRequest, v1.GetTenantByJoinCodeResponse](
+			httpClient,
+			baseURL+TenantServiceGetTenantByJoinCodeProcedure,
+			connect.WithSchema(tenantServiceMethods.ByName("GetTenantByJoinCode")),
+			connect.WithClientOptions(opts...),
+		),
 		joinTenant: connect.NewClient[v1.JoinTenantRequest, v1.JoinTenantResponse](
 			httpClient,
 			baseURL+TenantServiceJoinTenantProcedure,
@@ -172,7 +183,13 @@ func NewTenantServiceClient(httpClient connect.HTTPClient, baseURL string, opts 
 
 // tenantServiceClient implements TenantServiceClient.
 type tenantServiceClient struct {
-	joinTenant *connect.Client[v1.JoinTenantRequest, v1.JoinTenantResponse]
+	getTenantByJoinCode *connect.Client[v1.GetTenantByJoinCodeRequest, v1.GetTenantByJoinCodeResponse]
+	joinTenant          *connect.Client[v1.JoinTenantRequest, v1.JoinTenantResponse]
+}
+
+// GetTenantByJoinCode calls keyhub.app.v1.TenantService.GetTenantByJoinCode.
+func (c *tenantServiceClient) GetTenantByJoinCode(ctx context.Context, req *connect.Request[v1.GetTenantByJoinCodeRequest]) (*connect.Response[v1.GetTenantByJoinCodeResponse], error) {
+	return c.getTenantByJoinCode.CallUnary(ctx, req)
 }
 
 // JoinTenant calls keyhub.app.v1.TenantService.JoinTenant.
@@ -182,6 +199,8 @@ func (c *tenantServiceClient) JoinTenant(ctx context.Context, req *connect.Reque
 
 // TenantServiceHandler is an implementation of the keyhub.app.v1.TenantService service.
 type TenantServiceHandler interface {
+	// 参加コードからテナント情報を取得
+	GetTenantByJoinCode(context.Context, *connect.Request[v1.GetTenantByJoinCodeRequest]) (*connect.Response[v1.GetTenantByJoinCodeResponse], error)
 	// テナントに参加
 	JoinTenant(context.Context, *connect.Request[v1.JoinTenantRequest]) (*connect.Response[v1.JoinTenantResponse], error)
 }
@@ -193,6 +212,12 @@ type TenantServiceHandler interface {
 // and JSON codecs. They also support gzip compression.
 func NewTenantServiceHandler(svc TenantServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
 	tenantServiceMethods := v1.File_keyhub_app_v1_app_proto.Services().ByName("TenantService").Methods()
+	tenantServiceGetTenantByJoinCodeHandler := connect.NewUnaryHandler(
+		TenantServiceGetTenantByJoinCodeProcedure,
+		svc.GetTenantByJoinCode,
+		connect.WithSchema(tenantServiceMethods.ByName("GetTenantByJoinCode")),
+		connect.WithHandlerOptions(opts...),
+	)
 	tenantServiceJoinTenantHandler := connect.NewUnaryHandler(
 		TenantServiceJoinTenantProcedure,
 		svc.JoinTenant,
@@ -201,6 +226,8 @@ func NewTenantServiceHandler(svc TenantServiceHandler, opts ...connect.HandlerOp
 	)
 	return "/keyhub.app.v1.TenantService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case TenantServiceGetTenantByJoinCodeProcedure:
+			tenantServiceGetTenantByJoinCodeHandler.ServeHTTP(w, r)
 		case TenantServiceJoinTenantProcedure:
 			tenantServiceJoinTenantHandler.ServeHTTP(w, r)
 		default:
@@ -211,6 +238,10 @@ func NewTenantServiceHandler(svc TenantServiceHandler, opts ...connect.HandlerOp
 
 // UnimplementedTenantServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedTenantServiceHandler struct{}
+
+func (UnimplementedTenantServiceHandler) GetTenantByJoinCode(context.Context, *connect.Request[v1.GetTenantByJoinCodeRequest]) (*connect.Response[v1.GetTenantByJoinCodeResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.TenantService.GetTenantByJoinCode is not implemented"))
+}
 
 func (UnimplementedTenantServiceHandler) JoinTenant(context.Context, *connect.Request[v1.JoinTenantRequest]) (*connect.Response[v1.JoinTenantResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.app.v1.TenantService.JoinTenant is not implemented"))

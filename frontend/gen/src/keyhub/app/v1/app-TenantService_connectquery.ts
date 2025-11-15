@@ -5,6 +5,13 @@
 import { TenantService } from "./app_pb";
 
 /**
+ * 参加コードからテナント情報を取得
+ *
+ * @generated from rpc keyhub.app.v1.TenantService.GetTenantByJoinCode
+ */
+export const getTenantByJoinCode = TenantService.method.getTenantByJoinCode;
+
+/**
  * テナントに参加
  *
  * @generated from rpc keyhub.app.v1.TenantService.JoinTenant
