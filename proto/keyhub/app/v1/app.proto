@@ -13,6 +13,11 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
+service TenantService {
+  // テナントに参加
+  rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
+}
+
 message GetMeRequest {}
 
 message GetMeResponse {
@@ -51,4 +56,13 @@ enum TenantType {
   TENANT_TYPE_DEPARTMENT = 2; // 部署
   TENANT_TYPE_PROJECT = 3; // プロジェクト
   TENANT_TYPE_LABORATORY = 4; // 研究室
+}
+
+message JoinTenantRequest {
+  string join_code = 1;
+}
+
+message JoinTenantResponse {
+  Tenant tenant = 1;
+  string message = 2; // 成功メッセージ
 }
