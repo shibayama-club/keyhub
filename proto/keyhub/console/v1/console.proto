@@ -50,6 +50,9 @@ message CreateTenantRequest {
   string name = 1;
   string description = 2;
   TenantType tenant_type = 3;
+  string join_code = 4;
+  google.protobuf.Timestamp join_code_expiry = 5;
+  int32 join_code_max_use = 6;
 }
 
 message CreateTenantResponse {
