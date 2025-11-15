@@ -205,6 +205,21 @@ func (mr *MockRepositoryMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockRepository)(nil).GetTenant), ctx, id)
 }
 
+// GetTenantByJoinCode mocks base method.
+func (m *MockRepository) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantByJoinCode", ctx, code)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantByJoinCode indicates an expected call of GetTenantByJoinCode.
+func (mr *MockRepositoryMockRecorder) GetTenantByJoinCode(ctx, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByJoinCode", reflect.TypeOf((*MockRepository)(nil).GetTenantByJoinCode), ctx, code)
+}
+
 // GetUser mocks base method.
 func (m *MockRepository) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
@@ -491,6 +506,21 @@ func (m *MockTransaction) GetTenant(ctx context.Context, id model.TenantID) (mod
 func (mr *MockTransactionMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockTransaction)(nil).GetTenant), ctx, id)
+}
+
+// GetTenantByJoinCode mocks base method.
+func (m *MockTransaction) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantByJoinCode", ctx, code)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantByJoinCode indicates an expected call of GetTenantByJoinCode.
+func (mr *MockTransactionMockRecorder) GetTenantByJoinCode(ctx, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByJoinCode", reflect.TypeOf((*MockTransaction)(nil).GetTenantByJoinCode), ctx, code)
 }
 
 // GetUser mocks base method.
