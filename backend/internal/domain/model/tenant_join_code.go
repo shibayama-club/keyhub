@@ -63,10 +63,10 @@ func NewTenantJoinCode(value string) (TenantJoinCode, error) {
 	return c, nil
 }
 
-type TenantJoinCodeMaxUses int
+type TenantJoinCodeMaxUses int32
 
-func (m TenantJoinCodeMaxUses) Int() int {
-	return int(m)
+func (m TenantJoinCodeMaxUses) Int32() int32 {
+	return int32(m)
 }
 
 func (m TenantJoinCodeMaxUses) Validate() error {
@@ -79,7 +79,7 @@ func (m TenantJoinCodeMaxUses) Validate() error {
 	return nil
 }
 
-func NewTenantJoinCodeMaxUses(value int) (TenantJoinCodeMaxUses, error) {
+func NewTenantJoinCodeMaxUses(value int32) (TenantJoinCodeMaxUses, error) {
 	m := TenantJoinCodeMaxUses(value)
 	if err := m.Validate(); err != nil {
 		return 0, err
@@ -137,7 +137,7 @@ func (t TenantJoinCodeEntity) Validate() error {
 		)
 	}
 
-	if t.UsedCount > t.MaxUses.Int() && t.MaxUses.Int() > 0 {
+	if t.UsedCount > int(t.MaxUses.Int32()) && t.MaxUses.Int32() > 0 {
 		return errors.WithHint(
 			errors.New("used count cannot exceed max uses"),
 			"使用回数が最大使用回数を超えています。",
@@ -165,7 +165,7 @@ func (t TenantJoinCodeEntity) IsUsable() bool {
 	if t.IsExpired() {
 		return false
 	}
-	if t.MaxUses.Int() > 0 && t.UsedCount >= t.MaxUses.Int() {
+	if t.MaxUses.Int32() > 0 && t.UsedCount >= int(t.MaxUses.Int32()) {
 		return false
 	}
 	return true
