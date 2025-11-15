@@ -13,6 +13,7 @@ type Repository interface {
 type Transaction interface {
 	UserRepository
 	TenantRepository
+	TenantJoinCodeRepository
 	ConsoleSessionRepository
 	AppSessionRepository
 	OAuthStateRepository

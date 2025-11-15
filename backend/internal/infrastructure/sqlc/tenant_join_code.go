@@ -1,0 +1,58 @@
+package sqlc
+
+import (
+	"context"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/shibayama-club/keyhub/internal/domain/model"
+	"github.com/shibayama-club/keyhub/internal/domain/repository"
+	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
+)
+
+func parseSqlcTenantJoinCode(tjc sqlcgen.TenantJoinCode) (model.TenantJoinCodeEntity, error) {
+	var expiresAt *time.Time
+	if tjc.ExpiresAt.Valid {
+		t := tjc.ExpiresAt.Time
+		expiresAt = &t
+	}
+
+	expiresAtVO, err := model.NewTenantJoinCodeExpiresAt(expiresAt)
+	if err != nil {
+		return model.TenantJoinCodeEntity{}, err
+	}
+
+	return model.TenantJoinCodeEntity{
+		ID:        model.TenantJoinCodeID(tjc.ID),
+		TenantID:  model.TenantID(tjc.TenantID),
+		Code:      model.TenantJoinCode(tjc.Code),
+		ExpiresAt: expiresAtVO,
+		MaxUses:   model.TenantJoinCodeMaxUses(tjc.MaxUses),
+		UsedCount: int(tjc.UsedCount),
+		CreatedAt: tjc.CreatedAt.Time,
+	}, nil
+}
+
+func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg repository.CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+	var expiresAt pgtype.Timestamptz
+	if arg.ExpiresAt != nil {
+		expiresAt = pgtype.Timestamptz{
+			Time:  *arg.ExpiresAt,
+			Valid: true,
+		}
+	}
+
+	sqlcRow, err := t.queries.CreateTenantJoinCode(ctx, sqlcgen.CreateTenantJoinCodeParams{
+		ID:        arg.ID.UUID(),
+		TenantID:  arg.TenantID.UUID(),
+		Code:      arg.Code.String(),
+		ExpiresAt: expiresAt,
+		MaxUses:   arg.MaxUses.Int32(),
+		UsedCount: int32(arg.UsedCount),
+	})
+	if err != nil {
+		return model.TenantJoinCodeEntity{}, err
+	}
+
+	return parseSqlcTenantJoinCode(sqlcRow.TenantJoinCode)
+}

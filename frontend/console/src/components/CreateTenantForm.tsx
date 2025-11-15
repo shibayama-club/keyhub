@@ -17,6 +17,9 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
       name: '',
       description: '',
       tenantType: TenantType.TEAM,
+      joinCode: '',
+      joinCodeExpiry: undefined,
+      joinCodeMaxUse: undefined,
     }),
     [],
   );
@@ -30,6 +33,13 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
   const descriptionField = useFormField(form, 'description');
   const tenantTypeField = useFormField(form, 'tenantType', {
     transform: (value) => Number(value) as TenantType,
+  });
+  const joinCodeField = useFormField(form, 'joinCode');
+  const joinCodeExpiryField = useFormField(form, 'joinCodeExpiry', {
+    transform: (value) => (value ? new Date(value) : undefined),
+  });
+  const joinCodeMaxUseField = useFormField(form, 'joinCodeMaxUse', {
+    transform: (value) => (value ? Number(value) : undefined),
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -93,6 +103,65 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
           ))}
         </select>
         {tenantTypeField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{tenantTypeField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="joinCode" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="joinCode"
+          value={joinCodeField.value || ''}
+          onChange={joinCodeField.onChange}
+          onBlur={joinCodeField.onBlur}
+          placeholder="英数字6-20文字"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{joinCodeField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="joinCodeExpiry" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード有効期限
+        </label>
+        <input
+          type="date"
+          id="joinCodeExpiry"
+          value={
+            joinCodeExpiryField.value instanceof Date
+              ? joinCodeExpiryField.value.toISOString().slice(0, 10)
+              : joinCodeExpiryField.value || ''
+          }
+          onChange={joinCodeExpiryField.onChange}
+          onBlur={joinCodeExpiryField.onBlur}
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeExpiryField.error.length > 0 && (
+          <p className="mt-2 text-sm text-red-600">{joinCodeExpiryField.error[0]}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="joinCodeMaxUse" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード最大使用回数
+        </label>
+        <input
+          type="number"
+          id="joinCodeMaxUse"
+          value={joinCodeMaxUseField.value ?? ''}
+          onChange={joinCodeMaxUseField.onChange}
+          onBlur={joinCodeMaxUseField.onBlur}
+          placeholder="0以上の整数"
+          min="0"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeMaxUseField.error.length > 0 && (
+          <p className="mt-2 text-sm text-red-600">{joinCodeMaxUseField.error[0]}</p>
+        )}
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">

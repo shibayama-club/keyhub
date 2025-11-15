@@ -107,6 +107,13 @@ keyhub/
 └── Taskfile.yaml     # タスクランナー設定
 ```
 
+## 開発時、RowLevelSecurityのかかっているテーブルの中身を見たい時のQuery
+
+```
+SET keyhub.organization_id = <組織ID>;
+SELECT * FROM public.<テーブル名>;
+```
+
 ## ドキュメント
 
 - [認証フロー](docs/app/authflow.md)
