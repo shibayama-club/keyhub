@@ -108,13 +108,13 @@ func NewTenantJoinCodeExpiresAt(value *time.Time) (TenantJoinCodeExpiresAt, erro
 }
 
 type TenantJoinCodeEntity struct {
-	ID         TenantJoinCodeID
-	TenantID   TenantID
-	Code       TenantJoinCode
-	ExpiresAt  TenantJoinCodeExpiresAt
-	MaxUses    TenantJoinCodeMaxUses
-	UsedCount  int
-	CreatedAt  time.Time
+	ID        TenantJoinCodeID
+	TenantID  TenantID
+	Code      TenantJoinCode
+	ExpiresAt TenantJoinCodeExpiresAt
+	MaxUses   TenantJoinCodeMaxUses
+	UsedCount int
+	CreatedAt time.Time
 }
 
 func (t TenantJoinCodeEntity) Validate() error {
