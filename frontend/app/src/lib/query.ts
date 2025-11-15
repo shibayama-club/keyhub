@@ -2,6 +2,7 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { getMe, logout } from '../../../gen/src/keyhub/app/v1/app-AuthService_connectquery';
+import { getTenantByJoinCode } from '../../../gen/src/keyhub/app/v1/app-TenantService_connectquery';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -36,4 +37,8 @@ export const useQueryGetMe = () => {
 
 export const useMutationLogout = () => {
   return useMutation(logout);
+};
+
+export const useQueryGetTenantByJoinCode = (joinCode: string) => {
+  return useQuery(getTenantByJoinCode, { joinCode }, { enabled: !!joinCode });
 };
