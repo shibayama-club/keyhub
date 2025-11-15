@@ -44,12 +44,21 @@ func (h *Handler) CreateTenant(
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	tenantID, err := h.useCase.CreateTenant(ctx, dto.CreateTenantInput{
+	input := &dto.CreateTenantInput{
 		OrganizationID: orgID,
 		Name:           req.Msg.Name,
 		Description:    req.Msg.Description,
 		TenantType:     tenantTypeStr,
-	})
+		JoinCode:       req.Msg.JoinCode,
+		JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
+	}
+
+	if req.Msg.JoinCodeExpiry != nil {
+		expiryTime := req.Msg.JoinCodeExpiry.AsTime()
+		input.JoinCodeExpiry = &expiryTime
+	}
+
+	tenantID, err := h.useCase.CreateTenant(ctx, *input)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
