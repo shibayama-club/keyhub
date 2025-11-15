@@ -11,28 +11,51 @@ import (
 )
 
 func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error) {
-	if input.Name == "" {
-		return "", errors.WithHint(
-			errors.Mark(errors.New("name is required"), domainerrors.ErrValidation),
-			"テナント名を入力してください。",
-		)
+	tenantName, err := model.NewTenantName(input.Name)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant name")
+	}
+
+	tenantDescription, err := model.NewTenantDescription(input.Description)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant description")
+	}
+
+	tenantType, err := model.NewTenantType(input.TenantType)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant type")
 	}
 
 	tenant, err := model.NewTenant(
 		input.OrganizationID,
-		input.Name,
-		input.Description,
-		input.TenantType,
+		tenantName,
+		tenantDescription,
+		tenantType,
 	)
 	if err != nil {
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant")
 	}
 
+	joinCode, err := model.NewTenantJoinCode(input.JoinCode)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code")
+	}
+
+	joinCodeExpiry, err := model.NewTenantJoinCodeExpiresAt(input.JoinCodeExpiry)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code expiry")
+	}
+
+	joinCodeMaxUse, err := model.NewTenantJoinCodeMaxUses(input.JoinCodeMaxUse)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code max use")
+	}
+
 	joinCodeEntity, err := model.NewTenantJoinCodeEntity(
 		tenant.ID,
-		input.JoinCode,
-		input.JoinCodeExpiry,
-		input.JoinCodeMaxUse,
+		joinCode,
+		joinCodeExpiry,
+		joinCodeMaxUse,
 	)
 	if err != nil {
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant join code entity")
