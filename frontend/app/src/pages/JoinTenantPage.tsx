@@ -104,7 +104,7 @@ export function JoinTenantPage() {
               </button>
             </div>
           )}
-      </div>
+        </div>
       </main>
     </div>
   );
