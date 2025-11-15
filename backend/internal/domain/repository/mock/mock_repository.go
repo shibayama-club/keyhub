@@ -101,6 +101,21 @@ func (mr *MockRepositoryMockRecorder) CreateTenant(ctx, arg any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenant", reflect.TypeOf((*MockRepository)(nil).CreateTenant), ctx, arg)
 }
 
+// CreateTenantJoinCode mocks base method.
+func (m *MockRepository) CreateTenantJoinCode(ctx context.Context, arg repository.CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTenantJoinCode", ctx, arg)
+	ret0, _ := ret[0].(model.TenantJoinCodeEntity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTenantJoinCode indicates an expected call of CreateTenantJoinCode.
+func (mr *MockRepositoryMockRecorder) CreateTenantJoinCode(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantJoinCode", reflect.TypeOf((*MockRepository)(nil).CreateTenantJoinCode), ctx, arg)
+}
+
 // DeleteSession mocks base method.
 func (m *MockRepository) DeleteSession(ctx context.Context, sessionID model.ConsoleSessionID) error {
 	m.ctrl.T.Helper()
@@ -372,6 +387,21 @@ func (m *MockTransaction) CreateTenant(ctx context.Context, arg repository.Creat
 func (mr *MockTransactionMockRecorder) CreateTenant(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenant", reflect.TypeOf((*MockTransaction)(nil).CreateTenant), ctx, arg)
+}
+
+// CreateTenantJoinCode mocks base method.
+func (m *MockTransaction) CreateTenantJoinCode(ctx context.Context, arg repository.CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTenantJoinCode", ctx, arg)
+	ret0, _ := ret[0].(model.TenantJoinCodeEntity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTenantJoinCode indicates an expected call of CreateTenantJoinCode.
+func (mr *MockTransactionMockRecorder) CreateTenantJoinCode(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantJoinCode", reflect.TypeOf((*MockTransaction)(nil).CreateTenantJoinCode), ctx, arg)
 }
 
 // DeleteSession mocks base method.
