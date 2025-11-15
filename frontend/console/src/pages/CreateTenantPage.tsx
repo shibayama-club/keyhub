@@ -5,17 +5,28 @@ import { Navbar } from '../components/Navbar';
 import { CreateTenantForm } from '../components/CreateTenantForm';
 import { useMutationCreateTenant, queryClient } from '../libs/query';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
+import { timestampFromDate } from '@bufbuild/protobuf/wkt';
 
 export const CreateTenantPage = () => {
   const navigate = useNavigate();
   const { mutateAsync: createTenant, isPending } = useMutationCreateTenant();
 
-  const handleSubmit = async (data: { name: string; description?: string; tenantType: TenantType }) => {
+  const handleSubmit = async (data: {
+    name: string;
+    description?: string;
+    tenantType: TenantType;
+    joinCode: string;
+    joinCodeExpiry?: Date;
+    joinCodeMaxUse?: number;
+  }) => {
     try {
       await createTenant({
         name: data.name,
         description: data.description || '',
         tenantType: data.tenantType,
+        joinCode: data.joinCode,
+        joinCodeExpiry: data.joinCodeExpiry ? timestampFromDate(data.joinCodeExpiry) : undefined,
+        joinCodeMaxUse: data.joinCodeMaxUse ?? 0,
       });
 
       // TanStack Queryのキャッシュを無効化してテナント一覧を最新に保つ
