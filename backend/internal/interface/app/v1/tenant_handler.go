@@ -21,6 +21,10 @@ func (h *Handler) GetTenantByJoinCode(ctx context.Context, req *connect.Request[
 	}), nil
 }
 
+func (h *Handler) JoinTenant(ctx context.Context, req *connect.Request[appv1.JoinTenantRequest]) (*connect.Response[appv1.JoinTenantResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, nil)
+}
+
 func convertStringToTenantTypeProto(tenantType string) appv1.TenantType {
 	switch tenantType {
 	case "TENANT_TYPE_TEAM":
