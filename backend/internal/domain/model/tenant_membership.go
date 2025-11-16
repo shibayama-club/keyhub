@@ -6,14 +6,14 @@ import (
 	"github.com/google/uuid"
 )
 
-type TenantMembershipID string
+type TenantMembershipID uuid.UUID
 
 func (id TenantMembershipID) UUID() uuid.UUID {
-	return uuid.MustParse(string(id))
+	return uuid.UUID(id)
 }
 
 func (id TenantMembershipID) String() string {
-	return string(id)
+	return uuid.UUID(id).String()
 }
 
 type TenantMembershipRole string
