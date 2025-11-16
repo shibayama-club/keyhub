@@ -104,23 +104,16 @@ CREATE TABLE tenant_memberships (
     tenant_id UUID NOT NULL,
     user_id UUID NOT NULL,
     role TEXT NOT NULL DEFAULT 'member',
-    status TEXT NOT NULL DEFAULT 'active',
-    joined_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    left_at TIMESTAMPTZ,
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    left_at TIMESTAMPTZ,
     PRIMARY KEY (id),
     UNIQUE (tenant_id, user_id),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT check_role CHECK (role IN ('owner', 'admin', 'member', 'viewer')),
-    CONSTRAINT check_status CHECK (status IN ('active', 'inactive', 'suspended'))
+    CONSTRAINT check_role CHECK (role IN ('admin', 'member'))
 );
 
-CREATE INDEX idx_tenant_memberships_tenant_id ON tenant_memberships(tenant_id);
 CREATE INDEX idx_tenant_memberships_user_id ON tenant_memberships(user_id);
-CREATE INDEX idx_tenant_memberships_status ON tenant_memberships(status);
-CREATE INDEX idx_tenant_memberships_tenant_user_status ON tenant_memberships(tenant_id, user_id, status);
 
 -- 5. Sessions table
 CREATE TABLE sessions (
