@@ -14,6 +14,7 @@ type Transaction interface {
 	UserRepository
 	TenantRepository
 	TenantJoinCodeRepository
+	TenantMembershipRepository
 	ConsoleSessionRepository
 	AppSessionRepository
 	OAuthStateRepository
