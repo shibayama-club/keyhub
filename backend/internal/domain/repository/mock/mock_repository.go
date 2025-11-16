@@ -116,6 +116,21 @@ func (mr *MockRepositoryMockRecorder) CreateTenantJoinCode(ctx, arg any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantJoinCode", reflect.TypeOf((*MockRepository)(nil).CreateTenantJoinCode), ctx, arg)
 }
 
+// CreateTenantMembership mocks base method.
+func (m *MockRepository) CreateTenantMembership(ctx context.Context, membership model.TenantMembership) (model.TenantMembership, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTenantMembership", ctx, membership)
+	ret0, _ := ret[0].(model.TenantMembership)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTenantMembership indicates an expected call of CreateTenantMembership.
+func (mr *MockRepositoryMockRecorder) CreateTenantMembership(ctx, membership any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantMembership", reflect.TypeOf((*MockRepository)(nil).CreateTenantMembership), ctx, membership)
+}
+
 // DeleteSession mocks base method.
 func (m *MockRepository) DeleteSession(ctx context.Context, sessionID model.ConsoleSessionID) error {
 	m.ctrl.T.Helper()
@@ -220,6 +235,21 @@ func (mr *MockRepositoryMockRecorder) GetTenantByJoinCode(ctx, code any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByJoinCode", reflect.TypeOf((*MockRepository)(nil).GetTenantByJoinCode), ctx, code)
 }
 
+// GetTenantMembershipByTenantAndUser mocks base method.
+func (m *MockRepository) GetTenantMembershipByTenantAndUser(ctx context.Context, tenantID model.TenantID, userID model.UserID) (model.TenantMembership, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantMembershipByTenantAndUser", ctx, tenantID, userID)
+	ret0, _ := ret[0].(model.TenantMembership)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantMembershipByTenantAndUser indicates an expected call of GetTenantMembershipByTenantAndUser.
+func (mr *MockRepositoryMockRecorder) GetTenantMembershipByTenantAndUser(ctx, tenantID, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantMembershipByTenantAndUser", reflect.TypeOf((*MockRepository)(nil).GetTenantMembershipByTenantAndUser), ctx, tenantID, userID)
+}
+
 // GetUser mocks base method.
 func (m *MockRepository) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
@@ -248,6 +278,20 @@ func (m *MockRepository) GetUserByProviderIdentity(ctx context.Context, provider
 func (mr *MockRepositoryMockRecorder) GetUserByProviderIdentity(ctx, provider, providerSub any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByProviderIdentity", reflect.TypeOf((*MockRepository)(nil).GetUserByProviderIdentity), ctx, provider, providerSub)
+}
+
+// IncrementJoinCodeUsedCount mocks base method.
+func (m *MockRepository) IncrementJoinCodeUsedCount(ctx context.Context, code model.TenantJoinCode) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IncrementJoinCodeUsedCount", ctx, code)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IncrementJoinCodeUsedCount indicates an expected call of IncrementJoinCodeUsedCount.
+func (mr *MockRepositoryMockRecorder) IncrementJoinCodeUsedCount(ctx, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IncrementJoinCodeUsedCount", reflect.TypeOf((*MockRepository)(nil).IncrementJoinCodeUsedCount), ctx, code)
 }
 
 // RevokeAppSession mocks base method.
@@ -419,6 +463,21 @@ func (mr *MockTransactionMockRecorder) CreateTenantJoinCode(ctx, arg any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantJoinCode", reflect.TypeOf((*MockTransaction)(nil).CreateTenantJoinCode), ctx, arg)
 }
 
+// CreateTenantMembership mocks base method.
+func (m *MockTransaction) CreateTenantMembership(ctx context.Context, membership model.TenantMembership) (model.TenantMembership, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateTenantMembership", ctx, membership)
+	ret0, _ := ret[0].(model.TenantMembership)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateTenantMembership indicates an expected call of CreateTenantMembership.
+func (mr *MockTransactionMockRecorder) CreateTenantMembership(ctx, membership any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenantMembership", reflect.TypeOf((*MockTransaction)(nil).CreateTenantMembership), ctx, membership)
+}
+
 // DeleteSession mocks base method.
 func (m *MockTransaction) DeleteSession(ctx context.Context, sessionID model.ConsoleSessionID) error {
 	m.ctrl.T.Helper()
@@ -523,6 +582,21 @@ func (mr *MockTransactionMockRecorder) GetTenantByJoinCode(ctx, code any) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByJoinCode", reflect.TypeOf((*MockTransaction)(nil).GetTenantByJoinCode), ctx, code)
 }
 
+// GetTenantMembershipByTenantAndUser mocks base method.
+func (m *MockTransaction) GetTenantMembershipByTenantAndUser(ctx context.Context, tenantID model.TenantID, userID model.UserID) (model.TenantMembership, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantMembershipByTenantAndUser", ctx, tenantID, userID)
+	ret0, _ := ret[0].(model.TenantMembership)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantMembershipByTenantAndUser indicates an expected call of GetTenantMembershipByTenantAndUser.
+func (mr *MockTransactionMockRecorder) GetTenantMembershipByTenantAndUser(ctx, tenantID, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantMembershipByTenantAndUser", reflect.TypeOf((*MockTransaction)(nil).GetTenantMembershipByTenantAndUser), ctx, tenantID, userID)
+}
+
 // GetUser mocks base method.
 func (m *MockTransaction) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
@@ -551,6 +625,20 @@ func (m *MockTransaction) GetUserByProviderIdentity(ctx context.Context, provide
 func (mr *MockTransactionMockRecorder) GetUserByProviderIdentity(ctx, provider, providerSub any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByProviderIdentity", reflect.TypeOf((*MockTransaction)(nil).GetUserByProviderIdentity), ctx, provider, providerSub)
+}
+
+// IncrementJoinCodeUsedCount mocks base method.
+func (m *MockTransaction) IncrementJoinCodeUsedCount(ctx context.Context, code model.TenantJoinCode) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "IncrementJoinCodeUsedCount", ctx, code)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// IncrementJoinCodeUsedCount indicates an expected call of IncrementJoinCodeUsedCount.
+func (mr *MockTransactionMockRecorder) IncrementJoinCodeUsedCount(ctx, code any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IncrementJoinCodeUsedCount", reflect.TypeOf((*MockTransaction)(nil).IncrementJoinCodeUsedCount), ctx, code)
 }
 
 // RevokeAppSession mocks base method.
