@@ -2,7 +2,10 @@
 -- PostgreSQL database dump
 --
 
+\restrict zSIOXa8Y45i9fU0HzDGaqsN3SADbhrjJUXtkgMun8c9E0MZBJYcZ374jj4xJhrL
 
+-- Dumped from database version 16.10
+-- Dumped by pg_dump version 16.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -476,4 +479,5 @@ ALTER TABLE ONLY public.user_identities
 -- PostgreSQL database dump complete
 --
 
+\unrestrict zSIOXa8Y45i9fU0HzDGaqsN3SADbhrjJUXtkgMun8c9E0MZBJYcZ374jj4xJhrL
 
