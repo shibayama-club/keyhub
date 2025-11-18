@@ -640,6 +640,25 @@
           "columns": [
             "user_id"
           ]
+        },
+        {
+          "name": "idx_memberships_user_left_tenant",
+          "def": "CREATE INDEX idx_memberships_user_left_tenant ON public.tenant_memberships USING btree (user_id, left_at, tenant_id) WHERE (left_at IS NULL)",
+          "table": "public.tenant_memberships",
+          "columns": [
+            "user_id",
+            "left_at",
+            "tenant_id"
+          ]
+        },
+        {
+          "name": "idx_memberships_tenant_left",
+          "def": "CREATE INDEX idx_memberships_tenant_left ON public.tenant_memberships USING btree (tenant_id, left_at) WHERE (left_at IS NULL)",
+          "table": "public.tenant_memberships",
+          "columns": [
+            "tenant_id",
+            "left_at"
+          ]
         }
       ],
       "constraints": [

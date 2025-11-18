@@ -30,6 +30,8 @@
 | tenant_memberships_pkey | CREATE UNIQUE INDEX tenant_memberships_pkey ON public.tenant_memberships USING btree (id) |
 | tenant_memberships_tenant_id_user_id_key | CREATE UNIQUE INDEX tenant_memberships_tenant_id_user_id_key ON public.tenant_memberships USING btree (tenant_id, user_id) |
 | idx_memberships_user | CREATE INDEX idx_memberships_user ON public.tenant_memberships USING btree (user_id) |
+| idx_memberships_user_left_tenant | CREATE INDEX idx_memberships_user_left_tenant ON public.tenant_memberships USING btree (user_id, left_at, tenant_id) WHERE (left_at IS NULL) |
+| idx_memberships_tenant_left | CREATE INDEX idx_memberships_tenant_left ON public.tenant_memberships USING btree (tenant_id, left_at) WHERE (left_at IS NULL) |
 
 ## Relations
 
