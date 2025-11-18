@@ -1,8 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import * as Sentry from '@sentry/react';
 import { Header } from '../components/Header';
-import { useQueryGetTenantByJoinCode } from '../lib/query';
+import { useQueryGetTenantByJoinCode, useMutationJoinTenant } from '../lib/query';
 import { TenantType } from '../../../gen/src/keyhub/app/v1/app_pb';
 
 const TENANT_TYPE_LABELS: Record<TenantType, string> = {
@@ -16,8 +17,10 @@ const TENANT_TYPE_LABELS: Record<TenantType, string> = {
 export function JoinTenantPage() {
   const [joinCode, setJoinCode] = useState('');
   const [searchCode, setSearchCode] = useState('');
+  const navigate = useNavigate();
 
   const { data, isLoading, error } = useQueryGetTenantByJoinCode(searchCode);
+  const joinMutation = useMutationJoinTenant();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,6 +29,17 @@ export function JoinTenantPage() {
     } catch (error) {
       Sentry.captureException(error);
       toast.error('テナント情報の取得に失敗しました');
+    }
+  };
+
+  const handleJoin = async () => {
+    try {
+      await joinMutation.mutateAsync({ joinCode: searchCode });
+      toast.success('テナントに参加しました');
+      navigate('/home');
+    } catch (error) {
+      Sentry.captureException(error);
+      toast.error('テナントへの参加に失敗しました');
     }
   };
 
@@ -98,9 +112,11 @@ export function JoinTenantPage() {
 
               <button
                 type="button"
-                className="mt-4 w-full rounded-md bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700"
+                onClick={handleJoin}
+                disabled={joinMutation.isPending}
+                className="mt-4 w-full rounded-md bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-400"
               >
-                このテナントに参加
+                {joinMutation.isPending ? '参加中...' : 'このテナントに参加'}
               </button>
             </div>
           )}
