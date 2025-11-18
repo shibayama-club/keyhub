@@ -4,6 +4,9 @@ import (
 	"context"
 
 	"connectrpc.com/connect"
+	"github.com/cockroachdb/errors"
+	"github.com/shibayama-club/keyhub/internal/domain"
+	"github.com/shibayama-club/keyhub/internal/domain/model"
 	appv1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1"
 )
 
@@ -22,7 +25,17 @@ func (h *Handler) GetTenantByJoinCode(ctx context.Context, req *connect.Request[
 }
 
 func (h *Handler) JoinTenant(ctx context.Context, req *connect.Request[appv1.JoinTenantRequest]) (*connect.Response[appv1.JoinTenantResponse], error) {
-	return nil, connect.NewError(connect.CodeUnimplemented, nil)
+	userID, ok := domain.Value[model.UserID](ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user not authenticated"))
+	}
+
+	err := h.useCase.JoinTenant(ctx, userID, req.Msg.JoinCode)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&appv1.JoinTenantResponse{}), nil
 }
 
 func convertStringToTenantTypeProto(tenantType string) appv1.TenantType {
