@@ -2,8 +2,6 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 16.10
--- Dumped by pg_dump version 16.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -476,4 +474,5 @@ ALTER TABLE ONLY public.user_identities
 --
 -- PostgreSQL database dump complete
 --
+
 
