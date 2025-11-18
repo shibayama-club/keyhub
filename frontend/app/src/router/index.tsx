@@ -6,6 +6,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { CallbackPage } from '../pages/CallbackPage';
 import { HomePage } from '../pages/HomePage';
 import { JoinTenantPage } from '../pages/JoinTenantPage';
+import { TenantsPage } from '../pages/TenantsPage';
 
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
@@ -32,6 +33,10 @@ export const router = sentryCreateBrowserRouter([
       {
         path: 'home',
         element: <HomePage />,
+      },
+      {
+        path: 'tenants',
+        element: <TenantsPage />,
       },
       {
         path: 'join-tenant',
