@@ -67,7 +67,7 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (Cre
 }
 
 const getAllTenants = `-- name: GetAllTenants :many
-SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
+SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
 FROM tenants t
 WHERE organization_id = $1
 ORDER BY created_at DESC
@@ -128,4 +128,44 @@ func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, er
 		&i.Tenant.UpdatedAt,
 	)
 	return i, err
+}
+
+const getTenantsByUserID = `-- name: GetTenantsByUserID :many
+SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
+FROM tenants t
+INNER JOIN tenant_memberships tm ON t.id = tm.tenant_id
+WHERE tm.user_id = $1
+ORDER BY t.created_at DESC
+`
+
+type GetTenantsByUserIDRow struct {
+	Tenant Tenant
+}
+
+func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]GetTenantsByUserIDRow, error) {
+	rows, err := q.db.Query(ctx, getTenantsByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTenantsByUserIDRow
+	for rows.Next() {
+		var i GetTenantsByUserIDRow
+		if err := rows.Scan(
+			&i.Tenant.ID,
+			&i.Tenant.OrganizationID,
+			&i.Tenant.Name,
+			&i.Tenant.Description,
+			&i.Tenant.TenantType,
+			&i.Tenant.CreatedAt,
+			&i.Tenant.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
