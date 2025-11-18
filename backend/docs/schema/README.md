@@ -10,7 +10,7 @@
 | [public.oauth_states](public.oauth_states.md) | 5 |  | BASE TABLE |
 | [public.tenants](public.tenants.md) | 7 |  | BASE TABLE |
 | [public.tenant_join_codes](public.tenant_join_codes.md) | 7 |  | BASE TABLE |
-| [public.tenant_memberships](public.tenant_memberships.md) | 8 |  | BASE TABLE |
+| [public.tenant_memberships](public.tenant_memberships.md) | 6 |  | BASE TABLE |
 | [public.console_sessions](public.console_sessions.md) | 4 |  | BASE TABLE |
 
 ## Stored procedures and functions

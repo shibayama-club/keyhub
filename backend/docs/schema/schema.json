@@ -604,17 +604,6 @@
           "default": "'member'::text"
         },
         {
-          "name": "status",
-          "type": "text",
-          "nullable": false,
-          "default": "'active'::text"
-        },
-        {
-          "name": "joined_via",
-          "type": "text",
-          "nullable": true
-        },
-        {
           "name": "created_at",
           "type": "timestamp with time zone",
           "nullable": false,
@@ -655,16 +644,6 @@
       ],
       "constraints": [
         {
-          "name": "tenant_memberships_joined_via_check",
-          "type": "CHECK",
-          "def": "CHECK ((joined_via = ANY (ARRAY['domain'::text, 'code'::text, 'manual'::text])))",
-          "table": "public.tenant_memberships",
-          "referenced_table": "",
-          "columns": [
-            "joined_via"
-          ]
-        },
-        {
           "name": "tenant_memberships_role_check",
           "type": "CHECK",
           "def": "CHECK ((role = ANY (ARRAY['admin'::text, 'member'::text])))",
@@ -672,16 +651,6 @@
           "referenced_table": "",
           "columns": [
             "role"
-          ]
-        },
-        {
-          "name": "tenant_memberships_status_check",
-          "type": "CHECK",
-          "def": "CHECK ((status = ANY (ARRAY['active'::text, 'invited'::text, 'left'::text])))",
-          "table": "public.tenant_memberships",
-          "referenced_table": "",
-          "columns": [
-            "status"
           ]
         },
         {

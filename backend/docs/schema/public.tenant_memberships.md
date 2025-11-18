@@ -10,8 +10,6 @@
 | tenant_id | uuid |  | false |  | [public.tenants](public.tenants.md) |  |
 | user_id | uuid |  | false |  | [public.users](public.users.md) |  |
 | role | text | 'member'::text | false |  |  |  |
-| status | text | 'active'::text | false |  |  |  |
-| joined_via | text |  | true |  |  |  |
 | created_at | timestamp with time zone | CURRENT_TIMESTAMP | false |  |  |  |
 | left_at | timestamp with time zone |  | true |  |  |  |
 
@@ -19,9 +17,7 @@
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
-| tenant_memberships_joined_via_check | CHECK | CHECK ((joined_via = ANY (ARRAY['domain'::text, 'code'::text, 'manual'::text]))) |
 | tenant_memberships_role_check | CHECK | CHECK ((role = ANY (ARRAY['admin'::text, 'member'::text]))) |
-| tenant_memberships_status_check | CHECK | CHECK ((status = ANY (ARRAY['active'::text, 'invited'::text, 'left'::text]))) |
 | tenant_memberships_user_id_fkey | FOREIGN KEY | FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE |
 | tenant_memberships_tenant_id_fkey | FOREIGN KEY | FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE |
 | tenant_memberships_pkey | PRIMARY KEY | PRIMARY KEY (id) |
