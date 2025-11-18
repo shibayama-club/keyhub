@@ -250,6 +250,21 @@ func (mr *MockRepositoryMockRecorder) GetTenantMembershipByTenantAndUser(ctx, te
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantMembershipByTenantAndUser", reflect.TypeOf((*MockRepository)(nil).GetTenantMembershipByTenantAndUser), ctx, tenantID, userID)
 }
 
+// GetTenantsByUserID mocks base method.
+func (m *MockRepository) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantsByUserID", ctx, userID)
+	ret0, _ := ret[0].([]model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantsByUserID indicates an expected call of GetTenantsByUserID.
+func (mr *MockRepositoryMockRecorder) GetTenantsByUserID(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantsByUserID", reflect.TypeOf((*MockRepository)(nil).GetTenantsByUserID), ctx, userID)
+}
+
 // GetUser mocks base method.
 func (m *MockRepository) GetUser(ctx context.Context, userID model.UserID) (model.User, error) {
 	m.ctrl.T.Helper()
@@ -595,6 +610,21 @@ func (m *MockTransaction) GetTenantMembershipByTenantAndUser(ctx context.Context
 func (mr *MockTransactionMockRecorder) GetTenantMembershipByTenantAndUser(ctx, tenantID, userID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantMembershipByTenantAndUser", reflect.TypeOf((*MockTransaction)(nil).GetTenantMembershipByTenantAndUser), ctx, tenantID, userID)
+}
+
+// GetTenantsByUserID mocks base method.
+func (m *MockTransaction) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantsByUserID", ctx, userID)
+	ret0, _ := ret[0].([]model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantsByUserID indicates an expected call of GetTenantsByUserID.
+func (mr *MockTransactionMockRecorder) GetTenantsByUserID(ctx, userID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantsByUserID", reflect.TypeOf((*MockTransaction)(nil).GetTenantsByUserID), ctx, userID)
 }
 
 // GetUser mocks base method.
