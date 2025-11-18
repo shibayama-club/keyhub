@@ -5,6 +5,7 @@ import (
 
 	"github.com/cockroachdb/errors"
 	"github.com/google/uuid"
+	"github.com/samber/lo"
 	domainerrors "github.com/shibayama-club/keyhub/internal/domain/errors"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
@@ -65,4 +66,28 @@ func (u *UseCase) JoinTenant(ctx context.Context, userID model.UserID, joinCode 
 	}
 
 	return nil
+}
+
+func (u *UseCase) GetMyTenants(ctx context.Context, userID model.UserID) (dto.GetMyTenantsOutput, error) {
+	tenants, err := u.repo.GetTenantsByUserID(ctx, userID)
+	if err != nil {
+		return dto.GetMyTenantsOutput{}, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get tenants by user id")
+	}
+
+	tenantOutputs := lo.Map(tenants, func(tenant repository.TenantWithMemberCount, _ int) dto.TenantOutput {
+		return dto.TenantOutput{
+			ID:             tenant.Tenant.ID.String(),
+			OrganizationID: tenant.Tenant.OrganizationID.String(),
+			Name:           tenant.Tenant.Name.String(),
+			Description:    tenant.Tenant.Description.String(),
+			TenantType:     tenant.Tenant.Type.String(),
+			MemberCount:    tenant.MemberCount,
+			CreatedAt:      tenant.Tenant.CreatedAt,
+			UpdatedAt:      tenant.Tenant.UpdatedAt,
+		}
+	})
+
+	return dto.GetMyTenantsOutput{
+		Tenants: tenantOutputs,
+	}, nil
 }

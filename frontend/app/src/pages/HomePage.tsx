@@ -26,6 +26,17 @@ export const HomePage = () => {
         {/* Dashboard Cards */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-lg bg-white p-6 shadow">
+            <h3 className="text-lg font-semibold text-gray-900">マイテナント</h3>
+            <p className="mt-2 text-sm text-gray-600">参加しているテナントの一覧を確認できます</p>
+            <button
+              onClick={() => navigate('/tenants')}
+              className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+            >
+              テナント一覧を見る →
+            </button>
+          </div>
+
+          <div className="rounded-lg bg-white p-6 shadow">
             <h3 className="text-lg font-semibold text-gray-900">テナントに参加</h3>
             <p className="mt-2 text-sm text-gray-600">参加コードを使ってテナントに参加できます</p>
             <button
@@ -34,12 +45,6 @@ export const HomePage = () => {
             >
               参加する →
             </button>
-          </div>
-
-          <div className="rounded-lg bg-white p-6 shadow">
-            <h3 className="text-lg font-semibold text-gray-900">Profile</h3>
-            <p className="mt-2 text-sm text-gray-600">View and edit your profile information</p>
-            <button className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-500">View Profile →</button>
           </div>
 
           <div className="rounded-lg bg-white p-6 shadow">

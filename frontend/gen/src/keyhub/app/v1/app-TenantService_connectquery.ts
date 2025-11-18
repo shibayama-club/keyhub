@@ -17,3 +17,10 @@ export const getTenantByJoinCode = TenantService.method.getTenantByJoinCode;
  * @generated from rpc keyhub.app.v1.TenantService.JoinTenant
  */
 export const joinTenant = TenantService.method.joinTenant;
+
+/**
+ * ログインユーザーが参加しているテナント一覧を取得
+ *
+ * @generated from rpc keyhub.app.v1.TenantService.GetMyTenants
+ */
+export const getMyTenants = TenantService.method.getMyTenants;

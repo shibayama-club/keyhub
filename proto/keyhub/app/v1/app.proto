@@ -19,6 +19,9 @@ service TenantService {
 
   // テナントに参加
   rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
+
+  // ログインユーザーが参加しているテナント一覧を取得
+  rpc GetMyTenants(GetMyTenantsRequest) returns (GetMyTenantsResponse);
 }
 
 message GetMeRequest {}
@@ -79,4 +82,10 @@ message JoinTenantRequest {
 message JoinTenantResponse {
   Tenant tenant = 1;
   string message = 2; // 成功メッセージ
+}
+
+message GetMyTenantsRequest {}
+
+message GetMyTenantsResponse {
+  repeated Tenant tenants = 1;
 }

@@ -5,9 +5,12 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
+	"github.com/samber/lo"
 	"github.com/shibayama-club/keyhub/internal/domain"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	appv1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1"
+	"github.com/shibayama-club/keyhub/internal/usecase/app/dto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func (h *Handler) GetTenantByJoinCode(ctx context.Context, req *connect.Request[appv1.GetTenantByJoinCodeRequest]) (*connect.Response[appv1.GetTenantByJoinCodeResponse], error) {
@@ -36,6 +39,39 @@ func (h *Handler) JoinTenant(ctx context.Context, req *connect.Request[appv1.Joi
 	}
 
 	return connect.NewResponse(&appv1.JoinTenantResponse{}), nil
+}
+
+func (h *Handler) GetMyTenants(ctx context.Context, req *connect.Request[appv1.GetMyTenantsRequest]) (*connect.Response[appv1.GetMyTenantsResponse], error) {
+	userID, ok := domain.Value[model.UserID](ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.New("user not authenticated"))
+	}
+
+	output, err := h.useCase.GetMyTenants(ctx, userID)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	tenants := lo.Map(output.Tenants, func(t dto.TenantOutput, _ int) *appv1.Tenant {
+		return convertTenantOutputToProto(t)
+	})
+
+	return connect.NewResponse(&appv1.GetMyTenantsResponse{
+		Tenants: tenants,
+	}), nil
+}
+
+func convertTenantOutputToProto(tenant dto.TenantOutput) *appv1.Tenant {
+	return &appv1.Tenant{
+		Id:             tenant.ID,
+		OrganizationId: tenant.OrganizationID,
+		Name:           tenant.Name,
+		Description:    tenant.Description,
+		TenantType:     convertStringToTenantTypeProto(tenant.TenantType),
+		MemberCount:    tenant.MemberCount,
+		CreatedAt:      timestamppb.New(tenant.CreatedAt),
+		UpdatedAt:      timestamppb.New(tenant.UpdatedAt),
+	}
 }
 
 func convertStringToTenantTypeProto(tenantType string) appv1.TenantType {
