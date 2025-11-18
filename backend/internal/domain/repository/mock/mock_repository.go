@@ -251,10 +251,10 @@ func (mr *MockRepositoryMockRecorder) GetTenantMembershipByTenantAndUser(ctx, te
 }
 
 // GetTenantsByUserID mocks base method.
-func (m *MockRepository) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]model.Tenant, error) {
+func (m *MockRepository) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]repository.TenantWithMemberCount, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTenantsByUserID", ctx, userID)
-	ret0, _ := ret[0].([]model.Tenant)
+	ret0, _ := ret[0].([]repository.TenantWithMemberCount)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -613,10 +613,10 @@ func (mr *MockTransactionMockRecorder) GetTenantMembershipByTenantAndUser(ctx, t
 }
 
 // GetTenantsByUserID mocks base method.
-func (m *MockTransaction) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]model.Tenant, error) {
+func (m *MockTransaction) GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]repository.TenantWithMemberCount, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTenantsByUserID", ctx, userID)
-	ret0, _ := ret[0].([]model.Tenant)
+	ret0, _ := ret[0].([]repository.TenantWithMemberCount)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
