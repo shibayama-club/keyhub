@@ -2,7 +2,8 @@
 -- PostgreSQL database dump
 --
 
-
+-- Dumped from database version 16.10
+-- Dumped by pg_dump version 16.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -172,13 +173,9 @@ CREATE TABLE public.tenant_memberships (
     tenant_id uuid NOT NULL,
     user_id uuid NOT NULL,
     role text DEFAULT 'member'::text NOT NULL,
-    status text DEFAULT 'active'::text NOT NULL,
-    joined_via text,
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     left_at timestamp with time zone,
-    CONSTRAINT tenant_memberships_joined_via_check CHECK ((joined_via = ANY (ARRAY['domain'::text, 'code'::text, 'manual'::text]))),
-    CONSTRAINT tenant_memberships_role_check CHECK ((role = ANY (ARRAY['admin'::text, 'member'::text]))),
-    CONSTRAINT tenant_memberships_status_check CHECK ((status = ANY (ARRAY['active'::text, 'invited'::text, 'left'::text])))
+    CONSTRAINT tenant_memberships_role_check CHECK ((role = ANY (ARRAY['admin'::text, 'member'::text])))
 );
 
 
@@ -479,5 +476,4 @@ ALTER TABLE ONLY public.user_identities
 --
 -- PostgreSQL database dump complete
 --
-
 
