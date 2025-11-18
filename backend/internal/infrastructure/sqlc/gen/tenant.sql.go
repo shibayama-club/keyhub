@@ -131,15 +131,21 @@ func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, er
 }
 
 const getTenantsByUserID = `-- name: GetTenantsByUserID :many
-SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
+SELECT
+    t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at,
+    COUNT(tm_all.id)::INT AS member_count
 FROM tenants t
 INNER JOIN tenant_memberships tm ON t.id = tm.tenant_id
+LEFT JOIN tenant_memberships tm_all ON t.id = tm_all.tenant_id AND tm_all.left_at IS NULL
 WHERE tm.user_id = $1
+  AND tm.left_at IS NULL
+GROUP BY t.id
 ORDER BY t.created_at DESC
 `
 
 type GetTenantsByUserIDRow struct {
-	Tenant Tenant
+	Tenant      Tenant
+	MemberCount int32
 }
 
 func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]GetTenantsByUserIDRow, error) {
@@ -159,6 +165,7 @@ func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]G
 			&i.Tenant.TenantType,
 			&i.Tenant.CreatedAt,
 			&i.Tenant.UpdatedAt,
+			&i.MemberCount,
 		); err != nil {
 			return nil, err
 		}
