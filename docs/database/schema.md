@@ -61,9 +61,8 @@ CREATE TABLE tenant_memberships (
     id UUID NOT NULL DEFAULT uuid_generate_v4(),
     tenant_id UUID NOT NULL,
     user_id UUID NOT NULL,
-    role TEXT NOT NULL DEFAULT 'member', -- member, admin, owner
-    status TEXT NOT NULL DEFAULT 'active', -- active, invited, suspended
-    joined_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    role TEXT NOT NULL DEFAULT 'member', -- member, admin (将来使用予定)
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     left_at TIMESTAMPTZ,
     PRIMARY KEY (id),
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
@@ -72,8 +71,6 @@ CREATE TABLE tenant_memberships (
 );
 
 CREATE INDEX idx_memberships_user ON tenant_memberships(user_id);
-CREATE INDEX idx_memberships_tenant ON tenant_memberships(tenant_id);
-CREATE UNIQUE INDEX idx_memberships_unique ON tenant_memberships(tenant_id, user_id);
 ```
 
 ### sessions テーブル

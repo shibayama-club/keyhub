@@ -59,8 +59,6 @@ type TenantMembership struct {
 	TenantID  uuid.UUID
 	UserID    uuid.UUID
 	Role      string
-	Status    string
-	JoinedVia *string
 	CreatedAt pgtype.Timestamptz
 	LeftAt    pgtype.Timestamptz
 }

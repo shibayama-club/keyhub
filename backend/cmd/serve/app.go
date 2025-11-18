@@ -123,6 +123,12 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	)
 	e.Any(authPath+"*", echo.WrapHandler(authHandler))
 
+	tenantPath, tenantHandler := appv1connect.NewTenantServiceHandler(
+		appHandler,
+		connect.WithInterceptors(authInterceptor),
+	)
+	e.Any(tenantPath+"*", echo.WrapHandler(tenantHandler))
+
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.app.v1.HealthService/Check", healthHandler.Check)
 

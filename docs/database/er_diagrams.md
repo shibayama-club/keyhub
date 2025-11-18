@@ -76,9 +76,8 @@ erDiagram
         uuid id PK "メンバーシップ識別子"
         uuid tenant_id FK "テナントID"
         uuid user_id FK "ユーザーID"
-        text role "権限（member/admin/owner）"
-        text status "状態（active/invited/suspended）"
-        timestamptz joined_at "参加日時"
+        text role "権限（member/admin、将来使用予定）"
+        timestamptz created_at "参加日時"
         timestamptz left_at "退出日時"
     }
 

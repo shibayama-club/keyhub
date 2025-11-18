@@ -3,10 +3,11 @@ package errors
 import "github.com/cockroachdb/errors"
 
 var (
-	ErrValidation   = errors.New("Validation error")
-	ErrNotFound     = errors.New("not found error")
-	ErrUnAuthorized = errors.New("unauthorized error")
-	ErrInternal     = errors.New("internal error")
+	ErrValidation    = errors.New("Validation error")
+	ErrNotFound      = errors.New("not found error")
+	ErrUnAuthorized  = errors.New("unauthorized error")
+	ErrInternal      = errors.New("internal error")
+	ErrAlreadyExists = errors.New("already exists error")
 )
 
 func IsValidationError(err error) bool {
@@ -23,4 +24,8 @@ func IsUnAuthorizedError(err error) bool {
 
 func IsInternalError(err error) bool {
 	return errors.Is(err, ErrInternal)
+}
+
+func IsAlreadyExistsError(err error) bool {
+	return errors.Is(err, ErrAlreadyExists)
 }

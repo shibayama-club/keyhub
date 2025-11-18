@@ -20,14 +20,18 @@ type Querier interface {
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (CreateConsoleSessionRow, error)
 	CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error)
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) (CreateTenantJoinCodeRow, error)
+	CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) (CreateTenantMembershipRow, error)
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
+	GetTenantByJoinCode(ctx context.Context, code string) (GetTenantByJoinCodeRow, error)
+	GetTenantMembershipByTenantAndUser(ctx context.Context, arg GetTenantMembershipByTenantAndUserParams) (GetTenantMembershipByTenantAndUserRow, error)
 	GetUser(ctx context.Context, id uuid.UUID) (GetUserRow, error)
 	GetUserByProviderIdentity(ctx context.Context, arg GetUserByProviderIdentityParams) (GetUserByProviderIdentityRow, error)
+	IncrementJoinCodeUsedCount(ctx context.Context, code string) error
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
 	UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error)

@@ -7,8 +7,6 @@ CREATE TABLE tenant_memberships (
     tenant_id UUID NOT NULL,
     user_id UUID NOT NULL,
     role TEXT NOT NULL CHECK (role IN ('admin', 'member')) DEFAULT 'member',
-    status TEXT NOT NULL CHECK (status IN ('active', 'invited', 'left')) DEFAULT 'active',
-    joined_via TEXT CHECK (joined_via IN ('domain', 'code', 'manual')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     left_at TIMESTAMPTZ,
     PRIMARY KEY (id),

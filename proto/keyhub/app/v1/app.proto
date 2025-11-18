@@ -13,6 +13,14 @@ service AuthService {
   rpc Logout(LogoutRequest) returns (LogoutResponse);
 }
 
+service TenantService {
+  // 参加コードからテナント情報を取得
+  rpc GetTenantByJoinCode(GetTenantByJoinCodeRequest) returns (GetTenantByJoinCodeResponse);
+
+  // テナントに参加
+  rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
+}
+
 message GetMeRequest {}
 
 message GetMeResponse {
@@ -51,4 +59,24 @@ enum TenantType {
   TENANT_TYPE_DEPARTMENT = 2; // 部署
   TENANT_TYPE_PROJECT = 3; // プロジェクト
   TENANT_TYPE_LABORATORY = 4; // 研究室
+}
+
+message GetTenantByJoinCodeRequest {
+  string join_code = 1;
+}
+
+message GetTenantByJoinCodeResponse {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string description = 3;
+  TenantType tenant_type = 4;
+}
+
+message JoinTenantRequest {
+  string join_code = 1;
+}
+
+message JoinTenantResponse {
+  Tenant tenant = 1;
+  string message = 2; // 成功メッセージ
 }

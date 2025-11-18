@@ -209,9 +209,8 @@
 | id | UUID | PK, NOT NULL | メンバーシップ識別子 | `a7b8c9d0-e1f2-3456-abcd-789012345678` |
 | tenant_id | UUID | FK(tenants.id), NOT NULL | 所属テナント | `d4e5f6a7-b8c9-0123-defa-456789012345` |
 | user_id | UUID | FK(users.id), NOT NULL | 所属ユーザー | `a1b2c3d4-e5f6-7890-abcd-ef1234567890` |
-| role | TEXT | DEFAULT 'member' | 権限レベル | `member`, `admin`, `owner` |
-| status | TEXT | DEFAULT 'active' | メンバーシップ状態 | `active`, `invited`, `suspended` |
-| joined_at | TIMESTAMPTZ | NOT NULL | 参加日時 | `2024-01-15 11:00:00+09` |
+| role | TEXT | DEFAULT 'member' | 権限レベル（将来使用予定） | `member`, `admin` |
+| created_at | TIMESTAMPTZ | NOT NULL | 参加日時 | `2024-01-15 11:00:00+09` |
 | left_at | TIMESTAMPTZ | - | 退出日時 | null |
 
 **インデックス**:
@@ -223,24 +222,18 @@
 - `INDEX idx_memberships_tenant ON (tenant_id)`
 
 **権限レベル**:
-- `owner`: 全権限（テナント削除、管理者任命）
-- `admin`: 管理権限（メンバー管理、設定変更）
+- `admin`: 管理権限（メンバー管理、設定変更）- 将来実装予定
 - `member`: 基本権限（閲覧、基本操作）
-
-**状態遷移**:
-- `invited` → `active`: 招待承認時
-- `active` → `suspended`: 一時停止時
-- `active` → （削除）: 退出時（left_atを記録）
 
 **使用例**:
 - ユーザーのテナント所属管理
-- 権限チェック
 - メンバー一覧表示
+- 所属履歴の記録
 
 **ビジネスルール**:
 - 1ユーザー1テナントに重複参加不可
-- ownerは最低1名必須
-- 退出時はleft_atを記録（物理削除しない）
+- 退出時はleft_atを記録（論理削除）
+- roleは現在未使用（将来の権限管理のために予約）
 
 ---
 

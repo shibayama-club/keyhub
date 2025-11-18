@@ -74,17 +74,10 @@ PRIMARY KEY (id)
 UNIQUE (tenant_id, user_id)
 
 -- インデックス
-CREATE INDEX idx_tenant_memberships_tenant_id ON tenant_memberships(tenant_id);
 CREATE INDEX idx_tenant_memberships_user_id ON tenant_memberships(user_id);
-CREATE INDEX idx_tenant_memberships_status ON tenant_memberships(status);
-CREATE INDEX idx_tenant_memberships_tenant_user_status
-    ON tenant_memberships(tenant_id, user_id, status);
 
 -- 用途:
--- idx_tenant_memberships_tenant_id: Tenantメンバー一覧
 -- idx_tenant_memberships_user_id: ユーザーの所属Tenant一覧
--- idx_tenant_memberships_status: アクティブメンバーのフィルタリング
--- idx_tenant_memberships_tenant_user_status: 複合条件検索の最適化
 ```
 
 **Sessions Table**
@@ -179,24 +172,21 @@ CREATE INDEX idx_console_sessions_active
 -- 高カーディナリティ（良いインデックス候補）
 CREATE INDEX ON users(email);  -- ほぼユニーク
 
--- 低カーディナリティ（単体では非効率）
-CREATE INDEX ON tenant_memberships(status);  -- 3つの値のみ
-
--- 複合インデックスで改善
-CREATE INDEX ON tenant_memberships(status, joined_at DESC);
+-- 退出していないメンバーの検索を最適化
+CREATE INDEX ON tenant_memberships(tenant_id, left_at) WHERE left_at IS NULL;
 ```
 
 **カバリングインデックス**
 ```sql
 -- クエリ
-SELECT user_id, role, joined_at
+SELECT user_id, role, created_at
 FROM tenant_memberships
-WHERE tenant_id = $1 AND status = 'active';
+WHERE tenant_id = $1 AND left_at IS NULL;
 
 -- カバリングインデックス（全データをインデックスから取得）
 CREATE INDEX idx_covering_membership
-ON tenant_memberships(tenant_id, status)
-INCLUDE (user_id, role, joined_at);
+ON tenant_memberships(tenant_id, left_at)
+INCLUDE (user_id, role, created_at);
 ```
 
 **部分インデックス**
@@ -327,12 +317,11 @@ SELECT
     t.id as tenant_id,
     t.organization_id,
     COUNT(DISTINCT tm.user_id) as total_members,
-    COUNT(DISTINCT CASE WHEN tm.role = 'owner' THEN tm.user_id END) as owner_count,
     COUNT(DISTINCT CASE WHEN tm.role = 'admin' THEN tm.user_id END) as admin_count,
-    COUNT(DISTINCT CASE WHEN tm.joined_at > NOW() - INTERVAL '7 days' THEN tm.user_id END) as new_members_week,
-    MAX(tm.joined_at) as last_join_date
+    COUNT(DISTINCT CASE WHEN tm.created_at > NOW() - INTERVAL '7 days' THEN tm.user_id END) as new_members_week,
+    MAX(tm.created_at) as last_join_date
 FROM tenants t
-LEFT JOIN tenant_memberships tm ON t.id = tm.tenant_id AND tm.status = 'active'
+LEFT JOIN tenant_memberships tm ON t.id = tm.tenant_id AND tm.left_at IS NULL
 GROUP BY t.id, t.organization_id;
 
 -- インデックス追加

@@ -17,4 +17,5 @@ type CreateTenantJoinCodeArg struct {
 
 type TenantJoinCodeRepository interface {
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error)
+	GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error)
 }
