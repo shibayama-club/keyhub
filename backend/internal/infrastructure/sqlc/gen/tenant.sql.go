@@ -17,18 +17,14 @@ INSERT INTO tenants(
     organization_id,
     name,
     description,
-    tenant_type,
-    created_at,
-    updated_at
+    tenant_type
 )
 VALUES(
     $1,
     $2,
     $3,
     $4,
-    $5,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
+    $5
 )
 RETURNING tenants.id, tenants.organization_id, tenants.name, tenants.description, tenants.tenant_type, tenants.created_at, tenants.updated_at
 `

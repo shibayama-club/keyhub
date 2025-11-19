@@ -4,18 +4,14 @@ INSERT INTO tenants(
     organization_id,
     name,
     description,
-    tenant_type,
-    created_at,
-    updated_at
+    tenant_type
 )
 VALUES(
     @id,
     @organization_id,
     @name,
     @description,
-    @tenant_type,
-    CURRENT_TIMESTAMP,
-    CURRENT_TIMESTAMP
+    @tenant_type
 )
 RETURNING sqlc.embed(tenants);
 
