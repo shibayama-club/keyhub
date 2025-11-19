@@ -15,3 +15,10 @@ type CreateTenantInput struct {
 	JoinCodeExpiry *time.Time
 	JoinCodeMaxUse int32
 }
+
+type UpdateTenantInput struct{
+	ID model.TenantID
+	Name string
+	Description string
+	TenantType string
+}
