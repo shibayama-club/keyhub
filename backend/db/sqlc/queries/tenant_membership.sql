@@ -3,15 +3,13 @@ INSERT INTO tenant_memberships(
     id,
     tenant_id,
     user_id,
-    role,
-    created_at
+    role
 )
 VALUES(
     @id,
     @tenant_id,
     @user_id,
-    @role,
-    CURRENT_TIMESTAMP
+    @role
 )
 RETURNING sqlc.embed(tenant_memberships);
 

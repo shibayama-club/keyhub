@@ -16,15 +16,13 @@ INSERT INTO tenant_memberships(
     id,
     tenant_id,
     user_id,
-    role,
-    created_at
+    role
 )
 VALUES(
     $1,
     $2,
     $3,
-    $4,
-    CURRENT_TIMESTAMP
+    $4
 )
 RETURNING tenant_memberships.id, tenant_memberships.tenant_id, tenant_memberships.user_id, tenant_memberships.role, tenant_memberships.created_at, tenant_memberships.left_at
 `
