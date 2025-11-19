@@ -44,7 +44,7 @@ func (h *Handler) CreateTenant(
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	input := &dto.CreateTenantInput{
+	input := dto.CreateTenantInput{
 		OrganizationID: orgID,
 		Name:           req.Msg.Name,
 		Description:    req.Msg.Description,
@@ -58,7 +58,7 @@ func (h *Handler) CreateTenant(
 		input.JoinCodeExpiry = &expiryTime
 	}
 
-	tenantID, err := h.useCase.CreateTenant(ctx, *input)
+	tenantID, err := h.useCase.CreateTenant(ctx, input)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
