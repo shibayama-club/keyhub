@@ -104,9 +104,7 @@ func (u *UseCase) GetAllTenants(ctx context.Context, organizationID model.Organi
 	return tenants, nil
 }
 
-
-
-func (u *UseCase) GetTenantById(ctx context.Context, TenantId model.TenantID)(model.Tenant, error){
+func (u *UseCase) GetTenantById(ctx context.Context, TenantId model.TenantID) (model.Tenant, error) {
 	tenant, err := u.repo.GetTenantByID(ctx, TenantId)
 	if err != nil {
 		return model.Tenant{}, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get a tenant by id from repository")
@@ -115,7 +113,7 @@ func (u *UseCase) GetTenantById(ctx context.Context, TenantId model.TenantID)(mo
 	return tenant, nil
 }
 
-func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)(string, error){
+func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) (string, error) {
 	tenantName, err := model.NewTenantName(input.Name)
 	if err != nil {
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant name")
@@ -137,17 +135,17 @@ func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)
 
 	err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
 		updatedTenant, err = tx.UpdateTenant(ctx, repository.UpdateTenantArg{
-			ID: input.ID,
-			Name: tenantName,
+			ID:          input.ID,
+			Name:        tenantName,
 			Description: tenantDescription,
-			Type: tenantType,
+			Type:        tenantType,
 		})
-		if err != nil{
+		if err != nil {
 			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to update a tenant in repository")
 		}
 		return nil
 	})
-	if err != nil{
+	if err != nil {
 		return "", err
 	}
 

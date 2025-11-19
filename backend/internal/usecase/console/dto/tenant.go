@@ -16,9 +16,9 @@ type CreateTenantInput struct {
 	JoinCodeMaxUse int32
 }
 
-type UpdateTenantInput struct{
-	ID model.TenantID
-	Name string
+type UpdateTenantInput struct {
+	ID          model.TenantID
+	Name        string
 	Description string
-	TenantType string
+	TenantType  string
 }
