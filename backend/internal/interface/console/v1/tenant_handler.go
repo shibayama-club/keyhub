@@ -84,6 +84,7 @@ func convertModelTenantTypeToProto(modelType model.TenantType) consolev1.TenantT
 	}
 }
 
+
 func convertModelTenantToProto(tenant model.Tenant) *consolev1.Tenant {
 	return &consolev1.Tenant{
 		Id:             tenant.ID.String(),
@@ -101,7 +102,7 @@ func (h *Handler) GetAllTenants(
 	req *connect.Request[consolev1.GetAllTenantsRequest],
 ) (*connect.Response[consolev1.GetAllTenantsResponse], error) {
 	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
+	if !ok { 
 		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
 	}
 
@@ -118,3 +119,27 @@ func (h *Handler) GetAllTenants(
 		Tenants: protoTenants,
 	}), nil
 }
+
+func(h *Handler) GetTenantById(
+	ctx context.Context,
+	req *connect.Request[consolev1.GetTenantByIdRequest],
+)(*connect.Response[consolev1.GetTenantByIdResponse], error){
+	// QUESTION(sirasu):ParseTenantIDでいいか?
+	tenantId, err := model.ParseTenantID(req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+	tenant, err := h.useCase.GetTenantById(ctx, tenantId)
+	if err != nil{
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoTenant := convertModelTenantToProto(tenant)
+
+	return connect.NewResponse(&consolev1.GetTenantByIdResponse{
+		Tenant: protoTenant,
+	}), nil
+}
+
+
+// TODO(sirasu):UpdateTenantを実装
