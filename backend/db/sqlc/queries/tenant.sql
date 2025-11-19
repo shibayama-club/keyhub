@@ -1,3 +1,4 @@
+
 -- name: CreateTenant :one
 INSERT INTO tenants(
     id,
@@ -37,3 +38,18 @@ WHERE tm.user_id = $1
   AND tm.left_at IS NULL
 GROUP BY t.id
 ORDER BY t.created_at DESC;
+-- name: GetTenantById :one
+SELECT sqlc.embed(t) 
+FROM tenants t
+WHERE id = $1;
+
+-- name: UpdateTenant :one
+UPDATE tenants
+SET 
+    name = @name,
+    description = @description,
+    tenant_type = @tenant_type,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = @id
+RETURNING sqlc.embed(tenants);
+
