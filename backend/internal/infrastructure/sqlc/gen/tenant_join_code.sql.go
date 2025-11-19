@@ -19,8 +19,7 @@ INSERT INTO tenant_join_codes(
     code,
     expires_at,
     max_uses,
-    used_count,
-    created_at
+    used_count
 )
 VALUES(
     $1,
@@ -28,8 +27,7 @@ VALUES(
     $3,
     $4,
     $5,
-    $6,
-    CURRENT_TIMESTAMP
+    $6
 )
 RETURNING tenant_join_codes.id, tenant_join_codes.tenant_id, tenant_join_codes.code, tenant_join_codes.expires_at, tenant_join_codes.max_uses, tenant_join_codes.used_count, tenant_join_codes.created_at
 `

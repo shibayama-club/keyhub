@@ -5,8 +5,7 @@ INSERT INTO tenant_join_codes(
     code,
     expires_at,
     max_uses,
-    used_count,
-    created_at
+    used_count
 )
 VALUES(
     @id,
@@ -14,8 +13,7 @@ VALUES(
     @code,
     @expires_at,
     @max_uses,
-    @used_count,
-    CURRENT_TIMESTAMP
+    @used_count
 )
 RETURNING sqlc.embed(tenant_join_codes);
 
