@@ -47,6 +47,12 @@ const (
 	// ConsoleServiceGetAllTenantsProcedure is the fully-qualified name of the ConsoleService's
 	// GetAllTenants RPC.
 	ConsoleServiceGetAllTenantsProcedure = "/keyhub.console.v1.ConsoleService/GetAllTenants"
+	// ConsoleServiceGetTenantByIdProcedure is the fully-qualified name of the ConsoleService's
+	// GetTenantById RPC.
+	ConsoleServiceGetTenantByIdProcedure = "/keyhub.console.v1.ConsoleService/GetTenantById"
+	// ConsoleServiceUpdateTenantProcedure is the fully-qualified name of the ConsoleService's
+	// UpdateTenant RPC.
+	ConsoleServiceUpdateTenantProcedure = "/keyhub.console.v1.ConsoleService/UpdateTenant"
 )
 
 // ConsoleAuthServiceClient is a client for the keyhub.console.v1.ConsoleAuthService service.
@@ -156,6 +162,10 @@ type ConsoleServiceClient interface {
 	CreateTenant(context.Context, *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error)
 	// Tenant一覧取得
 	GetAllTenants(context.Context, *connect.Request[v1.GetAllTenantsRequest]) (*connect.Response[v1.GetAllTenantsResponse], error)
+	// IDからTenant取得
+	GetTenantById(context.Context, *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error)
+	// Tenant編集
+	UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
 }
 
 // NewConsoleServiceClient constructs a client for the keyhub.console.v1.ConsoleService service. By
@@ -181,6 +191,18 @@ func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(consoleServiceMethods.ByName("GetAllTenants")),
 			connect.WithClientOptions(opts...),
 		),
+		getTenantById: connect.NewClient[v1.GetTenantByIdRequest, v1.GetTenantByIdResponse](
+			httpClient,
+			baseURL+ConsoleServiceGetTenantByIdProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("GetTenantById")),
+			connect.WithClientOptions(opts...),
+		),
+		updateTenant: connect.NewClient[v1.UpdateTenantRequest, v1.UpdateTenantResponse](
+			httpClient,
+			baseURL+ConsoleServiceUpdateTenantProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("UpdateTenant")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -188,6 +210,8 @@ func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 type consoleServiceClient struct {
 	createTenant  *connect.Client[v1.CreateTenantRequest, v1.CreateTenantResponse]
 	getAllTenants *connect.Client[v1.GetAllTenantsRequest, v1.GetAllTenantsResponse]
+	getTenantById *connect.Client[v1.GetTenantByIdRequest, v1.GetTenantByIdResponse]
+	updateTenant  *connect.Client[v1.UpdateTenantRequest, v1.UpdateTenantResponse]
 }
 
 // CreateTenant calls keyhub.console.v1.ConsoleService.CreateTenant.
@@ -200,12 +224,26 @@ func (c *consoleServiceClient) GetAllTenants(ctx context.Context, req *connect.R
 	return c.getAllTenants.CallUnary(ctx, req)
 }
 
+// GetTenantById calls keyhub.console.v1.ConsoleService.GetTenantById.
+func (c *consoleServiceClient) GetTenantById(ctx context.Context, req *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error) {
+	return c.getTenantById.CallUnary(ctx, req)
+}
+
+// UpdateTenant calls keyhub.console.v1.ConsoleService.UpdateTenant.
+func (c *consoleServiceClient) UpdateTenant(ctx context.Context, req *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error) {
+	return c.updateTenant.CallUnary(ctx, req)
+}
+
 // ConsoleServiceHandler is an implementation of the keyhub.console.v1.ConsoleService service.
 type ConsoleServiceHandler interface {
 	// Tenant作成
 	CreateTenant(context.Context, *connect.Request[v1.CreateTenantRequest]) (*connect.Response[v1.CreateTenantResponse], error)
 	// Tenant一覧取得
 	GetAllTenants(context.Context, *connect.Request[v1.GetAllTenantsRequest]) (*connect.Response[v1.GetAllTenantsResponse], error)
+	// IDからTenant取得
+	GetTenantById(context.Context, *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error)
+	// Tenant編集
+	UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
 }
 
 // NewConsoleServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -227,12 +265,28 @@ func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(consoleServiceMethods.ByName("GetAllTenants")),
 		connect.WithHandlerOptions(opts...),
 	)
+	consoleServiceGetTenantByIdHandler := connect.NewUnaryHandler(
+		ConsoleServiceGetTenantByIdProcedure,
+		svc.GetTenantById,
+		connect.WithSchema(consoleServiceMethods.ByName("GetTenantById")),
+		connect.WithHandlerOptions(opts...),
+	)
+	consoleServiceUpdateTenantHandler := connect.NewUnaryHandler(
+		ConsoleServiceUpdateTenantProcedure,
+		svc.UpdateTenant,
+		connect.WithSchema(consoleServiceMethods.ByName("UpdateTenant")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/keyhub.console.v1.ConsoleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ConsoleServiceCreateTenantProcedure:
 			consoleServiceCreateTenantHandler.ServeHTTP(w, r)
 		case ConsoleServiceGetAllTenantsProcedure:
 			consoleServiceGetAllTenantsHandler.ServeHTTP(w, r)
+		case ConsoleServiceGetTenantByIdProcedure:
+			consoleServiceGetTenantByIdHandler.ServeHTTP(w, r)
+		case ConsoleServiceUpdateTenantProcedure:
+			consoleServiceUpdateTenantHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -248,4 +302,12 @@ func (UnimplementedConsoleServiceHandler) CreateTenant(context.Context, *connect
 
 func (UnimplementedConsoleServiceHandler) GetAllTenants(context.Context, *connect.Request[v1.GetAllTenantsRequest]) (*connect.Response[v1.GetAllTenantsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.GetAllTenants is not implemented"))
+}
+
+func (UnimplementedConsoleServiceHandler) GetTenantById(context.Context, *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.GetTenantById is not implemented"))
+}
+
+func (UnimplementedConsoleServiceHandler) UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.UpdateTenant is not implemented"))
 }
