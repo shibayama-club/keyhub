@@ -150,4 +150,48 @@ func (h *Handler) GetTenantById(
 	}), nil
 }
 
-// TODO(sirasu):UpdateTenantを実装
+func (h *Handler) UpdaTenant(
+	ctx context.Context,
+	req *connect.Request[consolev1.UpdateTenantRequest],
+) (*connect.Response[consolev1.UpdateTenantResponse], error) {
+	tenantId, err := model.ParseTenantID(req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	tenant, err := h.useCase.GetTenantById(ctx, tenantId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	orgID, ok := domain.Value[model.OrganizationID](ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
+	}
+
+	if tenant.OrganizationID != orgID {
+		return nil, connect.NewError(connect.CodeNotFound, errors.WithMessage(domainerrors.ErrNotFound, "tenant not found"))
+	}
+
+	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	input := &dto.UpdateTenantInput{
+		ID:          tenantId,
+		Name:        req.Msg.Name,
+		Description: req.Msg.Description,
+		TenantType:  tenantTypeStr,
+	}
+
+	tenantID, err := h.useCase.UpdateTenant(ctx, *input)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&consolev1.UpdateTenantResponse{
+		Id: tenantID,
+	}), nil
+
+}
