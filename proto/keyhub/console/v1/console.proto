@@ -34,6 +34,10 @@ service ConsoleService {
   rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse);
   // Tenant一覧取得
   rpc GetAllTenants(GetAllTenantsRequest) returns (GetAllTenantsResponse);
+  // IDからTenant取得
+  rpc GetTenantById(GetTenantByIdRequest) returns (GetTenantByIdResponse);
+  // Tenant編集
+  rpc UpdateTenant(UpdateTenantRequest) returns (UpdateTenantResponse);
 }
 
 message Tenant {
@@ -63,6 +67,24 @@ message GetAllTenantsRequest {}
 
 message GetAllTenantsResponse {
   repeated Tenant tenants = 1;
+}
+
+message GetTenantByIdRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+message GetTenantByIdResponse {
+  Tenant tenant = 1;
+}
+
+message UpdateTenantRequest {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string description = 3;
+  TenantType tenant_type = 4;
+}
+
+message UpdateTenantResponse {
+  string id = 1 [(buf.validate.field).string.uuid = true];
 }
 
 enum TenantType {
