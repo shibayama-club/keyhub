@@ -128,9 +128,19 @@ func (h *Handler) GetTenantById(
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
+
 	tenant, err := h.useCase.GetTenantById(ctx, tenantId)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	orgID, ok := domain.Value[model.OrganizationID](ctx)
+	if !ok {
+		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
+	}
+
+	if tenant.OrganizationID != orgID {
+		return nil, connect.NewError(connect.CodeNotFound, errors.WithMessage(domainerrors.ErrNotFound, "tenant not found"))
 	}
 
 	protoTenant := convertModelTenantToProto(tenant)
