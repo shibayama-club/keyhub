@@ -75,7 +75,7 @@ func (t *SqlcTransaction) GetTenantsByUserID(ctx context.Context, userID model.U
 }
 func (t *SqlcTransaction) GetTenantByID(ctx context.Context, id model.TenantID) (model.Tenant, error) {
 	row, err := t.queries.GetTenantById(ctx, id.UUID())
-	if err != nil{
+	if err != nil {
 		return model.Tenant{}, err
 	}
 	return parseSqlcTenant(row.Tenant)
@@ -83,10 +83,10 @@ func (t *SqlcTransaction) GetTenantByID(ctx context.Context, id model.TenantID) 
 
 func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (model.Tenant, error) {
 	row, err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
-		ID: arg.ID.UUID(),
-		Name: arg.Name.String(),
+		ID:          arg.ID.UUID(),
+		Name:        arg.Name.String(),
 		Description: arg.Description.String(),
-		TenantType: arg.Type.String(),
+		TenantType:  arg.Type.String(),
 	})
 	if err != nil {
 		return model.Tenant{}, err
