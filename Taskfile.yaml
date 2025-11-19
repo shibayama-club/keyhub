@@ -191,8 +191,7 @@ tasks:
     deps: [compose:up]
     cmds:
       - docker exec $(docker ps -qf "name=postgres") pg_dump -U postgres -d keyhub --schema-only --no-owner --no-privileges > backend/db/schema.sql
-      - grep -v '^\\restrict ' backend/db/schema.sql | grep -v '^\\unrestrict ' | grep -v '^-- Dumped from database version' | grep -v '^-- Dumped by pg_dump version' > backend/db/schema.sql.tmp && mv backend/db/schema.sql.tmp backend/db/schema.sql
-      - echo "Schema dumped to backend/db/schema.sql (version comments and Supabase commands removed)"
+      - echo "Schema dumped to backend/db/schema.sql"
 
   lint:
     deps: [lint:backend, lint:frontend]
