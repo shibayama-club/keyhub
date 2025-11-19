@@ -191,6 +191,10 @@ tasks:
     deps: [compose:up]
     cmds:
       - docker exec $(docker ps -qf "name=postgres") pg_dump -U postgres -d keyhub --schema-only --no-owner --no-privileges > backend/db/schema.sql
+      - sed -i '' '/^-- Dumped from database version /d' backend/db/schema.sql
+      - sed -i '' '/^-- Dumped by pg_dump version /d' backend/db/schema.sql
+      - sed -i '' '/^\\restrict /d' backend/db/schema.sql
+      - sed -i '' '/^\\unrestrict /d' backend/db/schema.sql
       - echo "Schema dumped to backend/db/schema.sql"
 
   lint:
