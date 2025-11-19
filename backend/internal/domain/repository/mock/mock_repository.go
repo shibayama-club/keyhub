@@ -220,6 +220,21 @@ func (mr *MockRepositoryMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockRepository)(nil).GetTenant), ctx, id)
 }
 
+// GetTenantByID mocks base method.
+func (m *MockRepository) GetTenantByID(ctx context.Context, id model.TenantID) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantByID", ctx, id)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantByID indicates an expected call of GetTenantByID.
+func (mr *MockRepositoryMockRecorder) GetTenantByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByID", reflect.TypeOf((*MockRepository)(nil).GetTenantByID), ctx, id)
+}
+
 // GetTenantByJoinCode mocks base method.
 func (m *MockRepository) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
 	m.ctrl.T.Helper()
@@ -335,6 +350,21 @@ func (m *MockRepository) SaveOAuthState(ctx context.Context, oauthState model.OA
 func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockRepository)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpdateTenant mocks base method.
+func (m *MockRepository) UpdateTenant(ctx context.Context, Arg repository.UpdateTenantArg) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenant", ctx, Arg)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTenant indicates an expected call of UpdateTenant.
+func (mr *MockRepositoryMockRecorder) UpdateTenant(ctx, Arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockRepository)(nil).UpdateTenant), ctx, Arg)
 }
 
 // UpsertUser mocks base method.
@@ -582,6 +612,21 @@ func (mr *MockTransactionMockRecorder) GetTenant(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockTransaction)(nil).GetTenant), ctx, id)
 }
 
+// GetTenantByID mocks base method.
+func (m *MockTransaction) GetTenantByID(ctx context.Context, id model.TenantID) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantByID", ctx, id)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantByID indicates an expected call of GetTenantByID.
+func (mr *MockTransactionMockRecorder) GetTenantByID(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByID", reflect.TypeOf((*MockTransaction)(nil).GetTenantByID), ctx, id)
+}
+
 // GetTenantByJoinCode mocks base method.
 func (m *MockTransaction) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
 	m.ctrl.T.Helper()
@@ -697,6 +742,21 @@ func (m *MockTransaction) SaveOAuthState(ctx context.Context, oauthState model.O
 func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockTransaction)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpdateTenant mocks base method.
+func (m *MockTransaction) UpdateTenant(ctx context.Context, Arg repository.UpdateTenantArg) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenant", ctx, Arg)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTenant indicates an expected call of UpdateTenant.
+func (mr *MockTransactionMockRecorder) UpdateTenant(ctx, Arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockTransaction)(nil).UpdateTenant), ctx, Arg)
 }
 
 // UpsertUser mocks base method.
