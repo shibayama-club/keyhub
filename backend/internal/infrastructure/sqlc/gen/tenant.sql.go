@@ -101,7 +101,7 @@ func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) (
 	return items, nil
 }
 
-const getTenantbyId = `-- name: GetTenantbyId :one
+const getTenantById = `-- name: GetTenantById :one
 SELECT
     t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at,
     jc.id, jc.tenant_id, jc.code, jc.expires_at, jc.max_uses, jc.used_count, jc.created_at
@@ -111,14 +111,14 @@ INNER JOIN tenant_join_codes jc
 WHERE t.id = $1
 `
 
-type GetTenantbyIdRow struct {
+type GetTenantByIdRow struct {
 	Tenant         Tenant
 	TenantJoinCode TenantJoinCode
 }
 
-func (q *Queries) GetTenantbyId(ctx context.Context, id uuid.UUID) (GetTenantbyIdRow, error) {
-	row := q.db.QueryRow(ctx, getTenantbyId, id)
-	var i GetTenantbyIdRow
+func (q *Queries) GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error) {
+	row := q.db.QueryRow(ctx, getTenantById, id)
+	var i GetTenantByIdRow
 	err := row.Scan(
 		&i.Tenant.ID,
 		&i.Tenant.OrganizationID,

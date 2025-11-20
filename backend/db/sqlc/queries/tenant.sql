@@ -15,7 +15,7 @@ VALUES(
 )
 RETURNING sqlc.embed(tenants);
 
--- name: GetTenantbyId :one
+-- name: GetTenantById :one
 SELECT
     sqlc.embed(t),
     sqlc.embed(jc)
