@@ -26,7 +26,7 @@ WHERE tjc.code = $1
     AND (tjc.expires_at IS NULL OR tjc.expires_at > CURRENT_TIMESTAMP)
     AND (tjc.max_uses = 0 OR tjc.used_count < tjc.max_uses);
 
--- name: UpdateTenantJoinCode :one
+-- name: UpdateTenantJoinCodeByTenantId :one
 UPDATE tenant_join_codes
 SET 
     code = @code,
