@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"time"
 
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
@@ -96,6 +97,19 @@ func convertModelTenantToProto(tenant model.Tenant) *consolev1.Tenant {
 	}
 }
 
+func convertModelGetTenantByIdToProto(tenant dto.GetTenantByIdOutput) *consolev1.GetTenantByIdResponse {
+	var protoExpiry *timestamppb.Timestamp
+	if tenant.JoinCode.ExpiresAt != nil {
+		protoExpiry = timestamppb.New(*tenant.JoinCode.ExpiresAt)
+	}
+	return &consolev1.GetTenantByIdResponse{
+		Tenant:         convertModelTenantToProto(tenant.Tenant),
+		JoinCode:       tenant.JoinCode.Code.String(),
+		JoinCodeExpiry: protoExpiry,
+		JoinCodeMaxUse: tenant.JoinCode.MaxUses.Int32(),
+	}
+}
+
 func (h *Handler) GetAllTenants(
 	ctx context.Context,
 	req *connect.Request[consolev1.GetAllTenantsRequest],
@@ -134,20 +148,9 @@ func (h *Handler) GetTenantById(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
-	}
+	protoTenant := convertModelGetTenantByIdToProto(tenant)
 
-	if tenant.OrganizationID != orgID {
-		return nil, connect.NewError(connect.CodeNotFound, errors.WithMessage(domainerrors.ErrNotFound, "tenant not found"))
-	}
-
-	protoTenant := convertModelTenantToProto(tenant)
-
-	return connect.NewResponse(&consolev1.GetTenantByIdResponse{
-		Tenant: protoTenant,
-	}), nil
+	return connect.NewResponse(protoTenant), nil
 }
 
 func (h *Handler) UpdaTenant(
@@ -159,33 +162,28 @@ func (h *Handler) UpdaTenant(
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	tenant, err := h.useCase.GetTenantById(ctx, tenantId)
-	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
-	}
-
-	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
-	}
-
-	if tenant.OrganizationID != orgID {
-		return nil, connect.NewError(connect.CodeNotFound, errors.WithMessage(domainerrors.ErrNotFound, "tenant not found"))
-	}
-
 	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	input := &dto.UpdateTenantInput{
-		ID:          tenantId,
-		Name:        req.Msg.Name,
-		Description: req.Msg.Description,
-		TenantType:  tenantTypeStr,
+	var joinCodeExpiry *time.Time
+	if req.Msg.JoinCodeExpiry != nil {
+		t := req.Msg.JoinCodeExpiry.AsTime()
+		joinCodeExpiry = &t
 	}
 
-	tenantID, err := h.useCase.UpdateTenant(ctx, *input)
+	input := dto.UpdateTenantInput{
+		TenantID:       tenantId,
+		Name:           req.Msg.Name,
+		Description:    req.Msg.Description,
+		TenantType:     tenantTypeStr,
+		JoinCode:       req.Msg.JoinCode,
+		JoinCodeExpiry: joinCodeExpiry,
+		JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
+	}
+
+	tenantID, err := h.useCase.UpdateTenant(ctx, input)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
