@@ -15,6 +15,7 @@ VALUES(
 )
 RETURNING sqlc.embed(tenants);
 
+-- name: GetTenant :one
 SELECT
     sqlc.embed(t),
     sqlc.embed(jc)
@@ -22,6 +23,7 @@ FROM tenants t
 INNER JOIN tenant_join_codes jc
     ON jc.tenant_id = t.id
 WHERE t.id = $1;
+
 
 -- name: GetAllTenants :many
 SELECT sqlc.embed(t)
