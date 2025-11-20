@@ -36,7 +36,7 @@ type Querier interface {
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
 	UpdateTenant(ctx context.Context, arg UpdateTenantParams) (UpdateTenantRow, error)
-	UpdateTenantJoinCode(ctx context.Context, arg UpdateTenantJoinCodeParams) (UpdateTenantJoinCodeRow, error)
+	UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) (UpdateTenantJoinCodeByTenantIdRow, error)
 	UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error)
 	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
 }
