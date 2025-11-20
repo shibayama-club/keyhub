@@ -85,6 +85,9 @@ message UpdateTenantRequest {
   string name = 2;
   string description = 3;
   TenantType tenant_type = 4;
+  string join_code = 5;
+  google.protobuf.Timestamp join_code_expiry = 6;
+  int32 join_code_max_use = 7;
 }
 
 message UpdateTenantResponse {
