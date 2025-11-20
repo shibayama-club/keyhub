@@ -72,6 +72,21 @@ func (mr *MockIUseCaseMockRecorder) GetAllTenants(ctx, organizationID any) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockIUseCase)(nil).GetAllTenants), ctx, organizationID)
 }
 
+// GetTenantById mocks base method.
+func (m *MockIUseCase) GetTenantById(ctx context.Context, tenantId model.TenantID) (model.Tenant, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTenantById", ctx, tenantId)
+	ret0, _ := ret[0].(model.Tenant)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTenantById indicates an expected call of GetTenantById.
+func (mr *MockIUseCaseMockRecorder) GetTenantById(ctx, tenantId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantById", reflect.TypeOf((*MockIUseCase)(nil).GetTenantById), ctx, tenantId)
+}
+
 // LoginWithOrgId mocks base method.
 func (m *MockIUseCase) LoginWithOrgId(ctx context.Context, orgID, orgKey string) (string, int64, error) {
 	m.ctrl.T.Helper()
@@ -100,6 +115,21 @@ func (m *MockIUseCase) Logout(ctx context.Context, sessionID string) error {
 func (mr *MockIUseCaseMockRecorder) Logout(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Logout", reflect.TypeOf((*MockIUseCase)(nil).Logout), ctx, sessionID)
+}
+
+// UpdateTenant mocks base method.
+func (m *MockIUseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenant", ctx, input)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTenant indicates an expected call of UpdateTenant.
+func (mr *MockIUseCaseMockRecorder) UpdateTenant(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockIUseCase)(nil).UpdateTenant), ctx, input)
 }
 
 // ValidateSession mocks base method.
