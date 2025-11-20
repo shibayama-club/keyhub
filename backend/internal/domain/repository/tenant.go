@@ -19,10 +19,18 @@ type TenantWithMemberCount struct {
 	MemberCount int32
 }
 type UpdateTenantArg struct {
-	ID          model.TenantID
-	Name        model.TenantName
-	Description model.TenantDescription
-	Type        model.TenantType
+	ID             model.TenantID
+	Name           model.TenantName
+	Description    model.TenantDescription
+	Type           model.TenantType
+	JoinCode       model.TenantJoinCodeEntity
+	JoinCodeExpiry model.TenantJoinCodeExpiresAt
+	JoinCodeMaxUse model.TenantJoinCodeMaxUses
+}
+
+type TenantWithJoinCode struct {
+	Tenant   model.Tenant
+	JoinCode model.TenantJoinCodeEntity
 }
 
 type TenantRepository interface {
