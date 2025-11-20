@@ -74,6 +74,10 @@ message GetTenantByIdRequest {
 }
 message GetTenantByIdResponse {
   Tenant tenant = 1;
+  string join_code = 2;
+  google.protobuf.Timestamp join_code_expiry = 3;
+  int32 join_code_max_use = 4;
+
 }
 
 message UpdateTenantRequest {
