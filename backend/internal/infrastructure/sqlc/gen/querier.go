@@ -26,7 +26,6 @@ type Querier interface {
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
-	GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error)
 	GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error)
 	GetTenantByJoinCode(ctx context.Context, code string) (GetTenantByJoinCodeRow, error)
 	GetTenantMembershipByTenantAndUser(ctx context.Context, arg GetTenantMembershipByTenantAndUserParams) (GetTenantMembershipByTenantAndUserRow, error)
@@ -37,6 +36,7 @@ type Querier interface {
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
 	UpdateTenant(ctx context.Context, arg UpdateTenantParams) (UpdateTenantRow, error)
+	UpdateTenantJoinCode(ctx context.Context, arg UpdateTenantJoinCodeParams) (UpdateTenantJoinCodeRow, error)
 	UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error)
 	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
 }

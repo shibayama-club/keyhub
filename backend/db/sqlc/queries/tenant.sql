@@ -1,4 +1,3 @@
-
 -- name: CreateTenant :one
 INSERT INTO tenants(
     id,
@@ -16,10 +15,13 @@ VALUES(
 )
 RETURNING sqlc.embed(tenants);
 
--- name: GetTenant :one
-SELECT sqlc.embed(t) 
+SELECT
+    sqlc.embed(t),
+    sqlc.embed(jc)
 FROM tenants t
-WHERE id = $1;
+INNER JOIN tenant_join_codes jc
+    ON jc.tenant_id = t.id
+WHERE t.id = $1;
 
 -- name: GetAllTenants :many
 SELECT sqlc.embed(t)
@@ -28,17 +30,8 @@ WHERE organization_id = $1
 ORDER BY created_at DESC;
 
 -- name: GetTenantById :one
-SELECT
-    sqlc.embed(t),
-    sqlc.embed(tenant_join_codes)
+SELECT sqlc.embed(t)
 FROM tenants t
-INNER JOIN LATERAL (
-    SELECT *
-    FROM tenant_join_codes
-    WHERE tenant_id = t.id
-    ORDER BY created_at DESC
-    LIMIT 1
-) tenant_join_codes ON TRUE
 WHERE t.id = $1;
 
 
@@ -47,9 +40,8 @@ UPDATE tenants
 SET 
     name = @name,
     description = @description,
-    tenant_type = @tenant_type,
-    updated_at = CURRENT_TIMESTAMP
-WHERE id = @id
+    tenant_type = @tenant_type
+WHERE id = $1
 RETURNING sqlc.embed(tenants);
 
 -- name: GetTenantsByUserID :many

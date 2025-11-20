@@ -101,19 +101,19 @@ func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) (
 	return items, nil
 }
 
-const getTenant = `-- name: GetTenant :one
-SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
+const getTenantById = `-- name: GetTenantById :one
+SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
 FROM tenants t
-WHERE id = $1
+WHERE t.id = $1
 `
 
-type GetTenantRow struct {
+type GetTenantByIdRow struct {
 	Tenant Tenant
 }
 
-func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error) {
-	row := q.db.QueryRow(ctx, getTenant, id)
-	var i GetTenantRow
+func (q *Queries) GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error) {
+	row := q.db.QueryRow(ctx, getTenantById, id)
+	var i GetTenantByIdRow
 	err := row.Scan(
 		&i.Tenant.ID,
 		&i.Tenant.OrganizationID,
@@ -173,47 +173,21 @@ func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]G
 	return items, nil
 }
 
-const getTenantById = `-- name: GetTenantById :one
-SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
-FROM tenants t
-WHERE id = $1
-`
-
-type GetTenantByIdRow struct {
-	Tenant Tenant
-}
-
-func (q *Queries) GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error) {
-	row := q.db.QueryRow(ctx, getTenantById, id)
-	var i GetTenantByIdRow
-	err := row.Scan(
-		&i.Tenant.ID,
-		&i.Tenant.OrganizationID,
-		&i.Tenant.Name,
-		&i.Tenant.Description,
-		&i.Tenant.TenantType,
-		&i.Tenant.CreatedAt,
-		&i.Tenant.UpdatedAt,
-	)
-	return i, err
-}
-
 const updateTenant = `-- name: UpdateTenant :one
 UPDATE tenants
 SET 
-    name = $1,
-    description = $2,
-    tenant_type = $3,
-    updated_at = CURRENT_TIMESTAMP
-WHERE id = $4
+    name = $2,
+    description = $3,
+    tenant_type = $4
+WHERE id = $1
 RETURNING tenants.id, tenants.organization_id, tenants.name, tenants.description, tenants.tenant_type, tenants.created_at, tenants.updated_at
 `
 
 type UpdateTenantParams struct {
+	ID          uuid.UUID
 	Name        string
 	Description string
 	TenantType  string
-	ID          uuid.UUID
 }
 
 type UpdateTenantRow struct {
@@ -222,10 +196,10 @@ type UpdateTenantRow struct {
 
 func (q *Queries) UpdateTenant(ctx context.Context, arg UpdateTenantParams) (UpdateTenantRow, error) {
 	row := q.db.QueryRow(ctx, updateTenant,
+		arg.ID,
 		arg.Name,
 		arg.Description,
 		arg.TenantType,
-		arg.ID,
 	)
 	var i UpdateTenantRow
 	err := row.Scan(
