@@ -172,6 +172,7 @@ func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]G
 	}
 	return items, nil
 }
+
 const getTenantById = `-- name: GetTenantById :one
 SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
 FROM tenants t
