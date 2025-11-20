@@ -73,10 +73,10 @@ func (mr *MockIUseCaseMockRecorder) GetAllTenants(ctx, organizationID any) *gomo
 }
 
 // GetTenantById mocks base method.
-func (m *MockIUseCase) GetTenantById(ctx context.Context, tenantId model.TenantID) (model.Tenant, error) {
+func (m *MockIUseCase) GetTenantById(ctx context.Context, tenantId model.TenantID) (dto.GetTenantByIdOutput, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetTenantById", ctx, tenantId)
-	ret0, _ := ret[0].(model.Tenant)
+	ret0, _ := ret[0].(dto.GetTenantByIdOutput)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

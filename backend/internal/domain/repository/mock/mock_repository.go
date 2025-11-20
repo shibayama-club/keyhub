@@ -353,10 +353,10 @@ func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, oauthState any) *gomoc
 }
 
 // UpdateTenant mocks base method.
-func (m *MockRepository) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (repository.TenantWithJoinCode, error) {
+func (m *MockRepository) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (model.Tenant, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTenant", ctx, arg)
-	ret0, _ := ret[0].(repository.TenantWithJoinCode)
+	ret0, _ := ret[0].(model.Tenant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -365,6 +365,21 @@ func (m *MockRepository) UpdateTenant(ctx context.Context, arg repository.Update
 func (mr *MockRepositoryMockRecorder) UpdateTenant(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockRepository)(nil).UpdateTenant), ctx, arg)
+}
+
+// UpdateTenantJoinCodeByTenantId mocks base method.
+func (m *MockRepository) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenantJoinCodeByTenantId", ctx, arg)
+	ret0, _ := ret[0].(model.TenantJoinCodeEntity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTenantJoinCodeByTenantId indicates an expected call of UpdateTenantJoinCodeByTenantId.
+func (mr *MockRepositoryMockRecorder) UpdateTenantJoinCodeByTenantId(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenantJoinCodeByTenantId", reflect.TypeOf((*MockRepository)(nil).UpdateTenantJoinCodeByTenantId), ctx, arg)
 }
 
 // UpsertUser mocks base method.
@@ -745,10 +760,10 @@ func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, oauthState any) *gomo
 }
 
 // UpdateTenant mocks base method.
-func (m *MockTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (repository.TenantWithJoinCode, error) {
+func (m *MockTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (model.Tenant, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTenant", ctx, arg)
-	ret0, _ := ret[0].(repository.TenantWithJoinCode)
+	ret0, _ := ret[0].(model.Tenant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -757,6 +772,21 @@ func (m *MockTransaction) UpdateTenant(ctx context.Context, arg repository.Updat
 func (mr *MockTransactionMockRecorder) UpdateTenant(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockTransaction)(nil).UpdateTenant), ctx, arg)
+}
+
+// UpdateTenantJoinCodeByTenantId mocks base method.
+func (m *MockTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenantJoinCodeByTenantId", ctx, arg)
+	ret0, _ := ret[0].(model.TenantJoinCodeEntity)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateTenantJoinCodeByTenantId indicates an expected call of UpdateTenantJoinCodeByTenantId.
+func (mr *MockTransactionMockRecorder) UpdateTenantJoinCodeByTenantId(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenantJoinCodeByTenantId", reflect.TypeOf((*MockTransaction)(nil).UpdateTenantJoinCodeByTenantId), ctx, arg)
 }
 
 // UpsertUser mocks base method.
