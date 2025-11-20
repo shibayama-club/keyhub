@@ -3,7 +3,6 @@ package sqlc
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/samber/lo"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
@@ -19,21 +18,6 @@ func parseSqlcTenant(tenant sqlcgen.Tenant) (model.Tenant, error) {
 		Type:           model.TenantType(tenant.TenantType),
 		CreatedAt:      tenant.CreatedAt.Time,
 		UpdatedAt:      tenant.UpdatedAt.Time,
-	}, nil
-}
-
-func parseSqlcTenantWithJoinCode(tenant sqlcgen.Tenant, tenantJoinCode sqlcgen.TenantJoinCode) (repository.TenantWithJoinCode, error) {
-	tenantEntity, err := parseSqlcTenant(tenant)
-	if err != nil {
-		return repository.TenantWithJoinCode{}, err
-	}
-	joinCodeEntity, err := parseSqlcTenantJoinCode(tenantJoinCode)
-	if err != nil {
-		return repository.TenantWithJoinCode{}, err
-	}
-	return repository.TenantWithJoinCode{
-		Tenant:   tenantEntity,
-		JoinCode: joinCodeEntity,
 	}, nil
 }
 
@@ -110,28 +94,15 @@ func (t *SqlcTransaction) GetTenantByID(ctx context.Context, id model.TenantID) 
 	}, nil
 }
 
-func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (repository.TenantWithJoinCode, error) {
-	tenantRow, err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
+func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (model.Tenant, error) {
+	row, err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
 		ID:          arg.ID.UUID(),
 		Name:        arg.Name.String(),
 		Description: arg.Description.String(),
 		TenantType:  arg.Type.String(),
 	})
-	var expiresAt pgtype.Timestamptz
-	if arg.JoinCodeExpiry != nil {
-		expiresAt = pgtype.Timestamptz{
-			Time:  *arg.JoinCodeExpiry,
-			Valid: true,
-		}
-	}
-	joinCodeRow, err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
-		Code:      arg.JoinCode.Code.String(),
-		ExpiresAt: expiresAt,
-		MaxUses:   arg.JoinCodeMaxUse.Int32(),
-		TenantID:  arg.ID.UUID(),
-	})
 	if err != nil {
-		return repository.TenantWithJoinCode{}, err
+		return model.Tenant{}, err
 	}
-	return parseSqlcTenantWithJoinCode(tenantRow.Tenant, joinCodeRow.TenantJoinCode)
+	return parseSqlcTenant(row.Tenant)
 }

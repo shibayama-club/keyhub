@@ -19,15 +19,11 @@ type TenantWithMemberCount struct {
 	MemberCount int32
 }
 type UpdateTenantArg struct {
-	ID             model.TenantID
-	Name           model.TenantName
-	Description    model.TenantDescription
-	Type           model.TenantType
-	JoinCode       model.TenantJoinCodeEntity
-	JoinCodeExpiry model.TenantJoinCodeExpiresAt
-	JoinCodeMaxUse model.TenantJoinCodeMaxUses
+	ID          model.TenantID
+	Name        model.TenantName
+	Description model.TenantDescription
+	Type        model.TenantType
 }
-
 type TenantWithJoinCode struct {
 	Tenant   model.Tenant
 	JoinCode model.TenantJoinCodeEntity
@@ -39,5 +35,5 @@ type TenantRepository interface {
 	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
 	GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]TenantWithMemberCount, error)
 	GetTenantByID(ctx context.Context, id model.TenantID) (TenantWithJoinCode, error)
-	UpdateTenant(ctx context.Context, arg UpdateTenantArg) (TenantWithJoinCode, error)
+	UpdateTenant(ctx context.Context, arg UpdateTenantArg) (model.Tenant, error)
 }
