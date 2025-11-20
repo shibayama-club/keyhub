@@ -104,13 +104,16 @@ func (u *UseCase) GetAllTenants(ctx context.Context, organizationID model.Organi
 	return tenants, nil
 }
 
-func (u *UseCase) GetTenantById(ctx context.Context, TenantId model.TenantID) (model.Tenant, error) {
-	tenant, err := u.repo.GetTenantByID(ctx, TenantId)
+func (u *UseCase) GetTenantById(ctx context.Context, TenantId model.TenantID) (dto.GetTenantByIdOutput, error) {
+	tenantWithJoinCode, err := u.repo.GetTenantByID(ctx, TenantId)
 	if err != nil {
-		return model.Tenant{}, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get a tenant by id from repository")
+		return dto.GetTenantByIdOutput{}, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get a tenant by id from repository")
 	}
 
-	return tenant, nil
+	return dto.GetTenantByIdOutput{
+		Tenant:   tenantWithJoinCode.Tenant,
+		JoinCode: tenantWithJoinCode.JoinCode,
+	}, nil
 }
 
 func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) (string, error) {
@@ -129,19 +132,52 @@ func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant type")
 	}
 
-	var updatedTenant model.Tenant
+	joinCode, err := model.NewTenantJoinCode(input.JoinCode)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code")
+	}
 
-	//　QUESTION(sirasu):一つだからwithtransctionで挟まないで直でいい?
+	joinCodeExpiry, err := model.NewTenantJoinCodeExpiresAt(input.JoinCodeExpiry)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code expiry")
+	}
+
+	joinCodeMaxUse, err := model.NewTenantJoinCodeMaxUses(input.JoinCodeMaxUse)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid join code max use")
+	}
+
+	joinCodeEntity, err := model.NewTenantJoinCodeEntity(
+		input.TenantID,
+		joinCode,
+		joinCodeExpiry,
+		joinCodeMaxUse,
+	)
+	if err != nil {
+		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant join code entity")
+	}
+
+	var updatedTenant model.Tenant
 
 	err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
 		updatedTenant, err = tx.UpdateTenant(ctx, repository.UpdateTenantArg{
-			ID:          input.ID,
+			ID:          input.TenantID,
 			Name:        tenantName,
 			Description: tenantDescription,
 			Type:        tenantType,
 		})
 		if err != nil {
 			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to update a tenant in repository")
+		}
+		_, err = tx.UpdateTenantJoinCodeByTenantId(ctx, repository.UpdateTenantJoinCodeArg{
+			TenantID:  input.TenantID,
+			Code:      joinCodeEntity.Code,
+			ExpiresAt: joinCodeEntity.ExpiresAt,
+			MaxUses:   joinCodeEntity.MaxUses,
+			UsedCount: joinCodeEntity.UsedCount,
+		})
+		if err != nil {
+			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to update tenant join code in repository")
 		}
 		return nil
 	})
