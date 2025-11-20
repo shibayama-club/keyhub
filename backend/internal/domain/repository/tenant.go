@@ -38,6 +38,6 @@ type TenantRepository interface {
 	GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error)
 	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
 	GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]TenantWithMemberCount, error)
-	GetTenantByID(ctx context.Context, id model.TenantID) (model.Tenant, error)
-	UpdateTenant(ctx context.Context, Arg UpdateTenantArg) (model.Tenant, error)
+	GetTenantByID(ctx context.Context, id model.TenantID) (TenantWithJoinCode, error)
+	UpdateTenant(ctx context.Context, arg UpdateTenantArg) (TenantWithJoinCode, error)
 }
