@@ -17,5 +17,4 @@ type IUseCase interface {
 	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
 	GetTenantById(ctx context.Context, tenantId model.TenantID) (dto.GetTenantByIdOutput, error)
 	UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) (string, error)
-
 }

@@ -17,7 +17,7 @@ type CreateTenantInput struct {
 }
 
 type UpdateTenantInput struct {
-	TenantID             model.TenantID
+	TenantID       model.TenantID
 	Name           string
 	Description    string
 	TenantType     string
