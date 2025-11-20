@@ -2,10 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict 50nq38pOErhhkuWtoaRQNRyqYsCqY8EyVRQRlvyymq8YcoT7WBaJlkcSDmEghWr
 
--- Dumped from database version 16.10
--- Dumped by pg_dump version 16.10
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -365,24 +362,10 @@ CREATE INDEX idx_join_codes_tenant ON public.tenant_join_codes USING btree (tena
 
 
 --
--- Name: idx_memberships_tenant_left; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_memberships_tenant_left ON public.tenant_memberships USING btree (tenant_id, left_at) WHERE (left_at IS NULL);
-
-
---
 -- Name: idx_memberships_user; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_memberships_user ON public.tenant_memberships USING btree (user_id);
-
-
---
--- Name: idx_memberships_user_left_tenant; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_memberships_user_left_tenant ON public.tenant_memberships USING btree (user_id, left_at, tenant_id) WHERE (left_at IS NULL);
 
 
 --
@@ -493,5 +476,4 @@ ALTER TABLE ONLY public.user_identities
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 50nq38pOErhhkuWtoaRQNRyqYsCqY8EyVRQRlvyymq8YcoT7WBaJlkcSDmEghWr
 
