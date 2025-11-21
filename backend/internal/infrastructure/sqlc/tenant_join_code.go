@@ -74,10 +74,10 @@ func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, ar
 		}
 	}
 	err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
+		TenantID:  arg.TenantID.UUID(),
 		Code:      arg.Code.String(),
 		ExpiresAt: expiresAt,
 		MaxUses:   arg.MaxUses.Int32(),
-		TenantID:  arg.TenantID.UUID(),
 	})
 	if err != nil {
 		return err
