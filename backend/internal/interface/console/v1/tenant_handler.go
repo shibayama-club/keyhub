@@ -153,6 +153,15 @@ func (h *Handler) GetTenantById(
 	return connect.NewResponse(protoTenant), nil
 }
 
+// protoのtimestamppb.Timestampをtime.Timeに変換
+func parseTimestampToTime(timestamp *timestamppb.Timestamp) *time.Time {
+	if timestamp == nil {
+		return nil
+	}
+	t := timestamp.AsTime()
+	return &t
+}
+
 func (h *Handler) UpdaTenant(
 	ctx context.Context,
 	req *connect.Request[consolev1.UpdateTenantRequest],
@@ -167,11 +176,7 @@ func (h *Handler) UpdaTenant(
 		return errors.Wrap(err, "invalid tenant type")
 	}
 
-	var joinCodeExpiry *time.Time
-	if req.Msg.JoinCodeExpiry != nil {
-		t := req.Msg.JoinCodeExpiry.AsTime()
-		joinCodeExpiry = &t
-	}
+	joinCodeExpiry := parseTimestampToTime(req.Msg.JoinCodeExpiry)
 
 	input := dto.UpdateTenantInput{
 		TenantID:       tenantId,
