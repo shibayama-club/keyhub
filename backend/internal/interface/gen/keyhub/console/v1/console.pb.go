@@ -768,7 +768,6 @@ func (x *UpdateTenantRequest) GetJoinCodeMaxUse() int32 {
 
 type UpdateTenantResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -801,13 +800,6 @@ func (x *UpdateTenantResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use UpdateTenantResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTenantResponse) Descriptor() ([]byte, []int) {
 	return file_keyhub_console_v1_console_proto_rawDescGZIP(), []int{12}
-}
-
-func (x *UpdateTenantResponse) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
 }
 
 var File_keyhub_console_v1_console_proto protoreflect.FileDescriptor
@@ -864,9 +856,8 @@ const file_keyhub_console_v1_console_proto_rawDesc = "" +
 	"tenantType\x12\x1b\n" +
 	"\tjoin_code\x18\x05 \x01(\tR\bjoinCode\x12D\n" +
 	"\x10join_code_expiry\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\x0ejoinCodeExpiry\x12)\n" +
-	"\x11join_code_max_use\x18\a \x01(\x05R\x0ejoinCodeMaxUse\"0\n" +
-	"\x14UpdateTenantResponse\x12\x18\n" +
-	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id*\x90\x01\n" +
+	"\x11join_code_max_use\x18\a \x01(\x05R\x0ejoinCodeMaxUse\"\x16\n" +
+	"\x14UpdateTenantResponse*\x90\x01\n" +
 	"\n" +
 	"TenantType\x12\x1b\n" +
 	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
