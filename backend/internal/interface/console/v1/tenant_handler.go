@@ -156,15 +156,15 @@ func (h *Handler) GetTenantById(
 func (h *Handler) UpdaTenant(
 	ctx context.Context,
 	req *connect.Request[consolev1.UpdateTenantRequest],
-) (*connect.Response[consolev1.UpdateTenantResponse], error) {
+) error {
 	tenantId, err := model.ParseTenantID(req.Msg.Id)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		return errors.Wrap(err, "invalid tenant id")
 	}
 
 	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+		return errors.Wrap(err, "invalid tenant type")
 	}
 
 	var joinCodeExpiry *time.Time
@@ -183,13 +183,11 @@ func (h *Handler) UpdaTenant(
 		JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
 	}
 
-	tenantID, err := h.useCase.UpdateTenant(ctx, input)
+	err = h.useCase.UpdateTenant(ctx, input)
 	if err != nil {
-		return nil, connect.NewError(connect.CodeInternal, err)
+		return connect.NewError(connect.CodeInternal, err)
 	}
 
-	return connect.NewResponse(&consolev1.UpdateTenantResponse{
-		Id: tenantID,
-	}), nil
+	return nil
 
 }
