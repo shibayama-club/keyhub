@@ -101,31 +101,6 @@ func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) (
 	return items, nil
 }
 
-const getTenant = `-- name: GetTenant :one
-SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at 
-FROM tenants t
-WHERE id = $1
-`
-
-type GetTenantRow struct {
-	Tenant Tenant
-}
-
-func (q *Queries) GetTenant(ctx context.Context, id uuid.UUID) (GetTenantRow, error) {
-	row := q.db.QueryRow(ctx, getTenant, id)
-	var i GetTenantRow
-	err := row.Scan(
-		&i.Tenant.ID,
-		&i.Tenant.OrganizationID,
-		&i.Tenant.Name,
-		&i.Tenant.Description,
-		&i.Tenant.TenantType,
-		&i.Tenant.CreatedAt,
-		&i.Tenant.UpdatedAt,
-	)
-	return i, err
-}
-
 const getTenantById = `-- name: GetTenantById :one
 SELECT
     t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at,
