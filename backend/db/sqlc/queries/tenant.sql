@@ -30,14 +30,14 @@ FROM tenants t
 WHERE organization_id = $1
 ORDER BY created_at DESC;
 
--- name: UpdateTenant :one
+-- name: UpdateTenant :exec
 UPDATE tenants
 SET 
     name = @name,
     description = @description,
     tenant_type = @tenant_type
 WHERE id = $1
-RETURNING sqlc.embed(tenants);
+
 
 -- name: GetTenantsByUserID :many
 SELECT
