@@ -162,18 +162,18 @@ func parseTimestampToTime(timestamp *timestamppb.Timestamp) *time.Time {
 	return &t
 }
 
-func (h *Handler) UpdaTenant(
+func (h *Handler) UpdateTenant(
 	ctx context.Context,
 	req *connect.Request[consolev1.UpdateTenantRequest],
-) error {
+) (*connect.Response[consolev1.UpdateTenantResponse], error) {
 	tenantId, err := model.ParseTenantID(req.Msg.Id)
 	if err != nil {
-		return errors.Wrap(err, "invalid tenant id")
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
 	if err != nil {
-		return errors.Wrap(err, "invalid tenant type")
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
 	joinCodeExpiry := parseTimestampToTime(req.Msg.JoinCodeExpiry)
@@ -190,9 +190,9 @@ func (h *Handler) UpdaTenant(
 
 	err = h.useCase.UpdateTenant(ctx, input)
 	if err != nil {
-		return connect.NewError(connect.CodeInternal, err)
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	return nil
+	return connect.NewResponse(&consolev1.UpdateTenantResponse{}), nil
 
 }
