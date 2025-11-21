@@ -205,21 +205,6 @@ func (mr *MockRepositoryMockRecorder) GetSession(ctx, sessionID any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockRepository)(nil).GetSession), ctx, sessionID)
 }
 
-// GetTenant mocks base method.
-func (m *MockRepository) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTenant", ctx, id)
-	ret0, _ := ret[0].(model.Tenant)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTenant indicates an expected call of GetTenant.
-func (mr *MockRepositoryMockRecorder) GetTenant(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockRepository)(nil).GetTenant), ctx, id)
-}
-
 // GetTenantByID mocks base method.
 func (m *MockRepository) GetTenantByID(ctx context.Context, id model.TenantID) (repository.TenantWithJoinCode, error) {
 	m.ctrl.T.Helper()
@@ -608,21 +593,6 @@ func (m *MockTransaction) GetSession(ctx context.Context, sessionID model.Consol
 func (mr *MockTransactionMockRecorder) GetSession(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockTransaction)(nil).GetSession), ctx, sessionID)
-}
-
-// GetTenant mocks base method.
-func (m *MockTransaction) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTenant", ctx, id)
-	ret0, _ := ret[0].(model.Tenant)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetTenant indicates an expected call of GetTenant.
-func (mr *MockTransactionMockRecorder) GetTenant(ctx, id any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockTransaction)(nil).GetTenant), ctx, id)
 }
 
 // GetTenantByID mocks base method.
