@@ -2,7 +2,6 @@ package v1
 
 import (
 	"context"
-	"time"
 
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
@@ -12,6 +11,7 @@ import (
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	consolev1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1"
 	"github.com/shibayama-club/keyhub/internal/usecase/console/dto"
+	"github.com/shibayama-club/keyhub/internal/util"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -153,15 +153,6 @@ func (h *Handler) GetTenantById(
 	return connect.NewResponse(protoTenant), nil
 }
 
-// protoのtimestamppb.Timestampをtime.Timeに変換
-func parseTimestampToTime(timestamp *timestamppb.Timestamp) *time.Time {
-	if timestamp == nil {
-		return nil
-	}
-	t := timestamp.AsTime()
-	return &t
-}
-
 func (h *Handler) UpdateTenant(
 	ctx context.Context,
 	req *connect.Request[consolev1.UpdateTenantRequest],
@@ -176,7 +167,7 @@ func (h *Handler) UpdateTenant(
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 
-	joinCodeExpiry := parseTimestampToTime(req.Msg.JoinCodeExpiry)
+	joinCodeExpiry := util.ParseTimestampToTime(req.Msg.JoinCodeExpiry)
 
 	input := dto.UpdateTenantInput{
 		TenantID:       tenantId,

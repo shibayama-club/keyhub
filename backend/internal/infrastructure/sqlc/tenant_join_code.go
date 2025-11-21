@@ -8,6 +8,7 @@ import (
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
+	"github.com/shibayama-club/keyhub/internal/util"
 )
 
 func parseSqlcTenantJoinCode(tjc sqlcgen.TenantJoinCode) (model.TenantJoinCodeEntity, error) {
@@ -65,21 +66,8 @@ func (t *SqlcTransaction) GetTenantByJoinCode(ctx context.Context, code model.Te
 	return parseSqlcTenant(sqlcRow.Tenant)
 }
 
-// time.Timeをpsgoreのtimestamptzに変換
-func paeseTimeToPgtypeTimestamptz(t *time.Time) pgtype.Timestamptz {
-	if t == nil {
-		return pgtype.Timestamptz{
-			Valid: false,
-		}
-	}
-	return pgtype.Timestamptz{
-		Time:  *t,
-		Valid: true,
-	}
-}
-
 func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) error {
-	expiresAt := paeseTimeToPgtypeTimestamptz(arg.ExpiresAt)
+	expiresAt := util.PaeseTimeToPgtypeTimestamptz(arg.ExpiresAt)
 	err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
 		TenantID:  arg.TenantID.UUID(),
 		Code:      arg.Code.String(),
