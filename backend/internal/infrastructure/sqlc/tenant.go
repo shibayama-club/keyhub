@@ -94,15 +94,15 @@ func (t *SqlcTransaction) GetTenantByID(ctx context.Context, id model.TenantID) 
 	}, nil
 }
 
-func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) (model.Tenant, error) {
-	row, err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
+func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) error {
+	err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
 		ID:          arg.ID.UUID(),
 		Name:        arg.Name.String(),
 		Description: arg.Description.String(),
 		TenantType:  arg.Type.String(),
 	})
 	if err != nil {
-		return model.Tenant{}, err
+		return err
 	}
-	return parseSqlcTenant(row.Tenant)
+	return nil
 }

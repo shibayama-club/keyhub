@@ -65,7 +65,7 @@ func (t *SqlcTransaction) GetTenantByJoinCode(ctx context.Context, code model.Te
 	return parseSqlcTenant(sqlcRow.Tenant)
 }
 
-func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) error {
 	var expiresAt pgtype.Timestamptz
 	if arg.ExpiresAt != nil {
 		expiresAt = pgtype.Timestamptz{
@@ -73,14 +73,14 @@ func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, ar
 			Valid: true,
 		}
 	}
-	row, err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
+	err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
 		Code:      arg.Code.String(),
 		ExpiresAt: expiresAt,
 		MaxUses:   arg.MaxUses.Int32(),
 		TenantID:  arg.TenantID.UUID(),
 	})
 	if err != nil {
-		return model.TenantJoinCodeEntity{}, err
+		return err
 	}
-	return parseSqlcTenantJoinCode(row.TenantJoinCode)
+	return nil
 }
