@@ -89,9 +89,7 @@ message UpdateTenantRequest {
   int32 join_code_max_use = 7;
 }
 
-message UpdateTenantResponse {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-}
+message UpdateTenantResponse {}
 
 enum TenantType {
   TENANT_TYPE_UNSPECIFIED = 0;
