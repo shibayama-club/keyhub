@@ -96,14 +96,13 @@ func (q *Queries) GetTenantByJoinCode(ctx context.Context, code string) (GetTena
 	return i, err
 }
 
-const updateTenantJoinCodeByTenantId = `-- name: UpdateTenantJoinCodeByTenantId :one
+const updateTenantJoinCodeByTenantId = `-- name: UpdateTenantJoinCodeByTenantId :exec
 UPDATE tenant_join_codes
 SET 
     code = $1,
     expires_at = $2,
     max_uses = $3
 WHERE tenant_id = $4
-RETURNING tenant_join_codes.id, tenant_join_codes.tenant_id, tenant_join_codes.code, tenant_join_codes.expires_at, tenant_join_codes.max_uses, tenant_join_codes.used_count, tenant_join_codes.created_at
 `
 
 type UpdateTenantJoinCodeByTenantIdParams struct {
@@ -113,26 +112,12 @@ type UpdateTenantJoinCodeByTenantIdParams struct {
 	TenantID  uuid.UUID
 }
 
-type UpdateTenantJoinCodeByTenantIdRow struct {
-	TenantJoinCode TenantJoinCode
-}
-
-func (q *Queries) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) (UpdateTenantJoinCodeByTenantIdRow, error) {
-	row := q.db.QueryRow(ctx, updateTenantJoinCodeByTenantId,
+func (q *Queries) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) error {
+	_, err := q.db.Exec(ctx, updateTenantJoinCodeByTenantId,
 		arg.Code,
 		arg.ExpiresAt,
 		arg.MaxUses,
 		arg.TenantID,
 	)
-	var i UpdateTenantJoinCodeByTenantIdRow
-	err := row.Scan(
-		&i.TenantJoinCode.ID,
-		&i.TenantJoinCode.TenantID,
-		&i.TenantJoinCode.Code,
-		&i.TenantJoinCode.ExpiresAt,
-		&i.TenantJoinCode.MaxUses,
-		&i.TenantJoinCode.UsedCount,
-		&i.TenantJoinCode.CreatedAt,
-	)
-	return i, err
+	return err
 }

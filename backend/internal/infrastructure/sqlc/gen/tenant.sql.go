@@ -210,14 +210,13 @@ func (q *Queries) GetTenantsByUserID(ctx context.Context, userID uuid.UUID) ([]G
 	return items, nil
 }
 
-const updateTenant = `-- name: UpdateTenant :one
+const updateTenant = `-- name: UpdateTenant :exec
 UPDATE tenants
 SET 
     name = $2,
     description = $3,
     tenant_type = $4
 WHERE id = $1
-RETURNING tenants.id, tenants.organization_id, tenants.name, tenants.description, tenants.tenant_type, tenants.created_at, tenants.updated_at
 `
 
 type UpdateTenantParams struct {
@@ -227,26 +226,12 @@ type UpdateTenantParams struct {
 	TenantType  string
 }
 
-type UpdateTenantRow struct {
-	Tenant Tenant
-}
-
-func (q *Queries) UpdateTenant(ctx context.Context, arg UpdateTenantParams) (UpdateTenantRow, error) {
-	row := q.db.QueryRow(ctx, updateTenant,
+func (q *Queries) UpdateTenant(ctx context.Context, arg UpdateTenantParams) error {
+	_, err := q.db.Exec(ctx, updateTenant,
 		arg.ID,
 		arg.Name,
 		arg.Description,
 		arg.TenantType,
 	)
-	var i UpdateTenantRow
-	err := row.Scan(
-		&i.Tenant.ID,
-		&i.Tenant.OrganizationID,
-		&i.Tenant.Name,
-		&i.Tenant.Description,
-		&i.Tenant.TenantType,
-		&i.Tenant.CreatedAt,
-		&i.Tenant.UpdatedAt,
-	)
-	return i, err
+	return err
 }

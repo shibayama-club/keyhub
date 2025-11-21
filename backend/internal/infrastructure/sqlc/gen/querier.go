@@ -36,8 +36,8 @@ type Querier interface {
 	IncrementJoinCodeUsedCount(ctx context.Context, code string) error
 	RevokeAppSession(ctx context.Context, sessionID string) error
 	SaveOAuthState(ctx context.Context, arg SaveOAuthStateParams) error
-	UpdateTenant(ctx context.Context, arg UpdateTenantParams) (UpdateTenantRow, error)
-	UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) (UpdateTenantJoinCodeByTenantIdRow, error)
+	UpdateTenant(ctx context.Context, arg UpdateTenantParams) error
+	UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) error
 	UpsertUser(ctx context.Context, arg UpsertUserParams) (UpsertUserRow, error)
 	UpsertUserIdentity(ctx context.Context, arg UpsertUserIdentityParams) error
 }
