@@ -50,8 +50,3 @@ WHERE tm.user_id = $1
   AND tm.left_at IS NULL
 GROUP BY t.id
 ORDER BY t.created_at DESC;
-
--- name: GetTenant :one
-SELECT sqlc.embed(t) 
-FROM tenants t
-WHERE id = $1;
