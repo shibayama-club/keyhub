@@ -20,7 +20,6 @@ type UpdateTenantJoinCodeArg struct {
 	Code      model.TenantJoinCode
 	ExpiresAt model.TenantJoinCodeExpiresAt
 	MaxUses   model.TenantJoinCodeMaxUses
-	UsedCount int
 }
 type TenantJoinCodeRepository interface {
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error)
