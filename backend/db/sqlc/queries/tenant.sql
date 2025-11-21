@@ -36,7 +36,7 @@ SET
     name = @name,
     description = @description,
     tenant_type = @tenant_type
-WHERE id = $1
+WHERE id = $1;
 
 
 -- name: GetTenantsByUserID :many

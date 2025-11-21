@@ -32,4 +32,4 @@ SET
     code = @code,
     expires_at = @expires_at,
     max_uses = @max_uses
-WHERE tenant_id = @tenant_id
+WHERE tenant_id = @tenant_id;
