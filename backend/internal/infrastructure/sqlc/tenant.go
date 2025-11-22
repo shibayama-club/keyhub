@@ -35,14 +35,6 @@ func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.Creat
 	return parseSqlcTenant(sqlcTenantRow.Tenant)
 }
 
-func (t *SqlcTransaction) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
-	row, err := t.queries.GetTenant(ctx, id.UUID())
-	if err != nil {
-		return model.Tenant{}, err
-	}
-	return parseSqlcTenant(row.Tenant)
-}
-
 func (t *SqlcTransaction) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
 	rows, err := t.queries.GetAllTenants(ctx, organizationID.UUID())
 	if err != nil {
@@ -72,4 +64,37 @@ func (t *SqlcTransaction) GetTenantsByUserID(ctx context.Context, userID model.U
 	})
 
 	return tenants, nil
+}
+func (t *SqlcTransaction) GetTenantByID(ctx context.Context, id model.TenantID) (repository.TenantWithJoinCode, error) {
+	row, err := t.queries.GetTenantById(ctx, id.UUID())
+	if err != nil {
+		return repository.TenantWithJoinCode{}, err
+	}
+	tenantRow := row.Tenant
+	joinCodeRow := row.TenantJoinCode
+	tenant, err := parseSqlcTenant(tenantRow)
+	if err != nil {
+		return repository.TenantWithJoinCode{}, err
+	}
+	joinCodeEntity, err := parseSqlcTenantJoinCode(joinCodeRow)
+	if err != nil {
+		return repository.TenantWithJoinCode{}, err
+	}
+	return repository.TenantWithJoinCode{
+		Tenant:   tenant,
+		JoinCode: joinCodeEntity,
+	}, nil
+}
+
+func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) error {
+	err := t.queries.UpdateTenant(ctx, sqlcgen.UpdateTenantParams{
+		ID:          arg.ID.UUID(),
+		Name:        arg.Name.String(),
+		Description: arg.Description.String(),
+		TenantType:  arg.Type.String(),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -25,3 +25,11 @@ INNER JOIN tenants t ON tjc.tenant_id = t.id
 WHERE tjc.code = $1
     AND (tjc.expires_at IS NULL OR tjc.expires_at > CURRENT_TIMESTAMP)
     AND (tjc.max_uses = 0 OR tjc.used_count < tjc.max_uses);
+
+-- name: UpdateTenantJoinCodeByTenantId :exec
+UPDATE tenant_join_codes
+SET 
+    code = @code,
+    expires_at = @expires_at,
+    max_uses = @max_uses
+WHERE tenant_id = @tenant_id;

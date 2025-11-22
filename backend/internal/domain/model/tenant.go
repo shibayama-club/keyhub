@@ -19,6 +19,17 @@ func (id TenantID) String() string {
 	return uuid.UUID(id).String()
 }
 
+func ParseTenantID(value string) (TenantID, error) {
+	u, err := uuid.Parse(value)
+	if err != nil {
+		return TenantID{}, errors.WithHint(
+			errors.Wrap(err, "failed to parse tenant ID"),
+			"テナントIDの形式が正しくありません。",
+		)
+	}
+	return TenantID(u), nil
+}
+
 type TenantName string
 
 func (n TenantName) String() string {

@@ -15,16 +15,29 @@ VALUES(
 )
 RETURNING sqlc.embed(tenants);
 
--- name: GetTenant :one
-SELECT sqlc.embed(t) 
+-- name: GetTenantById :one
+SELECT
+    sqlc.embed(t),
+    sqlc.embed(jc)
 FROM tenants t
-WHERE id = $1;
+INNER JOIN tenant_join_codes jc
+    ON jc.tenant_id = t.id
+WHERE t.id = $1;
 
 -- name: GetAllTenants :many
 SELECT sqlc.embed(t)
 FROM tenants t
 WHERE organization_id = $1
 ORDER BY created_at DESC;
+
+-- name: UpdateTenant :exec
+UPDATE tenants
+SET 
+    name = @name,
+    description = @description,
+    tenant_type = @tenant_type
+WHERE id = $1;
+
 
 -- name: GetTenantsByUserID :many
 SELECT
