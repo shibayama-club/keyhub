@@ -95,3 +95,29 @@ func (q *Queries) GetTenantByJoinCode(ctx context.Context, code string) (GetTena
 	)
 	return i, err
 }
+
+const updateTenantJoinCodeByTenantId = `-- name: UpdateTenantJoinCodeByTenantId :exec
+UPDATE tenant_join_codes
+SET 
+    code = $1,
+    expires_at = $2,
+    max_uses = $3
+WHERE tenant_id = $4
+`
+
+type UpdateTenantJoinCodeByTenantIdParams struct {
+	Code      string
+	ExpiresAt pgtype.Timestamptz
+	MaxUses   int32
+	TenantID  uuid.UUID
+}
+
+func (q *Queries) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeByTenantIdParams) error {
+	_, err := q.db.Exec(ctx, updateTenantJoinCodeByTenantId,
+		arg.Code,
+		arg.ExpiresAt,
+		arg.MaxUses,
+		arg.TenantID,
+	)
+	return err
+}

@@ -11,6 +11,7 @@ import (
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	consolev1 "github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1"
 	"github.com/shibayama-club/keyhub/internal/usecase/console/dto"
+	"github.com/shibayama-club/keyhub/internal/util"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -96,6 +97,19 @@ func convertModelTenantToProto(tenant model.Tenant) *consolev1.Tenant {
 	}
 }
 
+func convertModelGetTenantByIdToProto(tenant dto.GetTenantByIdOutput) *consolev1.GetTenantByIdResponse {
+	var protoExpiry *timestamppb.Timestamp
+	if tenant.JoinCode.ExpiresAt != nil {
+		protoExpiry = timestamppb.New(*tenant.JoinCode.ExpiresAt)
+	}
+	return &consolev1.GetTenantByIdResponse{
+		Tenant:         convertModelTenantToProto(tenant.Tenant),
+		JoinCode:       tenant.JoinCode.Code.String(),
+		JoinCodeExpiry: protoExpiry,
+		JoinCodeMaxUse: tenant.JoinCode.MaxUses.Int32(),
+	}
+}
+
 func (h *Handler) GetAllTenants(
 	ctx context.Context,
 	req *connect.Request[consolev1.GetAllTenantsRequest],
@@ -117,4 +131,59 @@ func (h *Handler) GetAllTenants(
 	return connect.NewResponse(&consolev1.GetAllTenantsResponse{
 		Tenants: protoTenants,
 	}), nil
+}
+
+func (h *Handler) GetTenantById(
+	ctx context.Context,
+	req *connect.Request[consolev1.GetTenantByIdRequest],
+) (*connect.Response[consolev1.GetTenantByIdResponse], error) {
+	// QUESTION(sirasu):ParseTenantIDでいいか?
+	tenantId, err := model.ParseTenantID(req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	tenant, err := h.useCase.GetTenantById(ctx, tenantId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	protoTenant := convertModelGetTenantByIdToProto(tenant)
+
+	return connect.NewResponse(protoTenant), nil
+}
+
+func (h *Handler) UpdateTenant(
+	ctx context.Context,
+	req *connect.Request[consolev1.UpdateTenantRequest],
+) (*connect.Response[consolev1.UpdateTenantResponse], error) {
+	tenantId, err := model.ParseTenantID(req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	tenantTypeStr, err := convertTenantType(req.Msg.TenantType)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	joinCodeExpiry := util.ParseTimestampToTime(req.Msg.JoinCodeExpiry)
+
+	input := dto.UpdateTenantInput{
+		TenantID:       tenantId,
+		Name:           req.Msg.Name,
+		Description:    req.Msg.Description,
+		TenantType:     tenantTypeStr,
+		JoinCode:       req.Msg.JoinCode,
+		JoinCodeExpiry: joinCodeExpiry,
+		JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
+	}
+
+	err = h.useCase.UpdateTenant(ctx, input)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&consolev1.UpdateTenantResponse{}), nil
+
 }

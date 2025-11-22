@@ -205,19 +205,19 @@ func (mr *MockRepositoryMockRecorder) GetSession(ctx, sessionID any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockRepository)(nil).GetSession), ctx, sessionID)
 }
 
-// GetTenant mocks base method.
-func (m *MockRepository) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
+// GetTenantByID mocks base method.
+func (m *MockRepository) GetTenantByID(ctx context.Context, id model.TenantID) (repository.TenantWithJoinCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTenant", ctx, id)
-	ret0, _ := ret[0].(model.Tenant)
+	ret := m.ctrl.Call(m, "GetTenantByID", ctx, id)
+	ret0, _ := ret[0].(repository.TenantWithJoinCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetTenant indicates an expected call of GetTenant.
-func (mr *MockRepositoryMockRecorder) GetTenant(ctx, id any) *gomock.Call {
+// GetTenantByID indicates an expected call of GetTenantByID.
+func (mr *MockRepositoryMockRecorder) GetTenantByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockRepository)(nil).GetTenant), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByID", reflect.TypeOf((*MockRepository)(nil).GetTenantByID), ctx, id)
 }
 
 // GetTenantByJoinCode mocks base method.
@@ -335,6 +335,34 @@ func (m *MockRepository) SaveOAuthState(ctx context.Context, oauthState model.OA
 func (mr *MockRepositoryMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockRepository)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpdateTenant mocks base method.
+func (m *MockRepository) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenant", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTenant indicates an expected call of UpdateTenant.
+func (mr *MockRepositoryMockRecorder) UpdateTenant(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockRepository)(nil).UpdateTenant), ctx, arg)
+}
+
+// UpdateTenantJoinCodeByTenantId mocks base method.
+func (m *MockRepository) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenantJoinCodeByTenantId", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTenantJoinCodeByTenantId indicates an expected call of UpdateTenantJoinCodeByTenantId.
+func (mr *MockRepositoryMockRecorder) UpdateTenantJoinCodeByTenantId(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenantJoinCodeByTenantId", reflect.TypeOf((*MockRepository)(nil).UpdateTenantJoinCodeByTenantId), ctx, arg)
 }
 
 // UpsertUser mocks base method.
@@ -567,19 +595,19 @@ func (mr *MockTransactionMockRecorder) GetSession(ctx, sessionID any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockTransaction)(nil).GetSession), ctx, sessionID)
 }
 
-// GetTenant mocks base method.
-func (m *MockTransaction) GetTenant(ctx context.Context, id model.TenantID) (model.Tenant, error) {
+// GetTenantByID mocks base method.
+func (m *MockTransaction) GetTenantByID(ctx context.Context, id model.TenantID) (repository.TenantWithJoinCode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetTenant", ctx, id)
-	ret0, _ := ret[0].(model.Tenant)
+	ret := m.ctrl.Call(m, "GetTenantByID", ctx, id)
+	ret0, _ := ret[0].(repository.TenantWithJoinCode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetTenant indicates an expected call of GetTenant.
-func (mr *MockTransactionMockRecorder) GetTenant(ctx, id any) *gomock.Call {
+// GetTenantByID indicates an expected call of GetTenantByID.
+func (mr *MockTransactionMockRecorder) GetTenantByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenant", reflect.TypeOf((*MockTransaction)(nil).GetTenant), ctx, id)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTenantByID", reflect.TypeOf((*MockTransaction)(nil).GetTenantByID), ctx, id)
 }
 
 // GetTenantByJoinCode mocks base method.
@@ -697,6 +725,34 @@ func (m *MockTransaction) SaveOAuthState(ctx context.Context, oauthState model.O
 func (mr *MockTransactionMockRecorder) SaveOAuthState(ctx, oauthState any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveOAuthState", reflect.TypeOf((*MockTransaction)(nil).SaveOAuthState), ctx, oauthState)
+}
+
+// UpdateTenant mocks base method.
+func (m *MockTransaction) UpdateTenant(ctx context.Context, arg repository.UpdateTenantArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenant", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTenant indicates an expected call of UpdateTenant.
+func (mr *MockTransactionMockRecorder) UpdateTenant(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenant", reflect.TypeOf((*MockTransaction)(nil).UpdateTenant), ctx, arg)
+}
+
+// UpdateTenantJoinCodeByTenantId mocks base method.
+func (m *MockTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateTenantJoinCodeByTenantId", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateTenantJoinCodeByTenantId indicates an expected call of UpdateTenantJoinCodeByTenantId.
+func (mr *MockTransactionMockRecorder) UpdateTenantJoinCodeByTenantId(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateTenantJoinCodeByTenantId", reflect.TypeOf((*MockTransaction)(nil).UpdateTenantJoinCodeByTenantId), ctx, arg)
 }
 
 // UpsertUser mocks base method.

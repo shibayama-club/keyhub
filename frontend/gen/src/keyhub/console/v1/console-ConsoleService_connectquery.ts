@@ -17,3 +17,17 @@ export const createTenant = ConsoleService.method.createTenant;
  * @generated from rpc keyhub.console.v1.ConsoleService.GetAllTenants
  */
 export const getAllTenants = ConsoleService.method.getAllTenants;
+
+/**
+ * IDからTenant取得
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleService.GetTenantById
+ */
+export const getTenantById = ConsoleService.method.getTenantById;
+
+/**
+ * Tenant編集
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleService.UpdateTenant
+ */
+export const updateTenant = ConsoleService.method.updateTenant;

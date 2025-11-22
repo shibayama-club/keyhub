@@ -8,6 +8,7 @@ import (
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
+	"github.com/shibayama-club/keyhub/internal/util"
 )
 
 func parseSqlcTenantJoinCode(tjc sqlcgen.TenantJoinCode) (model.TenantJoinCodeEntity, error) {
@@ -63,4 +64,18 @@ func (t *SqlcTransaction) GetTenantByJoinCode(ctx context.Context, code model.Te
 		return model.Tenant{}, err
 	}
 	return parseSqlcTenant(sqlcRow.Tenant)
+}
+
+func (t *SqlcTransaction) UpdateTenantJoinCodeByTenantId(ctx context.Context, arg repository.UpdateTenantJoinCodeArg) error {
+	expiresAt := util.PaeseTimeToPgtypeTimestamptz(arg.ExpiresAt)
+	err := t.queries.UpdateTenantJoinCodeByTenantId(ctx, sqlcgen.UpdateTenantJoinCodeByTenantIdParams{
+		TenantID:  arg.TenantID.UUID(),
+		Code:      arg.Code.String(),
+		ExpiresAt: expiresAt,
+		MaxUses:   arg.MaxUses.Int32(),
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
