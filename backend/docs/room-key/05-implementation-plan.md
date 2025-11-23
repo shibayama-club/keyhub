@@ -26,7 +26,7 @@ sqlc generate
   - RoomID, RoomName, BuildingName, FloorNumber, RoomType, RoomDescription (Value Objects)
   - Room Entity
 - `internal/domain/model/key.go`
-  - KeyID, KeyNumber, KeyType, KeyStatus (Value Objects)
+  - KeyID, KeyNumber, KeyStatus (Value Objects)
   - Key Entity
 - `internal/domain/model/room_assignment.go`
   - RoomAssignmentID (Value Object)

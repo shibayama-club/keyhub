@@ -172,13 +172,6 @@ message GetRoomsByTenantIdResponse {
 // Messages - Key
 // ============================================================
 
-enum KeyType {
-  KEY_TYPE_UNSPECIFIED = 0;
-  KEY_TYPE_PHYSICAL = 1;  // 物理鍵
-  KEY_TYPE_CARD = 2;      // カードキー
-  KEY_TYPE_DIGITAL = 3;   // デジタルキー
-}
-
 enum KeyStatus {
   KEY_STATUS_UNSPECIFIED = 0;
   KEY_STATUS_AVAILABLE = 1;  // 利用可能
@@ -192,16 +185,14 @@ message Key {
   string room_id = 2 [(buf.validate.field).string.uuid = true];
   string organization_id = 3 [(buf.validate.field).string.uuid = true];
   string key_number = 4;
-  KeyType key_type = 5;
-  KeyStatus status = 6;
-  google.protobuf.Timestamp created_at = 7;
-  google.protobuf.Timestamp updated_at = 8;
+  KeyStatus status = 5;
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
 }
 
 message CreateKeyRequest {
   string room_id = 1 [(buf.validate.field).string.uuid = true];
   string key_number = 2 [(buf.validate.field).string = {min_len: 1, max_len: 50}];
-  KeyType key_type = 3;
 }
 
 message CreateKeyResponse {
@@ -227,8 +218,7 @@ message GetKeyByIdResponse {
 message UpdateKeyRequest {
   string id = 1 [(buf.validate.field).string.uuid = true];
   string key_number = 2 [(buf.validate.field).string = {min_len: 1, max_len: 50}];
-  KeyType key_type = 3;
-  KeyStatus status = 4;
+  KeyStatus status = 3;
 }
 
 message UpdateKeyResponse {}

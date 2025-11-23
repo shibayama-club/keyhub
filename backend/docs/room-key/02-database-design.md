@@ -36,7 +36,6 @@ erDiagram
         uuid room_id FK
         uuid organization_id FK
         text key_number
-        text key_type
         text status
         timestamp created_at
         timestamp updated_at
@@ -122,7 +121,6 @@ erDiagram
 | room_id | UUID | NOT NULL, FK → rooms(id) | 部屋ID |
 | organization_id | UUID | NOT NULL | 組織ID |
 | key_number | TEXT | NOT NULL | 鍵番号（例: "K-101-A"） |
-| key_type | TEXT | NOT NULL | 鍵タイプ |
 | status | TEXT | NOT NULL DEFAULT 'available' | 鍵ステータス |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL | 作成日時 |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL | 更新日時 |
@@ -132,11 +130,6 @@ erDiagram
 - `idx_keys_organization_id`: organization_id
 - `idx_keys_status`: status
 - `idx_keys_organization_key_number`: (organization_id, key_number) UNIQUE
-
-#### key_type ENUM値
-- `physical` - 物理的な鍵
-- `card` - カードキー
-- `digital` - デジタルキー（スマートロックなど）
 
 #### status ENUM値
 - `available` - 利用可能
