@@ -25,10 +25,10 @@ enum TenantType {
 
 enum RoomType {
   ROOM_TYPE_UNSPECIFIED = 0;
-  ROOM_TYPE_CLASSROOM = 1;      // 教室
-  ROOM_TYPE_MEETING_ROOM = 2;   // 会議室
-  ROOM_TYPE_LABORATORY = 3;     // 実験室
-  ROOM_TYPE_OFFICE = 4;         // オフィス
-  ROOM_TYPE_WORKSHOP = 5;       // 作業室
-  ROOM_TYPE_STORAGE = 6;        // 倉庫
+  ROOM_TYPE_CLASSROOM = 1; // 教室
+  ROOM_TYPE_MEETING_ROOM = 2; // 会議室
+  ROOM_TYPE_LABORATORY = 3; // 実験室
+  ROOM_TYPE_OFFICE = 4; // オフィス
+  ROOM_TYPE_WORKSHOP = 5; // 作業室
+  ROOM_TYPE_STORAGE = 6; // 倉庫
 }
