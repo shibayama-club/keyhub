@@ -6,7 +6,7 @@
 
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
-| id | uuid | uuid_generate_v4() | false | [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) |  |  |
+| id | uuid | uuid_generate_v4() | false | [public.tenant_join_codes](public.tenant_join_codes.md) [public.tenant_memberships](public.tenant_memberships.md) [public.room_assignments](public.room_assignments.md) |  |  |
 | organization_id | uuid | '550e8400-e29b-41d4-a716-446655440000'::uuid | false |  |  |  |
 | name | text |  | false |  |  |  |
 | description | text | ''::text | false |  |  |  |
