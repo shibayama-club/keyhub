@@ -23,9 +23,9 @@ erDiagram
         uuid id PK
         uuid organization_id FK
         text name
-        text location
+        text building_name
+        text floor_number
         text room_type
-        int capacity
         text description
         timestamp created_at
         timestamp updated_at
@@ -92,9 +92,9 @@ erDiagram
 | id | UUID | PRIMARY KEY | 部屋ID |
 | organization_id | UUID | NOT NULL | 組織ID |
 | name | TEXT | NOT NULL | 部屋名 |
-| location | TEXT | NOT NULL | 建物名・階数など |
+| building_name | TEXT | NOT NULL | 建物名 |
+| floor_number | TEXT | NOT NULL | 階数（例: "1F", "B1", "3階"） |
 | room_type | TEXT | NOT NULL | 部屋タイプ |
-| capacity | INTEGER | | 収容人数（NULLまたは > 0） |
 | description | TEXT | NOT NULL DEFAULT '' | 説明 |
 | created_at | TIMESTAMP WITH TIME ZONE | NOT NULL | 作成日時 |
 | updated_at | TIMESTAMP WITH TIME ZONE | NOT NULL | 更新日時 |

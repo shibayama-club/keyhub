@@ -23,7 +23,7 @@ sqlc generate
 
 ### 4. ドメインモデルの実装
 - `internal/domain/model/room.go`
-  - RoomID, RoomName, RoomLocation, RoomType, RoomCapacity, RoomDescription (Value Objects)
+  - RoomID, RoomName, BuildingName, FloorNumber, RoomType, RoomDescription (Value Objects)
   - Room Entity
 - `internal/domain/model/key.go`
   - KeyID, KeyNumber, KeyType, KeyStatus (Value Objects)

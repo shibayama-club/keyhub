@@ -74,9 +74,9 @@ message Room {
   string id = 1 [(buf.validate.field).string.uuid = true];
   string organization_id = 2 [(buf.validate.field).string.uuid = true];
   string name = 3;
-  string location = 4;
-  RoomType room_type = 5;
-  optional int32 capacity = 6;
+  string building_name = 4;
+  string floor_number = 5;
+  RoomType room_type = 6;
   string description = 7;
   google.protobuf.Timestamp created_at = 8;
   google.protobuf.Timestamp updated_at = 9;
@@ -84,9 +84,9 @@ message Room {
 
 message CreateRoomRequest {
   string name = 1 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
-  string location = 2 [(buf.validate.field).string = {min_len: 1, max_len: 200}];
-  RoomType room_type = 3;
-  optional int32 capacity = 4 [(buf.validate.field).int32 = {gt: 0}];
+  string building_name = 2 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+  string floor_number = 3 [(buf.validate.field).string = {min_len: 1, max_len: 20}];
+  RoomType room_type = 4;
   string description = 5 [(buf.validate.field).string.max_len = 500];
 }
 
@@ -112,9 +112,9 @@ message GetRoomByIdResponse {
 message UpdateRoomRequest {
   string id = 1 [(buf.validate.field).string.uuid = true];
   string name = 2 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
-  string location = 3 [(buf.validate.field).string = {min_len: 1, max_len: 200}];
-  RoomType room_type = 4;
-  optional int32 capacity = 5 [(buf.validate.field).int32 = {gt: 0}];
+  string building_name = 3 [(buf.validate.field).string = {min_len: 1, max_len: 100}];
+  string floor_number = 4 [(buf.validate.field).string = {min_len: 1, max_len: 20}];
+  RoomType room_type = 5;
   string description = 6 [(buf.validate.field).string.max_len = 500];
 }
 
