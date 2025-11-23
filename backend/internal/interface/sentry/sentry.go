@@ -22,7 +22,7 @@ type IErrorInterceptor interface {
 	// 適切な詳細を含む最終的なエラーレスポンスを構築する
 	buildErrorResponse(ctx context.Context, err error, code connect.Code, eventID string) *connect.Error
 	WrapUnary(next connect.UnaryFunc) connect.UnaryFunc
-	WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc 
+	WrapStreamingClient(next connect.StreamingClientFunc) connect.StreamingClientFunc
 	WrapStreamingHandler(next connect.StreamingHandlerFunc) connect.StreamingHandlerFunc
 }
 
@@ -104,26 +104,15 @@ func (i *ErrorInterceptor) logError(ctx context.Context, err error, code connect
 
 	// エラーコードに基づいて適切なレベルでログ出力
 	switch code {
-	case connect.CodeCanceled,
-		connect.CodeInvalidArgument,
+	case connect.CodeInvalidArgument,
 		connect.CodeNotFound,
 		connect.CodeAlreadyExists,
-		connect.CodePermissionDenied,
-		connect.CodeFailedPrecondition,
-		connect.CodeAborted,
-		connect.CodeOutOfRange,
-		connect.CodeUnauthenticated:
+		connect.CodeUnauthenticated,
+		connect.CodePermissionDenied:
 		// クライアント側エラー - 警告として記録
 		slog.WarnContext(ctx, "request failed due to client error", baseAttrs...)
-
-	case connect.CodeUnknown,
-		connect.CodeDeadlineExceeded,
-		connect.CodeResourceExhausted,
-		connect.CodeUnimplemented,
-		connect.CodeInternal,
-		connect.CodeUnavailable,
-		connect.CodeDataLoss:
-		// サーバー側エラー - エラーとして記録
+	default:
+		// サーバー側エラーやその他 - エラーとして記録
 		slog.ErrorContext(ctx, "request failed due to server error", baseAttrs...)
 	}
 }
