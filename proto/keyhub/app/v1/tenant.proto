@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package keyhub.app.v1;
 
+import "buf/validate/validate.proto";
 import "keyhub/app/v1/common.proto";
 
 service TenantService {
