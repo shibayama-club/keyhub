@@ -19,4 +19,5 @@ type IUseCase interface {
 	UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) error
 	CreateRoom(ctx context.Context, input dto.CreateRoomInput) (string, error)
 	AssignRoomToTenant(ctx context.Context, input dto.AssignRoomToTenantInput) (string, error)
+	CreateKey(ctx context.Context, input dto.CreateKeyInput) (string, error)
 }
