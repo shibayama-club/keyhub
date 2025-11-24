@@ -1,4 +1,4 @@
--- name: CreateTenant :one
+-- name: CreateTenant :exec
 INSERT INTO tenants(
     id,
     organization_id,
@@ -12,8 +12,7 @@ VALUES(
     @name,
     @description,
     @tenant_type
-)
-RETURNING sqlc.embed(tenants);
+);
 
 -- name: GetTenantById :one
 SELECT
