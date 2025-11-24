@@ -12,6 +12,13 @@ import { ConsoleRoomService } from "./room_pb";
 export const createRoom = ConsoleRoomService.method.createRoom;
 
 /**
+ * 部屋一覧を取得
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleRoomService.GetAllRooms
+ */
+export const getAllRooms = ConsoleRoomService.method.getAllRooms;
+
+/**
  * テナントに部屋を割り当て
  *
  * @generated from rpc keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant

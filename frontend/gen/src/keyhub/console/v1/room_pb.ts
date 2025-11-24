@@ -7,7 +7,7 @@ import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2
 import { file_buf_validate_validate } from "../../../buf/validate/validate_pb";
 import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
-import type { RoomType } from "./common_pb";
+import type { Room, RoomType } from "./common_pb";
 import { file_keyhub_console_v1_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -15,7 +15,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file keyhub/console/v1/room.proto.
  */
 export const file_keyhub_console_v1_room: GenFile = /*@__PURE__*/
-  fileDesc("ChxrZXlodWIvY29uc29sZS92MS9yb29tLnByb3RvEhFrZXlodWIuY29uc29sZS52MSKTAQoRQ3JlYXRlUm9vbVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIVCg1idWlsZGluZ19uYW1lGAIgASgJEhQKDGZsb29yX251bWJlchgDIAEoCRIuCglyb29tX3R5cGUYBCABKA4yGy5rZXlodWIuY29uc29sZS52MS5Sb29tVHlwZRITCgtkZXNjcmlwdGlvbhgFIAEoCSIqChJDcmVhdGVSb29tUmVzcG9uc2USFAoCaWQYASABKAlCCLpIBXIDsAEBIpcBChlBc3NpZ25Sb29tVG9UZW5hbnRSZXF1ZXN0EhsKCXRlbmFudF9pZBgBIAEoCUIIukgFcgOwAQESGQoHcm9vbV9pZBgCIAEoCUIIukgFcgOwAQESMwoKZXhwaXJlc19hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBIAIgBAUINCgtfZXhwaXJlc19hdCI9ChpBc3NpZ25Sb29tVG9UZW5hbnRSZXNwb25zZRIfCg1hc3NpZ25tZW50X2lkGAEgASgJQgi6SAVyA7ABATLiAQoSQ29uc29sZVJvb21TZXJ2aWNlElkKCkNyZWF0ZVJvb20SJC5rZXlodWIuY29uc29sZS52MS5DcmVhdGVSb29tUmVxdWVzdBolLmtleWh1Yi5jb25zb2xlLnYxLkNyZWF0ZVJvb21SZXNwb25zZRJxChJBc3NpZ25Sb29tVG9UZW5hbnQSLC5rZXlodWIuY29uc29sZS52MS5Bc3NpZ25Sb29tVG9UZW5hbnRSZXF1ZXN0Gi0ua2V5aHViLmNvbnNvbGUudjEuQXNzaWduUm9vbVRvVGVuYW50UmVzcG9uc2VC3QEKFWNvbS5rZXlodWIuY29uc29sZS52MUIJUm9vbVByb3RvUAFaU2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2NvbnNvbGUvdjE7Y29uc29sZXYxogIDS0NYqgIRS2V5aHViLkNvbnNvbGUuVjHKAhFLZXlodWJcQ29uc29sZVxWMeICHUtleWh1YlxDb25zb2xlXFYxXEdQQk1ldGFkYXRh6gITS2V5aHViOjpDb25zb2xlOjpWMWIGcHJvdG8z", [file_buf_validate_validate, file_google_protobuf_timestamp, file_keyhub_console_v1_common]);
+  fileDesc("ChxrZXlodWIvY29uc29sZS92MS9yb29tLnByb3RvEhFrZXlodWIuY29uc29sZS52MSKTAQoRQ3JlYXRlUm9vbVJlcXVlc3QSDAoEbmFtZRgBIAEoCRIVCg1idWlsZGluZ19uYW1lGAIgASgJEhQKDGZsb29yX251bWJlchgDIAEoCRIuCglyb29tX3R5cGUYBCABKA4yGy5rZXlodWIuY29uc29sZS52MS5Sb29tVHlwZRITCgtkZXNjcmlwdGlvbhgFIAEoCSIqChJDcmVhdGVSb29tUmVzcG9uc2USFAoCaWQYASABKAlCCLpIBXIDsAEBIhQKEkdldEFsbFJvb21zUmVxdWVzdCI9ChNHZXRBbGxSb29tc1Jlc3BvbnNlEiYKBXJvb21zGAEgAygLMhcua2V5aHViLmNvbnNvbGUudjEuUm9vbSKXAQoZQXNzaWduUm9vbVRvVGVuYW50UmVxdWVzdBIbCgl0ZW5hbnRfaWQYASABKAlCCLpIBXIDsAEBEhkKB3Jvb21faWQYAiABKAlCCLpIBXIDsAEBEjMKCmV4cGlyZXNfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQFCDQoLX2V4cGlyZXNfYXQiPQoaQXNzaWduUm9vbVRvVGVuYW50UmVzcG9uc2USHwoNYXNzaWdubWVudF9pZBgBIAEoCUIIukgFcgOwAQEywAIKEkNvbnNvbGVSb29tU2VydmljZRJZCgpDcmVhdGVSb29tEiQua2V5aHViLmNvbnNvbGUudjEuQ3JlYXRlUm9vbVJlcXVlc3QaJS5rZXlodWIuY29uc29sZS52MS5DcmVhdGVSb29tUmVzcG9uc2USXAoLR2V0QWxsUm9vbXMSJS5rZXlodWIuY29uc29sZS52MS5HZXRBbGxSb29tc1JlcXVlc3QaJi5rZXlodWIuY29uc29sZS52MS5HZXRBbGxSb29tc1Jlc3BvbnNlEnEKEkFzc2lnblJvb21Ub1RlbmFudBIsLmtleWh1Yi5jb25zb2xlLnYxLkFzc2lnblJvb21Ub1RlbmFudFJlcXVlc3QaLS5rZXlodWIuY29uc29sZS52MS5Bc3NpZ25Sb29tVG9UZW5hbnRSZXNwb25zZULdAQoVY29tLmtleWh1Yi5jb25zb2xlLnYxQglSb29tUHJvdG9QAVpTZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvY29uc29sZS92MTtjb25zb2xldjGiAgNLQ1iqAhFLZXlodWIuQ29uc29sZS5WMcoCEUtleWh1YlxDb25zb2xlXFYx4gIdS2V5aHViXENvbnNvbGVcVjFcR1BCTWV0YWRhdGHqAhNLZXlodWI6OkNvbnNvbGU6OlYxYgZwcm90bzM", [file_buf_validate_validate, file_google_protobuf_timestamp, file_keyhub_console_v1_common]);
 
 /**
  * @generated from message keyhub.console.v1.CreateRoomRequest
@@ -72,6 +72,36 @@ export const CreateRoomResponseSchema: GenMessage<CreateRoomResponse> = /*@__PUR
   messageDesc(file_keyhub_console_v1_room, 1);
 
 /**
+ * @generated from message keyhub.console.v1.GetAllRoomsRequest
+ */
+export type GetAllRoomsRequest = Message<"keyhub.console.v1.GetAllRoomsRequest"> & {
+};
+
+/**
+ * Describes the message keyhub.console.v1.GetAllRoomsRequest.
+ * Use `create(GetAllRoomsRequestSchema)` to create a new message.
+ */
+export const GetAllRoomsRequestSchema: GenMessage<GetAllRoomsRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_room, 2);
+
+/**
+ * @generated from message keyhub.console.v1.GetAllRoomsResponse
+ */
+export type GetAllRoomsResponse = Message<"keyhub.console.v1.GetAllRoomsResponse"> & {
+  /**
+   * @generated from field: repeated keyhub.console.v1.Room rooms = 1;
+   */
+  rooms: Room[];
+};
+
+/**
+ * Describes the message keyhub.console.v1.GetAllRoomsResponse.
+ * Use `create(GetAllRoomsResponseSchema)` to create a new message.
+ */
+export const GetAllRoomsResponseSchema: GenMessage<GetAllRoomsResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_room, 3);
+
+/**
  * @generated from message keyhub.console.v1.AssignRoomToTenantRequest
  */
 export type AssignRoomToTenantRequest = Message<"keyhub.console.v1.AssignRoomToTenantRequest"> & {
@@ -96,7 +126,7 @@ export type AssignRoomToTenantRequest = Message<"keyhub.console.v1.AssignRoomToT
  * Use `create(AssignRoomToTenantRequestSchema)` to create a new message.
  */
 export const AssignRoomToTenantRequestSchema: GenMessage<AssignRoomToTenantRequest> = /*@__PURE__*/
-  messageDesc(file_keyhub_console_v1_room, 2);
+  messageDesc(file_keyhub_console_v1_room, 4);
 
 /**
  * @generated from message keyhub.console.v1.AssignRoomToTenantResponse
@@ -113,7 +143,7 @@ export type AssignRoomToTenantResponse = Message<"keyhub.console.v1.AssignRoomTo
  * Use `create(AssignRoomToTenantResponseSchema)` to create a new message.
  */
 export const AssignRoomToTenantResponseSchema: GenMessage<AssignRoomToTenantResponse> = /*@__PURE__*/
-  messageDesc(file_keyhub_console_v1_room, 3);
+  messageDesc(file_keyhub_console_v1_room, 5);
 
 /**
  * @generated from service keyhub.console.v1.ConsoleRoomService
@@ -128,6 +158,16 @@ export const ConsoleRoomService: GenService<{
     methodKind: "unary";
     input: typeof CreateRoomRequestSchema;
     output: typeof CreateRoomResponseSchema;
+  },
+  /**
+   * 部屋一覧を取得
+   *
+   * @generated from rpc keyhub.console.v1.ConsoleRoomService.GetAllRooms
+   */
+  getAllRooms: {
+    methodKind: "unary";
+    input: typeof GetAllRoomsRequestSchema;
+    output: typeof GetAllRoomsResponseSchema;
   },
   /**
    * テナントに部屋を割り当て
