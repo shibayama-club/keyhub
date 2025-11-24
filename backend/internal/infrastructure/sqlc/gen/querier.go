@@ -18,6 +18,7 @@ type Querier interface {
 	ConsumeOAuthState(ctx context.Context, state string) error
 	CreateAppSession(ctx context.Context, arg CreateAppSessionParams) error
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) error
+	CreateKey(ctx context.Context, arg CreateKeyParams) error
 	CreateRoom(ctx context.Context, arg CreateRoomParams) error
 	CreateRoomAssignment(ctx context.Context, arg CreateRoomAssignmentParams) error
 	CreateTenant(ctx context.Context, arg CreateTenantParams) error
