@@ -25,6 +25,7 @@ type Querier interface {
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) error
 	CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) error
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
+	GetAllRooms(ctx context.Context, organizationID uuid.UUID) ([]GetAllRoomsRow, error)
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
