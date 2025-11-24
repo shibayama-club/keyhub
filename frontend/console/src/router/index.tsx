@@ -6,6 +6,7 @@ import { LoginPage } from '../pages/LoginPage';
 import { DashboardPage } from '../pages/DashboardPage';
 import { TenantsPage } from '../pages/TenantsPage';
 import { CreateTenantPage } from '../pages/CreateTenantPage';
+import { RoomsPage } from '../pages/RoomsPage';
 import { CreateRoomPage } from '../pages/CreateRoomPage';
 import { AssignRoomPage } from '../pages/AssignRoomPage';
 
@@ -43,6 +44,10 @@ export const router = sentryCreateBrowserRouter(
         {
           path: 'tenants/:tenantId/assign-room',
           element: <AssignRoomPage />,
+        },
+        {
+          path: 'rooms',
+          element: <RoomsPage />,
         },
         {
           path: 'rooms/create',
