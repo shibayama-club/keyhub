@@ -21,8 +21,8 @@ func parseSqlcSession(session sqlcgen.Session) (model.AppSession, error) {
 	}, nil
 }
 
-func (t *SqlcTransaction) CreateAppSession(ctx context.Context, arg repository.CreateAppSessionArg) (model.AppSession, error) {
-	sqlcSessionRow, err := t.queries.CreateAppSession(ctx, sqlcgen.CreateAppSessionParams{
+func (t *SqlcTransaction) CreateAppSession(ctx context.Context, arg repository.CreateAppSessionArg) error {
+	return t.queries.CreateAppSession(ctx, sqlcgen.CreateAppSessionParams{
 		SessionID:          arg.SessionID.String(),
 		UserID:             arg.UserID.UUID(),
 		ActiveMembershipID: nil, // Optional field
@@ -32,10 +32,6 @@ func (t *SqlcTransaction) CreateAppSession(ctx context.Context, arg repository.C
 		},
 		CsrfToken: nil, // Optional field
 	})
-	if err != nil {
-		return model.AppSession{}, err
-	}
-	return parseSqlcSession(sqlcSessionRow.Session)
 }
 
 func (t *SqlcTransaction) GetAppSession(ctx context.Context, sessionID model.AppSessionID) (model.AppSession, error) {
