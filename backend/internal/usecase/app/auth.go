@@ -143,7 +143,7 @@ func (u *UseCase) GoogleCallback(ctx context.Context, code, state string) (sessi
 
 	expiresAt := time.Now().Add(24 * time.Hour)
 	err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
-		_, err := tx.CreateAppSession(ctx, repository.CreateAppSessionArg{
+		err := tx.CreateAppSession(ctx, repository.CreateAppSessionArg{
 			SessionID: appSessionID,
 			UserID:    userID,
 			ExpiresAt: expiresAt,
