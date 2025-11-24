@@ -1,4 +1,4 @@
--- name: CreateTenantMembership :one
+-- name: CreateTenantMembership :exec
 INSERT INTO tenant_memberships(
     id,
     tenant_id,
@@ -10,8 +10,7 @@ VALUES(
     @tenant_id,
     @user_id,
     @role
-)
-RETURNING sqlc.embed(tenant_memberships);
+);
 
 -- name: IncrementJoinCodeUsedCount :exec
 UPDATE tenant_join_codes
