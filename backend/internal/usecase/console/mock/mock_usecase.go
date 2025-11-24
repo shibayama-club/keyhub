@@ -57,6 +57,21 @@ func (mr *MockIUseCaseMockRecorder) AssignRoomToTenant(ctx, input any) *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignRoomToTenant", reflect.TypeOf((*MockIUseCase)(nil).AssignRoomToTenant), ctx, input)
 }
 
+// CreateKey mocks base method.
+func (m *MockIUseCase) CreateKey(ctx context.Context, input dto.CreateKeyInput) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateKey", ctx, input)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateKey indicates an expected call of CreateKey.
+func (mr *MockIUseCaseMockRecorder) CreateKey(ctx, input any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateKey", reflect.TypeOf((*MockIUseCase)(nil).CreateKey), ctx, input)
+}
+
 // CreateRoom mocks base method.
 func (m *MockIUseCase) CreateRoom(ctx context.Context, input dto.CreateRoomInput) (string, error) {
 	m.ctrl.T.Helper()
@@ -85,6 +100,21 @@ func (m *MockIUseCase) CreateTenant(ctx context.Context, input dto.CreateTenantI
 func (mr *MockIUseCaseMockRecorder) CreateTenant(ctx, input any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenant", reflect.TypeOf((*MockIUseCase)(nil).CreateTenant), ctx, input)
+}
+
+// GetAllRooms mocks base method.
+func (m *MockIUseCase) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllRooms", ctx, organizationID)
+	ret0, _ := ret[0].([]model.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllRooms indicates an expected call of GetAllRooms.
+func (mr *MockIUseCaseMockRecorder) GetAllRooms(ctx, organizationID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockIUseCase)(nil).GetAllRooms), ctx, organizationID)
 }
 
 // GetAllTenants mocks base method.
