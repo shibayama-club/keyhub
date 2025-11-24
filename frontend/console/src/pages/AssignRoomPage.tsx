@@ -11,7 +11,11 @@ export const AssignRoomPage = () => {
   const { tenantId } = useParams<{ tenantId: string }>();
   const navigate = useNavigate();
   const { mutateAsync: assignRoom, isPending } = useMutationAssignRoomToTenant();
-  const { data: tenantData, isLoading: isTenantLoading, isError: isTenantError } = useQueryGetTenantById(tenantId || '');
+  const {
+    data: tenantData,
+    isLoading: isTenantLoading,
+    isError: isTenantError,
+  } = useQueryGetTenantById(tenantId || '');
 
   if (!tenantId) {
     navigate('/tenants');
