@@ -10,7 +10,6 @@ import (
 	_ "buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go/buf/validate"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -140,16 +139,13 @@ func (RoomType) EnumDescriptor() ([]byte, []int) {
 }
 
 type Tenant struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	OrganizationId string                 `protobuf:"bytes,2,opt,name=organization_id,json=organizationId,proto3" json:"organization_id,omitempty"`
-	Name           string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description    string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	TenantType     TenantType             `protobuf:"varint,5,opt,name=tenant_type,json=tenantType,proto3,enum=keyhub.console.v1.TenantType" json:"tenant_type,omitempty"`
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	Description   string                 `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	TenantType    TenantType             `protobuf:"varint,4,opt,name=tenant_type,json=tenantType,proto3,enum=keyhub.console.v1.TenantType" json:"tenant_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Tenant) Reset() {
@@ -189,13 +185,6 @@ func (x *Tenant) GetId() string {
 	return ""
 }
 
-func (x *Tenant) GetOrganizationId() string {
-	if x != nil {
-		return x.OrganizationId
-	}
-	return ""
-}
-
 func (x *Tenant) GetName() string {
 	if x != nil {
 		return x.Name
@@ -217,36 +206,108 @@ func (x *Tenant) GetTenantType() TenantType {
 	return TenantType_TENANT_TYPE_UNSPECIFIED
 }
 
-func (x *Tenant) GetCreatedAt() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CreatedAt
-	}
-	return nil
+type Room struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	BuildingName  string                 `protobuf:"bytes,3,opt,name=building_name,json=buildingName,proto3" json:"building_name,omitempty"`
+	FloorNumber   string                 `protobuf:"bytes,4,opt,name=floor_number,json=floorNumber,proto3" json:"floor_number,omitempty"`
+	RoomType      RoomType               `protobuf:"varint,5,opt,name=room_type,json=roomType,proto3,enum=keyhub.console.v1.RoomType" json:"room_type,omitempty"`
+	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
-func (x *Tenant) GetUpdatedAt() *timestamppb.Timestamp {
+func (x *Room) Reset() {
+	*x = Room{}
+	mi := &file_keyhub_console_v1_common_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Room) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Room) ProtoMessage() {}
+
+func (x *Room) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_common_proto_msgTypes[1]
 	if x != nil {
-		return x.UpdatedAt
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
 	}
-	return nil
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Room.ProtoReflect.Descriptor instead.
+func (*Room) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *Room) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Room) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Room) GetBuildingName() string {
+	if x != nil {
+		return x.BuildingName
+	}
+	return ""
+}
+
+func (x *Room) GetFloorNumber() string {
+	if x != nil {
+		return x.FloorNumber
+	}
+	return ""
+}
+
+func (x *Room) GetRoomType() RoomType {
+	if x != nil {
+		return x.RoomType
+	}
+	return RoomType_ROOM_TYPE_UNSPECIFIED
+}
+
+func (x *Room) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
 }
 
 var File_keyhub_console_v1_common_proto protoreflect.FileDescriptor
 
 const file_keyhub_console_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x1ekeyhub/console/v1/common.proto\x12\x11keyhub.console.v1\x1a\x1bbuf/validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x02\n" +
+	"\x1ekeyhub/console/v1/common.proto\x12\x11keyhub.console.v1\x1a\x1bbuf/validate/validate.proto\"\x98\x01\n" +
 	"\x06Tenant\x12\x18\n" +
-	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12'\n" +
-	"\x0forganization_id\x18\x02 \x01(\tR\x0eorganizationId\x12\x12\n" +
-	"\x04name\x18\x03 \x01(\tR\x04name\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12>\n" +
-	"\vtenant_type\x18\x05 \x01(\x0e2\x1d.keyhub.console.v1.TenantTypeR\n" +
-	"tenantType\x129\n" +
-	"\n" +
-	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
-	"\n" +
-	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt*\x90\x01\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x03 \x01(\tR\vdescription\x12>\n" +
+	"\vtenant_type\x18\x04 \x01(\x0e2\x1d.keyhub.console.v1.TenantTypeR\n" +
+	"tenantType\"\xd8\x01\n" +
+	"\x04Room\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12#\n" +
+	"\rbuilding_name\x18\x03 \x01(\tR\fbuildingName\x12!\n" +
+	"\ffloor_number\x18\x04 \x01(\tR\vfloorNumber\x128\n" +
+	"\troom_type\x18\x05 \x01(\x0e2\x1b.keyhub.console.v1.RoomTypeR\broomType\x12 \n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription*\x90\x01\n" +
 	"\n" +
 	"TenantType\x12\x1b\n" +
 	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
@@ -277,22 +338,21 @@ func file_keyhub_console_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_keyhub_console_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_keyhub_console_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_keyhub_console_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_keyhub_console_v1_common_proto_goTypes = []any{
-	(TenantType)(0),               // 0: keyhub.console.v1.TenantType
-	(RoomType)(0),                 // 1: keyhub.console.v1.RoomType
-	(*Tenant)(nil),                // 2: keyhub.console.v1.Tenant
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(TenantType)(0), // 0: keyhub.console.v1.TenantType
+	(RoomType)(0),   // 1: keyhub.console.v1.RoomType
+	(*Tenant)(nil),  // 2: keyhub.console.v1.Tenant
+	(*Room)(nil),    // 3: keyhub.console.v1.Room
 }
 var file_keyhub_console_v1_common_proto_depIdxs = []int32{
 	0, // 0: keyhub.console.v1.Tenant.tenant_type:type_name -> keyhub.console.v1.TenantType
-	3, // 1: keyhub.console.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
-	3, // 2: keyhub.console.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	1, // 1: keyhub.console.v1.Room.room_type:type_name -> keyhub.console.v1.RoomType
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_console_v1_common_proto_init() }
@@ -306,7 +366,7 @@ func file_keyhub_console_v1_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_common_proto_rawDesc), len(file_keyhub_console_v1_common_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

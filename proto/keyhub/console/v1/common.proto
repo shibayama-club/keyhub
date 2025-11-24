@@ -3,16 +3,21 @@ syntax = "proto3";
 package keyhub.console.v1;
 
 import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 
 message Tenant {
   string id = 1 [(buf.validate.field).string.uuid = true];
-  string organization_id = 2;
-  string name = 3;
-  string description = 4;
-  TenantType tenant_type = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  string name = 2;
+  string description = 3;
+  TenantType tenant_type = 4;
+}
+
+message Room {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string building_name = 3;
+  string floor_number = 4;
+  RoomType room_type = 5;
+  string description = 6;
 }
 
 enum TenantType {
