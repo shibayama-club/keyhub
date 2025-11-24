@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createTenantJoinCode = `-- name: CreateTenantJoinCode :one
+const createTenantJoinCode = `-- name: CreateTenantJoinCode :exec
 INSERT INTO tenant_join_codes(
     id,
     tenant_id,
@@ -29,7 +29,6 @@ VALUES(
     $5,
     $6
 )
-RETURNING tenant_join_codes.id, tenant_join_codes.tenant_id, tenant_join_codes.code, tenant_join_codes.expires_at, tenant_join_codes.max_uses, tenant_join_codes.used_count, tenant_join_codes.created_at
 `
 
 type CreateTenantJoinCodeParams struct {
@@ -41,12 +40,8 @@ type CreateTenantJoinCodeParams struct {
 	UsedCount int32
 }
 
-type CreateTenantJoinCodeRow struct {
-	TenantJoinCode TenantJoinCode
-}
-
-func (q *Queries) CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) (CreateTenantJoinCodeRow, error) {
-	row := q.db.QueryRow(ctx, createTenantJoinCode,
+func (q *Queries) CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) error {
+	_, err := q.db.Exec(ctx, createTenantJoinCode,
 		arg.ID,
 		arg.TenantID,
 		arg.Code,
@@ -54,17 +49,7 @@ func (q *Queries) CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoin
 		arg.MaxUses,
 		arg.UsedCount,
 	)
-	var i CreateTenantJoinCodeRow
-	err := row.Scan(
-		&i.TenantJoinCode.ID,
-		&i.TenantJoinCode.TenantID,
-		&i.TenantJoinCode.Code,
-		&i.TenantJoinCode.ExpiresAt,
-		&i.TenantJoinCode.MaxUses,
-		&i.TenantJoinCode.UsedCount,
-		&i.TenantJoinCode.CreatedAt,
-	)
-	return i, err
+	return err
 }
 
 const getTenantByJoinCode = `-- name: GetTenantByJoinCode :one

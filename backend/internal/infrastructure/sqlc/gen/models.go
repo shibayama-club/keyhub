@@ -16,12 +16,44 @@ type ConsoleSession struct {
 	ExpiresAt      pgtype.Timestamptz
 }
 
+type Key struct {
+	ID             uuid.UUID
+	RoomID         uuid.UUID
+	OrganizationID uuid.UUID
+	KeyNumber      string
+	Status         string
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
 type OauthState struct {
 	State        string
 	CodeVerifier string
 	Nonce        string
 	CreatedAt    pgtype.Timestamptz
 	ConsumedAt   pgtype.Timestamptz
+}
+
+type Room struct {
+	ID             uuid.UUID
+	OrganizationID uuid.UUID
+	Name           string
+	BuildingName   string
+	FloorNumber    string
+	RoomType       string
+	Description    string
+	CreatedAt      pgtype.Timestamptz
+	UpdatedAt      pgtype.Timestamptz
+}
+
+type RoomAssignment struct {
+	ID         uuid.UUID
+	TenantID   uuid.UUID
+	RoomID     uuid.UUID
+	AssignedAt pgtype.Timestamptz
+	ExpiresAt  pgtype.Timestamptz
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
 }
 
 type Session struct {

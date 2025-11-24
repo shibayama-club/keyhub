@@ -4,30 +4,7 @@ package keyhub.console.v1;
 
 import "buf/validate/validate.proto";
 import "google/protobuf/timestamp.proto";
-
-service ConsoleAuthService {
-  // Organization IDで認証
-  rpc LoginWithOrgId(LoginWithOrgIdRequest) returns (LoginWithOrgIdResponse);
-
-  // ログアウト
-  rpc Logout(LogoutRequest) returns (LogoutResponse);
-}
-
-message LoginWithOrgIdRequest {
-  string organization_id = 1 [(buf.validate.field).string.uuid = true]; // uuid
-  string organization_key = 2;
-}
-
-message LoginWithOrgIdResponse {
-  string session_token = 1; // JWT形式
-  int64 expires_in = 2; // 有効期限（秒）
-}
-
-message LogoutRequest {}
-
-message LogoutResponse {
-  bool success = 1;
-}
+import "keyhub/console/v1/common.proto";
 
 service ConsoleService {
   // Tenant作成
@@ -38,16 +15,6 @@ service ConsoleService {
   rpc GetTenantById(GetTenantByIdRequest) returns (GetTenantByIdResponse);
   // Tenant編集
   rpc UpdateTenant(UpdateTenantRequest) returns (UpdateTenantResponse);
-}
-
-message Tenant {
-  string id = 1 [(buf.validate.field).string.uuid = true];
-  string organization_id = 2;
-  string name = 3;
-  string description = 4;
-  TenantType tenant_type = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
 }
 
 message CreateTenantRequest {
@@ -90,11 +57,3 @@ message UpdateTenantRequest {
 }
 
 message UpdateTenantResponse {}
-
-enum TenantType {
-  TENANT_TYPE_UNSPECIFIED = 0;
-  TENANT_TYPE_TEAM = 1; // チーム
-  TENANT_TYPE_DEPARTMENT = 2; // 部署
-  TENANT_TYPE_PROJECT = 3; // プロジェクト
-  TENANT_TYPE_LABORATORY = 4; // 研究室
-}

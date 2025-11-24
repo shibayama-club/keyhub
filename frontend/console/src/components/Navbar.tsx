@@ -71,6 +71,20 @@ export const Navbar = () => {
                 Tenants
               </a>
               <a
+                href="/rooms/create"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/rooms/create');
+                }}
+                className={`inline-flex items-center border-b-2 px-1 pt-1 text-sm font-medium ${
+                  isActive('/rooms/create')
+                    ? 'border-indigo-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                }`}
+              >
+                Rooms
+              </a>
+              <a
                 href="#"
                 className="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700"
               >

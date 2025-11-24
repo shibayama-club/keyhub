@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Tenant } from '../../../gen/src/keyhub/console/v1/console_pb';
 import { getTenantTypeLabel } from '../utils/tenant';
 
@@ -10,6 +11,7 @@ export const TenantList = ({
   isLoading: boolean;
   isError: boolean;
 }) => {
+  const navigate = useNavigate();
   if (isLoading) {
     return (
       <div className="px-4 py-12 text-center">
@@ -48,6 +50,22 @@ export const TenantList = ({
                 </span>
               </div>
               {tenant.description && <p className="mt-1 text-sm text-gray-600">{tenant.description}</p>}
+            </div>
+            <div>
+              <button
+                onClick={() => navigate(`/tenants/${tenant.id}/assign-room`)}
+                className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+              >
+                <svg className="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                  />
+                </svg>
+                Room割り当て
+              </button>
             </div>
           </div>
         </li>

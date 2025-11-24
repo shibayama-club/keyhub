@@ -18,4 +18,6 @@ type Transaction interface {
 	ConsoleSessionRepository
 	AppSessionRepository
 	OAuthStateRepository
+	RoomRepository
+	RoomAssignmentRepository
 }

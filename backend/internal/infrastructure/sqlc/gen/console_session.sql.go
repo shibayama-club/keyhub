@@ -21,7 +21,7 @@ func (q *Queries) CleanupExpiredConsoleSessions(ctx context.Context) error {
 	return err
 }
 
-const createConsoleSession = `-- name: CreateConsoleSession :one
+const createConsoleSession = `-- name: CreateConsoleSession :exec
 INSERT INTO console_sessions (
     session_id,
     organization_id,
@@ -29,7 +29,7 @@ INSERT INTO console_sessions (
     expires_at
 ) VALUES (
     $1, $2, NOW(), NOW() + INTERVAL '24 hours'
-) RETURNING console_sessions.session_id, console_sessions.organization_id, console_sessions.created_at, console_sessions.expires_at
+)
 `
 
 type CreateConsoleSessionParams struct {
@@ -37,20 +37,9 @@ type CreateConsoleSessionParams struct {
 	OrganizationID uuid.UUID
 }
 
-type CreateConsoleSessionRow struct {
-	ConsoleSession ConsoleSession
-}
-
-func (q *Queries) CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) (CreateConsoleSessionRow, error) {
-	row := q.db.QueryRow(ctx, createConsoleSession, arg.SessionID, arg.OrganizationID)
-	var i CreateConsoleSessionRow
-	err := row.Scan(
-		&i.ConsoleSession.SessionID,
-		&i.ConsoleSession.OrganizationID,
-		&i.ConsoleSession.CreatedAt,
-		&i.ConsoleSession.ExpiresAt,
-	)
-	return i, err
+func (q *Queries) CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) error {
+	_, err := q.db.Exec(ctx, createConsoleSession, arg.SessionID, arg.OrganizationID)
+	return err
 }
 
 const deleteConsoleSession = `-- name: DeleteConsoleSession :exec

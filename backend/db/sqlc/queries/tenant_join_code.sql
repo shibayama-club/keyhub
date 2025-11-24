@@ -1,4 +1,4 @@
--- name: CreateTenantJoinCode :one
+-- name: CreateTenantJoinCode :exec
 INSERT INTO tenant_join_codes(
     id,
     tenant_id,
@@ -14,8 +14,7 @@ VALUES(
     @expires_at,
     @max_uses,
     @used_count
-)
-RETURNING sqlc.embed(tenant_join_codes);
+);
 
 -- name: GetTenantByJoinCode :one
 SELECT

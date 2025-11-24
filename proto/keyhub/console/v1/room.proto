@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package keyhub.console.v1;
+
+import "buf/validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+import "keyhub/console/v1/common.proto";
+
+service ConsoleRoomService {
+  // 部屋を作成
+  rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
+
+  // テナントに部屋を割り当て
+  rpc AssignRoomToTenant(AssignRoomToTenantRequest) returns (AssignRoomToTenantResponse);
+}
+
+message CreateRoomRequest {
+  string name = 1;
+  string building_name = 2;
+  string floor_number = 3;
+  RoomType room_type = 4;
+  string description = 5;
+}
+
+message CreateRoomResponse {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message AssignRoomToTenantRequest {
+  string tenant_id = 1 [(buf.validate.field).string.uuid = true];
+  string room_id = 2 [(buf.validate.field).string.uuid = true];
+  optional google.protobuf.Timestamp expires_at = 3;
+}
+
+message AssignRoomToTenantResponse {
+  string assignment_id = 1 [(buf.validate.field).string.uuid = true];
+}

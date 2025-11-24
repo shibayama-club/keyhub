@@ -49,7 +49,7 @@ func (u *UseCase) LoginWithOrgId(ctx context.Context, orgID, orgKey string) (str
 	}
 
 	err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
-		_, err := tx.CreateSession(ctx, repository.CreateConsoleSessionArg{
+		err := tx.CreateSession(ctx, repository.CreateConsoleSessionArg{
 			SessionID:      sessionID,
 			OrganizationID: organizationID,
 		})
