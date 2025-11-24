@@ -7,7 +7,7 @@ import { DashboardPage } from '../pages/DashboardPage';
 import { TenantsPage } from '../pages/TenantsPage';
 import { CreateTenantPage } from '../pages/CreateTenantPage';
 import { CreateRoomPage } from '../pages/CreateRoomPage';
-import { TenantDetailPage } from '../pages/TenantDetailPage';
+import { AssignRoomPage } from '../pages/AssignRoomPage';
 
 // SentryでラップされたcreateBrowserRouter
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
@@ -42,7 +42,7 @@ export const router = sentryCreateBrowserRouter(
         },
         {
           path: 'tenants/:tenantId/assign-room',
-          element: <TenantDetailPage />,
+          element: <AssignRoomPage />,
         },
         {
           path: 'rooms/create',
