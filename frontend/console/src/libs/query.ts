@@ -9,6 +9,7 @@ import {
 } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
 import {
   createRoom,
+  getAllRooms,
   assignRoomToTenant,
 } from '../../../gen/src/keyhub/console/v1/room-ConsoleRoomService_connectquery';
 
@@ -61,6 +62,10 @@ export const useQueryGetTenantById = (id: string) => {
 
 export const useMutationCreateRoom = () => {
   return useMutation(createRoom);
+};
+
+export const useQueryGetAllRooms = () => {
+  return useQuery(getAllRooms, {});
 };
 
 export const useMutationAssignRoomToTenant = () => {
