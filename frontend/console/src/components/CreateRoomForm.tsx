@@ -93,9 +93,7 @@ export const CreateRoomForm = ({ onSubmit, isSubmitting = false }: CreateRoomFor
           className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
           disabled={isSubmitting}
         />
-        {floorNumberField.error.length > 0 && (
-          <p className="mt-2 text-sm text-red-600">{floorNumberField.error[0]}</p>
-        )}
+        {floorNumberField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{floorNumberField.error[0]}</p>}
       </div>
 
       <div>

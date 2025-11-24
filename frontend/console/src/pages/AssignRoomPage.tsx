@@ -48,12 +48,7 @@ export const AssignRoomPage = () => {
             onClick={() => navigate('/tenants')}
             className="mb-4 inline-flex items-center text-sm text-gray-600 hover:text-gray-900"
           >
-            <svg
-              className="mr-1 h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className="mr-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             テナント一覧に戻る
@@ -122,7 +117,8 @@ export const AssignRoomPage = () => {
               <h3 className="text-sm font-medium text-blue-800">Room IDについて</h3>
               <div className="mt-2 text-sm text-blue-700">
                 <p>
-                  Room IDは、Roomsページから作成したRoomのIDです。作成時にレスポンスで返されるUUID形式のIDを入力してください。
+                  Room
+                  IDは、Roomsページから作成したRoomのIDです。作成時にレスポンスで返されるUUID形式のIDを入力してください。
                 </p>
               </div>
             </div>
