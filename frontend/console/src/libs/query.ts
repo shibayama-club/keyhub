@@ -12,6 +12,7 @@ import {
   getAllRooms,
   assignRoomToTenant,
 } from '../../../gen/src/keyhub/console/v1/room-ConsoleRoomService_connectquery';
+import { createKey } from '../../../gen/src/keyhub/console/v1/key-ConsoleKeyService_connectquery';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -70,4 +71,8 @@ export const useQueryGetAllRooms = () => {
 
 export const useMutationAssignRoomToTenant = () => {
   return useMutation(assignRoomToTenant);
+};
+
+export const useMutationCreateKey = () => {
+  return useMutation(createKey);
 };
