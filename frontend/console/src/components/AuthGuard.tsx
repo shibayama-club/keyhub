@@ -8,7 +8,7 @@ export const AuthGuard = () => {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [checkAuth]);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
