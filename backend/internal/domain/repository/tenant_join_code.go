@@ -22,7 +22,7 @@ type UpdateTenantJoinCodeArg struct {
 	MaxUses   model.TenantJoinCodeMaxUses
 }
 type TenantJoinCodeRepository interface {
-	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error)
+	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeArg) error
 	GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error)
 	UpdateTenantJoinCodeByTenantId(ctx context.Context, arg UpdateTenantJoinCodeArg) error
 }

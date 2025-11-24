@@ -34,7 +34,7 @@ func parseSqlcTenantJoinCode(tjc sqlcgen.TenantJoinCode) (model.TenantJoinCodeEn
 	}, nil
 }
 
-func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg repository.CreateTenantJoinCodeArg) (model.TenantJoinCodeEntity, error) {
+func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg repository.CreateTenantJoinCodeArg) error {
 	var expiresAt pgtype.Timestamptz
 	if arg.ExpiresAt != nil {
 		expiresAt = pgtype.Timestamptz{
@@ -43,7 +43,7 @@ func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg reposito
 		}
 	}
 
-	sqlcRow, err := t.queries.CreateTenantJoinCode(ctx, sqlcgen.CreateTenantJoinCodeParams{
+	return t.queries.CreateTenantJoinCode(ctx, sqlcgen.CreateTenantJoinCodeParams{
 		ID:        arg.ID.UUID(),
 		TenantID:  arg.TenantID.UUID(),
 		Code:      arg.Code.String(),
@@ -51,11 +51,6 @@ func (t *SqlcTransaction) CreateTenantJoinCode(ctx context.Context, arg reposito
 		MaxUses:   arg.MaxUses.Int32(),
 		UsedCount: int32(arg.UsedCount),
 	})
-	if err != nil {
-		return model.TenantJoinCodeEntity{}, err
-	}
-
-	return parseSqlcTenantJoinCode(sqlcRow.TenantJoinCode)
 }
 
 func (t *SqlcTransaction) GetTenantByJoinCode(ctx context.Context, code model.TenantJoinCode) (model.Tenant, error) {
