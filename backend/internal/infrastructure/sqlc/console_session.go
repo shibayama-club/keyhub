@@ -17,16 +17,11 @@ func parseSqlcConsoleSession(consoleSession sqlcgen.ConsoleSession) (model.Conso
 	}, nil
 }
 
-func (t *SqlcTransaction) CreateSession(ctx context.Context, arg repository.CreateConsoleSessionArg) (model.ConsoleSession, error) {
-	params := sqlcgen.CreateConsoleSessionParams{
+func (t *SqlcTransaction) CreateSession(ctx context.Context, arg repository.CreateConsoleSessionArg) error {
+	return t.queries.CreateConsoleSession(ctx, sqlcgen.CreateConsoleSessionParams{
 		SessionID:      arg.SessionID.String(),
 		OrganizationID: arg.OrganizationID.UUID(),
-	}
-	sqlcConsoleSessionRow, err := t.queries.CreateConsoleSession(ctx, params)
-	if err != nil {
-		return model.ConsoleSession{}, err
-	}
-	return parseSqlcConsoleSession(sqlcConsoleSessionRow.ConsoleSession)
+	})
 }
 
 func (t *SqlcTransaction) GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error) {

@@ -1,4 +1,4 @@
--- name: CreateConsoleSession :one
+-- name: CreateConsoleSession :exec
 INSERT INTO console_sessions (
     session_id,
     organization_id,
@@ -6,7 +6,7 @@ INSERT INTO console_sessions (
     expires_at
 ) VALUES (
     $1, $2, NOW(), NOW() + INTERVAL '24 hours'
-) RETURNING sqlc.embed(console_sessions);
+);
 
 -- name: GetConsoleSession :one
 SELECT sqlc.embed(cs)

@@ -12,7 +12,7 @@ type CreateConsoleSessionArg struct {
 }
 
 type ConsoleSessionRepository interface {
-	CreateSession(ctx context.Context, arg CreateConsoleSessionArg) (model.ConsoleSession, error)
+	CreateSession(ctx context.Context, arg CreateConsoleSessionArg) error
 	GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error)
 	DeleteSession(ctx context.Context, sessionID model.ConsoleSessionID) error
 }
