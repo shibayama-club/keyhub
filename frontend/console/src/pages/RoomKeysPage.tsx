@@ -6,13 +6,12 @@ import { useQueryGetKeysByRoom } from '../libs/query';
 export const RoomKeysPage = () => {
   const navigate = useNavigate();
   const { roomId } = useParams<{ roomId: string }>();
+  const { data, isLoading, isError } = useQueryGetKeysByRoom(roomId || '');
 
   if (!roomId) {
     navigate('/rooms');
     return null;
   }
-
-  const { data, isLoading, isError } = useQueryGetKeysByRoom(roomId);
 
   return (
     <div className="min-h-screen bg-gray-50">
