@@ -70,6 +70,20 @@ func (mr *MockRepositoryMockRecorder) CreateAppSession(ctx, arg any) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAppSession", reflect.TypeOf((*MockRepository)(nil).CreateAppSession), ctx, arg)
 }
 
+// CreateKey mocks base method.
+func (m *MockRepository) CreateKey(ctx context.Context, arg repository.CreateKeyArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateKey", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateKey indicates an expected call of CreateKey.
+func (mr *MockRepositoryMockRecorder) CreateKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateKey", reflect.TypeOf((*MockRepository)(nil).CreateKey), ctx, arg)
+}
+
 // CreateRoom mocks base method.
 func (m *MockRepository) CreateRoom(ctx context.Context, arg repository.CreateRoomArg) error {
 	m.ctrl.T.Helper()
@@ -168,6 +182,21 @@ func (mr *MockRepositoryMockRecorder) DeleteSession(ctx, sessionID any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSession", reflect.TypeOf((*MockRepository)(nil).DeleteSession), ctx, sessionID)
 }
 
+// GetAllRooms mocks base method.
+func (m *MockRepository) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllRooms", ctx, organizationID)
+	ret0, _ := ret[0].([]model.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllRooms indicates an expected call of GetAllRooms.
+func (mr *MockRepositoryMockRecorder) GetAllRooms(ctx, organizationID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockRepository)(nil).GetAllRooms), ctx, organizationID)
+}
+
 // GetAllTenants mocks base method.
 func (m *MockRepository) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
 	m.ctrl.T.Helper()
@@ -196,6 +225,21 @@ func (m *MockRepository) GetAppSession(ctx context.Context, sessionID model.AppS
 func (mr *MockRepositoryMockRecorder) GetAppSession(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockRepository)(nil).GetAppSession), ctx, sessionID)
+}
+
+// GetKeysByRoom mocks base method.
+func (m *MockRepository) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKeysByRoom", ctx, roomID)
+	ret0, _ := ret[0].([]model.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKeysByRoom indicates an expected call of GetKeysByRoom.
+func (mr *MockRepositoryMockRecorder) GetKeysByRoom(ctx, roomID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeysByRoom", reflect.TypeOf((*MockRepository)(nil).GetKeysByRoom), ctx, roomID)
 }
 
 // GetOAuthState mocks base method.
@@ -498,6 +542,20 @@ func (mr *MockTransactionMockRecorder) CreateAppSession(ctx, arg any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateAppSession", reflect.TypeOf((*MockTransaction)(nil).CreateAppSession), ctx, arg)
 }
 
+// CreateKey mocks base method.
+func (m *MockTransaction) CreateKey(ctx context.Context, arg repository.CreateKeyArg) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateKey", ctx, arg)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateKey indicates an expected call of CreateKey.
+func (mr *MockTransactionMockRecorder) CreateKey(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateKey", reflect.TypeOf((*MockTransaction)(nil).CreateKey), ctx, arg)
+}
+
 // CreateRoom mocks base method.
 func (m *MockTransaction) CreateRoom(ctx context.Context, arg repository.CreateRoomArg) error {
 	m.ctrl.T.Helper()
@@ -596,6 +654,21 @@ func (mr *MockTransactionMockRecorder) DeleteSession(ctx, sessionID any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSession", reflect.TypeOf((*MockTransaction)(nil).DeleteSession), ctx, sessionID)
 }
 
+// GetAllRooms mocks base method.
+func (m *MockTransaction) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllRooms", ctx, organizationID)
+	ret0, _ := ret[0].([]model.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllRooms indicates an expected call of GetAllRooms.
+func (mr *MockTransactionMockRecorder) GetAllRooms(ctx, organizationID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockTransaction)(nil).GetAllRooms), ctx, organizationID)
+}
+
 // GetAllTenants mocks base method.
 func (m *MockTransaction) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
 	m.ctrl.T.Helper()
@@ -624,6 +697,21 @@ func (m *MockTransaction) GetAppSession(ctx context.Context, sessionID model.App
 func (mr *MockTransactionMockRecorder) GetAppSession(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockTransaction)(nil).GetAppSession), ctx, sessionID)
+}
+
+// GetKeysByRoom mocks base method.
+func (m *MockTransaction) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKeysByRoom", ctx, roomID)
+	ret0, _ := ret[0].([]model.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKeysByRoom indicates an expected call of GetKeysByRoom.
+func (mr *MockTransactionMockRecorder) GetKeysByRoom(ctx, roomID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeysByRoom", reflect.TypeOf((*MockTransaction)(nil).GetKeysByRoom), ctx, roomID)
 }
 
 // GetOAuthState mocks base method.

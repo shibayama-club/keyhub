@@ -55,6 +55,47 @@ func (q *Queries) CreateRoom(ctx context.Context, arg CreateRoomParams) error {
 	return err
 }
 
+const getAllRooms = `-- name: GetAllRooms :many
+SELECT r.id, r.organization_id, r.name, r.building_name, r.floor_number, r.room_type, r.description, r.created_at, r.updated_at
+FROM rooms r
+WHERE organization_id = $1
+ORDER BY created_at DESC
+`
+
+type GetAllRoomsRow struct {
+	Room Room
+}
+
+func (q *Queries) GetAllRooms(ctx context.Context, organizationID uuid.UUID) ([]GetAllRoomsRow, error) {
+	rows, err := q.db.Query(ctx, getAllRooms, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetAllRoomsRow
+	for rows.Next() {
+		var i GetAllRoomsRow
+		if err := rows.Scan(
+			&i.Room.ID,
+			&i.Room.OrganizationID,
+			&i.Room.Name,
+			&i.Room.BuildingName,
+			&i.Room.FloorNumber,
+			&i.Room.RoomType,
+			&i.Room.Description,
+			&i.Room.CreatedAt,
+			&i.Room.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRoomById = `-- name: GetRoomById :one
 SELECT r.id, r.organization_id, r.name, r.building_name, r.floor_number, r.room_type, r.description, r.created_at, r.updated_at
 FROM rooms r

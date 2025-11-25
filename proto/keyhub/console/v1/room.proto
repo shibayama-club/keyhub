@@ -10,6 +10,9 @@ service ConsoleRoomService {
   // 部屋を作成
   rpc CreateRoom(CreateRoomRequest) returns (CreateRoomResponse);
 
+  // 部屋一覧を取得
+  rpc GetAllRooms(GetAllRoomsRequest) returns (GetAllRoomsResponse);
+
   // テナントに部屋を割り当て
   rpc AssignRoomToTenant(AssignRoomToTenantRequest) returns (AssignRoomToTenantResponse);
 }
@@ -24,6 +27,12 @@ message CreateRoomRequest {
 
 message CreateRoomResponse {
   string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetAllRoomsRequest {}
+
+message GetAllRoomsResponse {
+  repeated Room rooms = 1;
 }
 
 message AssignRoomToTenantRequest {

@@ -30,8 +30,8 @@ export const CreateRoomPage = () => {
       await queryClient.invalidateQueries();
 
       toast.success('部屋を作成しました');
-      // 成功後はダッシュボードに戻る
-      navigate('/dashboard', { replace: true });
+      // 成功後は部屋一覧に戻る
+      navigate('/rooms', { replace: true });
     } catch (error) {
       // Sentryでエラーをキャプチャ
       Sentry.captureException(error);

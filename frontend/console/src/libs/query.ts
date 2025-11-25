@@ -9,8 +9,10 @@ import {
 } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
 import {
   createRoom,
+  getAllRooms,
   assignRoomToTenant,
 } from '../../../gen/src/keyhub/console/v1/room-ConsoleRoomService_connectquery';
+import { createKey, getKeysByRoom } from '../../../gen/src/keyhub/console/v1/key-ConsoleKeyService_connectquery';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -63,6 +65,18 @@ export const useMutationCreateRoom = () => {
   return useMutation(createRoom);
 };
 
+export const useQueryGetAllRooms = () => {
+  return useQuery(getAllRooms, {});
+};
+
 export const useMutationAssignRoomToTenant = () => {
   return useMutation(assignRoomToTenant);
+};
+
+export const useMutationCreateKey = () => {
+  return useMutation(createKey);
+};
+
+export const useQueryGetKeysByRoom = (roomId: string) => {
+  return useQuery(getKeysByRoom, { roomId });
 };

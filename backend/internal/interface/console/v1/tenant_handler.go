@@ -87,13 +87,10 @@ func convertModelTenantTypeToProto(modelType model.TenantType) consolev1.TenantT
 
 func convertModelTenantToProto(tenant model.Tenant) *consolev1.Tenant {
 	return &consolev1.Tenant{
-		Id:             tenant.ID.String(),
-		OrganizationId: tenant.OrganizationID.String(),
-		Name:           tenant.Name.String(),
-		Description:    tenant.Description.String(),
-		TenantType:     convertModelTenantTypeToProto(tenant.Type),
-		CreatedAt:      timestamppb.New(tenant.CreatedAt),
-		UpdatedAt:      timestamppb.New(tenant.UpdatedAt),
+		Id:          tenant.ID.String(),
+		Name:        tenant.Name.String(),
+		Description: tenant.Description.String(),
+		TenantType:  convertModelTenantTypeToProto(tenant.Type),
 	}
 }
 

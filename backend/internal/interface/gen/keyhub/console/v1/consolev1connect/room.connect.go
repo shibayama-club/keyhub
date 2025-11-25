@@ -36,6 +36,9 @@ const (
 	// ConsoleRoomServiceCreateRoomProcedure is the fully-qualified name of the ConsoleRoomService's
 	// CreateRoom RPC.
 	ConsoleRoomServiceCreateRoomProcedure = "/keyhub.console.v1.ConsoleRoomService/CreateRoom"
+	// ConsoleRoomServiceGetAllRoomsProcedure is the fully-qualified name of the ConsoleRoomService's
+	// GetAllRooms RPC.
+	ConsoleRoomServiceGetAllRoomsProcedure = "/keyhub.console.v1.ConsoleRoomService/GetAllRooms"
 	// ConsoleRoomServiceAssignRoomToTenantProcedure is the fully-qualified name of the
 	// ConsoleRoomService's AssignRoomToTenant RPC.
 	ConsoleRoomServiceAssignRoomToTenantProcedure = "/keyhub.console.v1.ConsoleRoomService/AssignRoomToTenant"
@@ -45,6 +48,8 @@ const (
 type ConsoleRoomServiceClient interface {
 	// 部屋を作成
 	CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error)
+	// 部屋一覧を取得
+	GetAllRooms(context.Context, *connect.Request[v1.GetAllRoomsRequest]) (*connect.Response[v1.GetAllRoomsResponse], error)
 	// テナントに部屋を割り当て
 	AssignRoomToTenant(context.Context, *connect.Request[v1.AssignRoomToTenantRequest]) (*connect.Response[v1.AssignRoomToTenantResponse], error)
 }
@@ -66,6 +71,12 @@ func NewConsoleRoomServiceClient(httpClient connect.HTTPClient, baseURL string, 
 			connect.WithSchema(consoleRoomServiceMethods.ByName("CreateRoom")),
 			connect.WithClientOptions(opts...),
 		),
+		getAllRooms: connect.NewClient[v1.GetAllRoomsRequest, v1.GetAllRoomsResponse](
+			httpClient,
+			baseURL+ConsoleRoomServiceGetAllRoomsProcedure,
+			connect.WithSchema(consoleRoomServiceMethods.ByName("GetAllRooms")),
+			connect.WithClientOptions(opts...),
+		),
 		assignRoomToTenant: connect.NewClient[v1.AssignRoomToTenantRequest, v1.AssignRoomToTenantResponse](
 			httpClient,
 			baseURL+ConsoleRoomServiceAssignRoomToTenantProcedure,
@@ -78,12 +89,18 @@ func NewConsoleRoomServiceClient(httpClient connect.HTTPClient, baseURL string, 
 // consoleRoomServiceClient implements ConsoleRoomServiceClient.
 type consoleRoomServiceClient struct {
 	createRoom         *connect.Client[v1.CreateRoomRequest, v1.CreateRoomResponse]
+	getAllRooms        *connect.Client[v1.GetAllRoomsRequest, v1.GetAllRoomsResponse]
 	assignRoomToTenant *connect.Client[v1.AssignRoomToTenantRequest, v1.AssignRoomToTenantResponse]
 }
 
 // CreateRoom calls keyhub.console.v1.ConsoleRoomService.CreateRoom.
 func (c *consoleRoomServiceClient) CreateRoom(ctx context.Context, req *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error) {
 	return c.createRoom.CallUnary(ctx, req)
+}
+
+// GetAllRooms calls keyhub.console.v1.ConsoleRoomService.GetAllRooms.
+func (c *consoleRoomServiceClient) GetAllRooms(ctx context.Context, req *connect.Request[v1.GetAllRoomsRequest]) (*connect.Response[v1.GetAllRoomsResponse], error) {
+	return c.getAllRooms.CallUnary(ctx, req)
 }
 
 // AssignRoomToTenant calls keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant.
@@ -96,6 +113,8 @@ func (c *consoleRoomServiceClient) AssignRoomToTenant(ctx context.Context, req *
 type ConsoleRoomServiceHandler interface {
 	// 部屋を作成
 	CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error)
+	// 部屋一覧を取得
+	GetAllRooms(context.Context, *connect.Request[v1.GetAllRoomsRequest]) (*connect.Response[v1.GetAllRoomsResponse], error)
 	// テナントに部屋を割り当て
 	AssignRoomToTenant(context.Context, *connect.Request[v1.AssignRoomToTenantRequest]) (*connect.Response[v1.AssignRoomToTenantResponse], error)
 }
@@ -113,6 +132,12 @@ func NewConsoleRoomServiceHandler(svc ConsoleRoomServiceHandler, opts ...connect
 		connect.WithSchema(consoleRoomServiceMethods.ByName("CreateRoom")),
 		connect.WithHandlerOptions(opts...),
 	)
+	consoleRoomServiceGetAllRoomsHandler := connect.NewUnaryHandler(
+		ConsoleRoomServiceGetAllRoomsProcedure,
+		svc.GetAllRooms,
+		connect.WithSchema(consoleRoomServiceMethods.ByName("GetAllRooms")),
+		connect.WithHandlerOptions(opts...),
+	)
 	consoleRoomServiceAssignRoomToTenantHandler := connect.NewUnaryHandler(
 		ConsoleRoomServiceAssignRoomToTenantProcedure,
 		svc.AssignRoomToTenant,
@@ -123,6 +148,8 @@ func NewConsoleRoomServiceHandler(svc ConsoleRoomServiceHandler, opts ...connect
 		switch r.URL.Path {
 		case ConsoleRoomServiceCreateRoomProcedure:
 			consoleRoomServiceCreateRoomHandler.ServeHTTP(w, r)
+		case ConsoleRoomServiceGetAllRoomsProcedure:
+			consoleRoomServiceGetAllRoomsHandler.ServeHTTP(w, r)
 		case ConsoleRoomServiceAssignRoomToTenantProcedure:
 			consoleRoomServiceAssignRoomToTenantHandler.ServeHTTP(w, r)
 		default:
@@ -136,6 +163,10 @@ type UnimplementedConsoleRoomServiceHandler struct{}
 
 func (UnimplementedConsoleRoomServiceHandler) CreateRoom(context.Context, *connect.Request[v1.CreateRoomRequest]) (*connect.Response[v1.CreateRoomResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleRoomService.CreateRoom is not implemented"))
+}
+
+func (UnimplementedConsoleRoomServiceHandler) GetAllRooms(context.Context, *connect.Request[v1.GetAllRoomsRequest]) (*connect.Response[v1.GetAllRoomsResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleRoomService.GetAllRooms is not implemented"))
 }
 
 func (UnimplementedConsoleRoomServiceHandler) AssignRoomToTenant(context.Context, *connect.Request[v1.AssignRoomToTenantRequest]) (*connect.Response[v1.AssignRoomToTenantResponse], error) {
