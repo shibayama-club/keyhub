@@ -10,6 +10,7 @@ import { RoomsPage } from '../pages/RoomsPage';
 import { CreateRoomPage } from '../pages/CreateRoomPage';
 import { AssignRoomPage } from '../pages/AssignRoomPage';
 import { CreateKeyPage } from '../pages/CreateKeyPage';
+import { RoomKeysPage } from '../pages/RoomKeysPage';
 
 // SentryでラップされたcreateBrowserRouter
 const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
@@ -53,6 +54,10 @@ export const router = sentryCreateBrowserRouter(
         {
           path: 'rooms/create',
           element: <CreateRoomPage />,
+        },
+        {
+          path: 'rooms/:roomId/keys',
+          element: <RoomKeysPage />,
         },
         {
           path: 'rooms/:roomId/keys/create',
