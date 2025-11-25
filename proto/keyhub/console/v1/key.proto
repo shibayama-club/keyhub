@@ -3,10 +3,14 @@ syntax = "proto3";
 package keyhub.console.v1;
 
 import "buf/validate/validate.proto";
+import "keyhub/console/v1/common.proto";
 
 service ConsoleKeyService {
   // 鍵を作成（Roomに紐付けて作成）
   rpc CreateKey(CreateKeyRequest) returns (CreateKeyResponse);
+
+  // Roomに紐付く鍵一覧を取得
+  rpc GetKeysByRoom(GetKeysByRoomRequest) returns (GetKeysByRoomResponse);
 }
 
 message CreateKeyRequest {
@@ -16,4 +20,12 @@ message CreateKeyRequest {
 
 message CreateKeyResponse {
   string id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetKeysByRoomRequest {
+  string room_id = 1 [(buf.validate.field).string.uuid = true];
+}
+
+message GetKeysByRoomResponse {
+  repeated Key keys = 1;
 }

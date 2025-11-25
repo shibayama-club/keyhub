@@ -28,6 +28,21 @@ enum TenantType {
   TENANT_TYPE_LABORATORY = 4; // 研究室
 }
 
+message Key {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string key_number = 2;
+  string room_id = 3 [(buf.validate.field).string.uuid = true];
+  KeyStatus status = 4;
+}
+
+enum KeyStatus {
+  KEY_STATUS_UNSPECIFIED = 0;
+  KEY_STATUS_AVAILABLE = 1; // 利用可能
+  KEY_STATUS_IN_USE = 2; // 使用中
+  KEY_STATUS_LOST = 3; // 紛失
+  KEY_STATUS_DAMAGED = 4; // 破損
+}
+
 enum RoomType {
   ROOM_TYPE_UNSPECIFIED = 0;
   ROOM_TYPE_CLASSROOM = 1; // 教室
