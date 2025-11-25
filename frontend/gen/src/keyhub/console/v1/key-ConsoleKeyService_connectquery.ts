@@ -10,3 +10,10 @@ import { ConsoleKeyService } from "./key_pb";
  * @generated from rpc keyhub.console.v1.ConsoleKeyService.CreateKey
  */
 export const createKey = ConsoleKeyService.method.createKey;
+
+/**
+ * Roomに紐付く鍵一覧を取得
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleKeyService.GetKeysByRoom
+ */
+export const getKeysByRoom = ConsoleKeyService.method.getKeysByRoom;

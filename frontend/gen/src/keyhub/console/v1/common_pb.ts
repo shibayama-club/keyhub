@@ -11,7 +11,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file keyhub/console/v1/common.proto.
  */
 export const file_keyhub_console_v1_common: GenFile = /*@__PURE__*/
-  fileDesc("Ch5rZXlodWIvY29uc29sZS92MS9jb21tb24ucHJvdG8SEWtleWh1Yi5jb25zb2xlLnYxInUKBlRlbmFudBIUCgJpZBgBIAEoCUIIukgFcgOwAQESDAoEbmFtZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIyCgt0ZW5hbnRfdHlwZRgEIAEoDjIdLmtleWh1Yi5jb25zb2xlLnYxLlRlbmFudFR5cGUinAEKBFJvb20SFAoCaWQYASABKAlCCLpIBXIDsAEBEgwKBG5hbWUYAiABKAkSFQoNYnVpbGRpbmdfbmFtZRgDIAEoCRIUCgxmbG9vcl9udW1iZXIYBCABKAkSLgoJcm9vbV90eXBlGAUgASgOMhsua2V5aHViLmNvbnNvbGUudjEuUm9vbVR5cGUSEwoLZGVzY3JpcHRpb24YBiABKAkqkAEKClRlbmFudFR5cGUSGwoXVEVOQU5UX1RZUEVfVU5TUEVDSUZJRUQQABIUChBURU5BTlRfVFlQRV9URUFNEAESGgoWVEVOQU5UX1RZUEVfREVQQVJUTUVOVBACEhcKE1RFTkFOVF9UWVBFX1BST0pFQ1QQAxIaChZURU5BTlRfVFlQRV9MQUJPUkFUT1JZEAQquQEKCFJvb21UeXBlEhkKFVJPT01fVFlQRV9VTlNQRUNJRklFRBAAEhcKE1JPT01fVFlQRV9DTEFTU1JPT00QARIaChZST09NX1RZUEVfTUVFVElOR19ST09NEAISGAoUUk9PTV9UWVBFX0xBQk9SQVRPUlkQAxIUChBST09NX1RZUEVfT0ZGSUNFEAQSFgoSUk9PTV9UWVBFX1dPUktTSE9QEAUSFQoRUk9PTV9UWVBFX1NUT1JBR0UQBkLfAQoVY29tLmtleWh1Yi5jb25zb2xlLnYxQgtDb21tb25Qcm90b1ABWlNnaXRodWIuY29tL3NoaWJheWFtYS1jbHViL2tleWh1Yi9pbnRlcm5hbC9pbnRlcmZhY2UvZ2VuL2tleWh1Yi9jb25zb2xlL3YxO2NvbnNvbGV2MaICA0tDWKoCEUtleWh1Yi5Db25zb2xlLlYxygIRS2V5aHViXENvbnNvbGVcVjHiAh1LZXlodWJcQ29uc29sZVxWMVxHUEJNZXRhZGF0YeoCE0tleWh1Yjo6Q29uc29sZTo6VjFiBnByb3RvMw", [file_buf_validate_validate]);
+  fileDesc("Ch5rZXlodWIvY29uc29sZS92MS9jb21tb24ucHJvdG8SEWtleWh1Yi5jb25zb2xlLnYxInUKBlRlbmFudBIUCgJpZBgBIAEoCUIIukgFcgOwAQESDAoEbmFtZRgCIAEoCRITCgtkZXNjcmlwdGlvbhgDIAEoCRIyCgt0ZW5hbnRfdHlwZRgEIAEoDjIdLmtleWh1Yi5jb25zb2xlLnYxLlRlbmFudFR5cGUinAEKBFJvb20SFAoCaWQYASABKAlCCLpIBXIDsAEBEgwKBG5hbWUYAiABKAkSFQoNYnVpbGRpbmdfbmFtZRgDIAEoCRIUCgxmbG9vcl9udW1iZXIYBCABKAkSLgoJcm9vbV90eXBlGAUgASgOMhsua2V5aHViLmNvbnNvbGUudjEuUm9vbVR5cGUSEwoLZGVzY3JpcHRpb24YBiABKAkieAoDS2V5EhQKAmlkGAEgASgJQgi6SAVyA7ABARISCgprZXlfbnVtYmVyGAIgASgJEhkKB3Jvb21faWQYAyABKAlCCLpIBXIDsAEBEiwKBnN0YXR1cxgEIAEoDjIcLmtleWh1Yi5jb25zb2xlLnYxLktleVN0YXR1cyqQAQoKVGVuYW50VHlwZRIbChdURU5BTlRfVFlQRV9VTlNQRUNJRklFRBAAEhQKEFRFTkFOVF9UWVBFX1RFQU0QARIaChZURU5BTlRfVFlQRV9ERVBBUlRNRU5UEAISFwoTVEVOQU5UX1RZUEVfUFJPSkVDVBADEhoKFlRFTkFOVF9UWVBFX0xBQk9SQVRPUlkQBCqFAQoJS2V5U3RhdHVzEhoKFktFWV9TVEFUVVNfVU5TUEVDSUZJRUQQABIYChRLRVlfU1RBVFVTX0FWQUlMQUJMRRABEhUKEUtFWV9TVEFUVVNfSU5fVVNFEAISEwoPS0VZX1NUQVRVU19MT1NUEAMSFgoSS0VZX1NUQVRVU19EQU1BR0VEEAQquQEKCFJvb21UeXBlEhkKFVJPT01fVFlQRV9VTlNQRUNJRklFRBAAEhcKE1JPT01fVFlQRV9DTEFTU1JPT00QARIaChZST09NX1RZUEVfTUVFVElOR19ST09NEAISGAoUUk9PTV9UWVBFX0xBQk9SQVRPUlkQAxIUChBST09NX1RZUEVfT0ZGSUNFEAQSFgoSUk9PTV9UWVBFX1dPUktTSE9QEAUSFQoRUk9PTV9UWVBFX1NUT1JBR0UQBkLfAQoVY29tLmtleWh1Yi5jb25zb2xlLnYxQgtDb21tb25Qcm90b1ABWlNnaXRodWIuY29tL3NoaWJheWFtYS1jbHViL2tleWh1Yi9pbnRlcm5hbC9pbnRlcmZhY2UvZ2VuL2tleWh1Yi9jb25zb2xlL3YxO2NvbnNvbGV2MaICA0tDWKoCEUtleWh1Yi5Db25zb2xlLlYxygIRS2V5aHViXENvbnNvbGVcVjHiAh1LZXlodWJcQ29uc29sZVxWMVxHUEJNZXRhZGF0YeoCE0tleWh1Yjo6Q29uc29sZTo6VjFiBnByb3RvMw", [file_buf_validate_validate]);
 
 /**
  * @generated from message keyhub.console.v1.Tenant
@@ -88,6 +88,38 @@ export const RoomSchema: GenMessage<Room> = /*@__PURE__*/
   messageDesc(file_keyhub_console_v1_common, 1);
 
 /**
+ * @generated from message keyhub.console.v1.Key
+ */
+export type Key = Message<"keyhub.console.v1.Key"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * @generated from field: string key_number = 2;
+   */
+  keyNumber: string;
+
+  /**
+   * @generated from field: string room_id = 3;
+   */
+  roomId: string;
+
+  /**
+   * @generated from field: keyhub.console.v1.KeyStatus status = 4;
+   */
+  status: KeyStatus;
+};
+
+/**
+ * Describes the message keyhub.console.v1.Key.
+ * Use `create(KeySchema)` to create a new message.
+ */
+export const KeySchema: GenMessage<Key> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_common, 2);
+
+/**
  * @generated from enum keyhub.console.v1.TenantType
  */
 export enum TenantType {
@@ -130,6 +162,50 @@ export enum TenantType {
  */
 export const TenantTypeSchema: GenEnum<TenantType> = /*@__PURE__*/
   enumDesc(file_keyhub_console_v1_common, 0);
+
+/**
+ * @generated from enum keyhub.console.v1.KeyStatus
+ */
+export enum KeyStatus {
+  /**
+   * @generated from enum value: KEY_STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * 利用可能
+   *
+   * @generated from enum value: KEY_STATUS_AVAILABLE = 1;
+   */
+  AVAILABLE = 1,
+
+  /**
+   * 使用中
+   *
+   * @generated from enum value: KEY_STATUS_IN_USE = 2;
+   */
+  IN_USE = 2,
+
+  /**
+   * 紛失
+   *
+   * @generated from enum value: KEY_STATUS_LOST = 3;
+   */
+  LOST = 3,
+
+  /**
+   * 破損
+   *
+   * @generated from enum value: KEY_STATUS_DAMAGED = 4;
+   */
+  DAMAGED = 4,
+}
+
+/**
+ * Describes the enum keyhub.console.v1.KeyStatus.
+ */
+export const KeyStatusSchema: GenEnum<KeyStatus> = /*@__PURE__*/
+  enumDesc(file_keyhub_console_v1_common, 1);
 
 /**
  * @generated from enum keyhub.console.v1.RoomType
@@ -187,5 +263,5 @@ export enum RoomType {
  * Describes the enum keyhub.console.v1.RoomType.
  */
 export const RoomTypeSchema: GenEnum<RoomType> = /*@__PURE__*/
-  enumDesc(file_keyhub_console_v1_common, 1);
+  enumDesc(file_keyhub_console_v1_common, 2);
 

@@ -77,6 +77,61 @@ func (TenantType) EnumDescriptor() ([]byte, []int) {
 	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{0}
 }
 
+type KeyStatus int32
+
+const (
+	KeyStatus_KEY_STATUS_UNSPECIFIED KeyStatus = 0
+	KeyStatus_KEY_STATUS_AVAILABLE   KeyStatus = 1 // 利用可能
+	KeyStatus_KEY_STATUS_IN_USE      KeyStatus = 2 // 使用中
+	KeyStatus_KEY_STATUS_LOST        KeyStatus = 3 // 紛失
+	KeyStatus_KEY_STATUS_DAMAGED     KeyStatus = 4 // 破損
+)
+
+// Enum value maps for KeyStatus.
+var (
+	KeyStatus_name = map[int32]string{
+		0: "KEY_STATUS_UNSPECIFIED",
+		1: "KEY_STATUS_AVAILABLE",
+		2: "KEY_STATUS_IN_USE",
+		3: "KEY_STATUS_LOST",
+		4: "KEY_STATUS_DAMAGED",
+	}
+	KeyStatus_value = map[string]int32{
+		"KEY_STATUS_UNSPECIFIED": 0,
+		"KEY_STATUS_AVAILABLE":   1,
+		"KEY_STATUS_IN_USE":      2,
+		"KEY_STATUS_LOST":        3,
+		"KEY_STATUS_DAMAGED":     4,
+	}
+)
+
+func (x KeyStatus) Enum() *KeyStatus {
+	p := new(KeyStatus)
+	*p = x
+	return p
+}
+
+func (x KeyStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (KeyStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_keyhub_console_v1_common_proto_enumTypes[1].Descriptor()
+}
+
+func (KeyStatus) Type() protoreflect.EnumType {
+	return &file_keyhub_console_v1_common_proto_enumTypes[1]
+}
+
+func (x KeyStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use KeyStatus.Descriptor instead.
+func (KeyStatus) EnumDescriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
 type RoomType int32
 
 const (
@@ -122,11 +177,11 @@ func (x RoomType) String() string {
 }
 
 func (RoomType) Descriptor() protoreflect.EnumDescriptor {
-	return file_keyhub_console_v1_common_proto_enumTypes[1].Descriptor()
+	return file_keyhub_console_v1_common_proto_enumTypes[2].Descriptor()
 }
 
 func (RoomType) Type() protoreflect.EnumType {
-	return &file_keyhub_console_v1_common_proto_enumTypes[1]
+	return &file_keyhub_console_v1_common_proto_enumTypes[2]
 }
 
 func (x RoomType) Number() protoreflect.EnumNumber {
@@ -135,7 +190,7 @@ func (x RoomType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RoomType.Descriptor instead.
 func (RoomType) EnumDescriptor() ([]byte, []int) {
-	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{1}
+	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{2}
 }
 
 type Tenant struct {
@@ -290,6 +345,74 @@ func (x *Room) GetDescription() string {
 	return ""
 }
 
+type Key struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	KeyNumber     string                 `protobuf:"bytes,2,opt,name=key_number,json=keyNumber,proto3" json:"key_number,omitempty"`
+	RoomId        string                 `protobuf:"bytes,3,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
+	Status        KeyStatus              `protobuf:"varint,4,opt,name=status,proto3,enum=keyhub.console.v1.KeyStatus" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Key) Reset() {
+	*x = Key{}
+	mi := &file_keyhub_console_v1_common_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Key) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Key) ProtoMessage() {}
+
+func (x *Key) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_common_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Key.ProtoReflect.Descriptor instead.
+func (*Key) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_common_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Key) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Key) GetKeyNumber() string {
+	if x != nil {
+		return x.KeyNumber
+	}
+	return ""
+}
+
+func (x *Key) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *Key) GetStatus() KeyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return KeyStatus_KEY_STATUS_UNSPECIFIED
+}
+
 var File_keyhub_console_v1_common_proto protoreflect.FileDescriptor
 
 const file_keyhub_console_v1_common_proto_rawDesc = "" +
@@ -307,14 +430,26 @@ const file_keyhub_console_v1_common_proto_rawDesc = "" +
 	"\rbuilding_name\x18\x03 \x01(\tR\fbuildingName\x12!\n" +
 	"\ffloor_number\x18\x04 \x01(\tR\vfloorNumber\x128\n" +
 	"\troom_type\x18\x05 \x01(\x0e2\x1b.keyhub.console.v1.RoomTypeR\broomType\x12 \n" +
-	"\vdescription\x18\x06 \x01(\tR\vdescription*\x90\x01\n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\"\x97\x01\n" +
+	"\x03Key\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x1d\n" +
+	"\n" +
+	"key_number\x18\x02 \x01(\tR\tkeyNumber\x12!\n" +
+	"\aroom_id\x18\x03 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06roomId\x124\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x1c.keyhub.console.v1.KeyStatusR\x06status*\x90\x01\n" +
 	"\n" +
 	"TenantType\x12\x1b\n" +
 	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10TENANT_TYPE_TEAM\x10\x01\x12\x1a\n" +
 	"\x16TENANT_TYPE_DEPARTMENT\x10\x02\x12\x17\n" +
 	"\x13TENANT_TYPE_PROJECT\x10\x03\x12\x1a\n" +
-	"\x16TENANT_TYPE_LABORATORY\x10\x04*\xb9\x01\n" +
+	"\x16TENANT_TYPE_LABORATORY\x10\x04*\x85\x01\n" +
+	"\tKeyStatus\x12\x1a\n" +
+	"\x16KEY_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14KEY_STATUS_AVAILABLE\x10\x01\x12\x15\n" +
+	"\x11KEY_STATUS_IN_USE\x10\x02\x12\x13\n" +
+	"\x0fKEY_STATUS_LOST\x10\x03\x12\x16\n" +
+	"\x12KEY_STATUS_DAMAGED\x10\x04*\xb9\x01\n" +
 	"\bRoomType\x12\x19\n" +
 	"\x15ROOM_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
 	"\x13ROOM_TYPE_CLASSROOM\x10\x01\x12\x1a\n" +
@@ -337,22 +472,25 @@ func file_keyhub_console_v1_common_proto_rawDescGZIP() []byte {
 	return file_keyhub_console_v1_common_proto_rawDescData
 }
 
-var file_keyhub_console_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_keyhub_console_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_keyhub_console_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_keyhub_console_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_keyhub_console_v1_common_proto_goTypes = []any{
 	(TenantType)(0), // 0: keyhub.console.v1.TenantType
-	(RoomType)(0),   // 1: keyhub.console.v1.RoomType
-	(*Tenant)(nil),  // 2: keyhub.console.v1.Tenant
-	(*Room)(nil),    // 3: keyhub.console.v1.Room
+	(KeyStatus)(0),  // 1: keyhub.console.v1.KeyStatus
+	(RoomType)(0),   // 2: keyhub.console.v1.RoomType
+	(*Tenant)(nil),  // 3: keyhub.console.v1.Tenant
+	(*Room)(nil),    // 4: keyhub.console.v1.Room
+	(*Key)(nil),     // 5: keyhub.console.v1.Key
 }
 var file_keyhub_console_v1_common_proto_depIdxs = []int32{
 	0, // 0: keyhub.console.v1.Tenant.tenant_type:type_name -> keyhub.console.v1.TenantType
-	1, // 1: keyhub.console.v1.Room.room_type:type_name -> keyhub.console.v1.RoomType
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	2, // 1: keyhub.console.v1.Room.room_type:type_name -> keyhub.console.v1.RoomType
+	1, // 2: keyhub.console.v1.Key.status:type_name -> keyhub.console.v1.KeyStatus
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_console_v1_common_proto_init() }
@@ -365,8 +503,8 @@ func file_keyhub_console_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_common_proto_rawDesc), len(file_keyhub_console_v1_common_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   2,
+			NumEnums:      3,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

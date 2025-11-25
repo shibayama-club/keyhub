@@ -5,13 +5,15 @@
 import type { GenFile, GenMessage, GenService } from "@bufbuild/protobuf/codegenv2";
 import { fileDesc, messageDesc, serviceDesc } from "@bufbuild/protobuf/codegenv2";
 import { file_buf_validate_validate } from "../../../buf/validate/validate_pb";
+import type { Key } from "./common_pb";
+import { file_keyhub_console_v1_common } from "./common_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file keyhub/console/v1/key.proto.
  */
 export const file_keyhub_console_v1_key: GenFile = /*@__PURE__*/
-  fileDesc("ChtrZXlodWIvY29uc29sZS92MS9rZXkucHJvdG8SEWtleWh1Yi5jb25zb2xlLnYxIkEKEENyZWF0ZUtleVJlcXVlc3QSGQoHcm9vbV9pZBgBIAEoCUIIukgFcgOwAQESEgoKa2V5X251bWJlchgCIAEoCSIpChFDcmVhdGVLZXlSZXNwb25zZRIUCgJpZBgBIAEoCUIIukgFcgOwAQEyawoRQ29uc29sZUtleVNlcnZpY2USVgoJQ3JlYXRlS2V5EiMua2V5aHViLmNvbnNvbGUudjEuQ3JlYXRlS2V5UmVxdWVzdBokLmtleWh1Yi5jb25zb2xlLnYxLkNyZWF0ZUtleVJlc3BvbnNlQtwBChVjb20ua2V5aHViLmNvbnNvbGUudjFCCEtleVByb3RvUAFaU2dpdGh1Yi5jb20vc2hpYmF5YW1hLWNsdWIva2V5aHViL2ludGVybmFsL2ludGVyZmFjZS9nZW4va2V5aHViL2NvbnNvbGUvdjE7Y29uc29sZXYxogIDS0NYqgIRS2V5aHViLkNvbnNvbGUuVjHKAhFLZXlodWJcQ29uc29sZVxWMeICHUtleWh1YlxDb25zb2xlXFYxXEdQQk1ldGFkYXRh6gITS2V5aHViOjpDb25zb2xlOjpWMWIGcHJvdG8z", [file_buf_validate_validate]);
+  fileDesc("ChtrZXlodWIvY29uc29sZS92MS9rZXkucHJvdG8SEWtleWh1Yi5jb25zb2xlLnYxIkEKEENyZWF0ZUtleVJlcXVlc3QSGQoHcm9vbV9pZBgBIAEoCUIIukgFcgOwAQESEgoKa2V5X251bWJlchgCIAEoCSIpChFDcmVhdGVLZXlSZXNwb25zZRIUCgJpZBgBIAEoCUIIukgFcgOwAQEiMQoUR2V0S2V5c0J5Um9vbVJlcXVlc3QSGQoHcm9vbV9pZBgBIAEoCUIIukgFcgOwAQEiPQoVR2V0S2V5c0J5Um9vbVJlc3BvbnNlEiQKBGtleXMYASADKAsyFi5rZXlodWIuY29uc29sZS52MS5LZXkyzwEKEUNvbnNvbGVLZXlTZXJ2aWNlElYKCUNyZWF0ZUtleRIjLmtleWh1Yi5jb25zb2xlLnYxLkNyZWF0ZUtleVJlcXVlc3QaJC5rZXlodWIuY29uc29sZS52MS5DcmVhdGVLZXlSZXNwb25zZRJiCg1HZXRLZXlzQnlSb29tEicua2V5aHViLmNvbnNvbGUudjEuR2V0S2V5c0J5Um9vbVJlcXVlc3QaKC5rZXlodWIuY29uc29sZS52MS5HZXRLZXlzQnlSb29tUmVzcG9uc2VC3AEKFWNvbS5rZXlodWIuY29uc29sZS52MUIIS2V5UHJvdG9QAVpTZ2l0aHViLmNvbS9zaGliYXlhbWEtY2x1Yi9rZXlodWIvaW50ZXJuYWwvaW50ZXJmYWNlL2dlbi9rZXlodWIvY29uc29sZS92MTtjb25zb2xldjGiAgNLQ1iqAhFLZXlodWIuQ29uc29sZS5WMcoCEUtleWh1YlxDb25zb2xlXFYx4gIdS2V5aHViXENvbnNvbGVcVjFcR1BCTWV0YWRhdGHqAhNLZXlodWI6OkNvbnNvbGU6OlYxYgZwcm90bzM", [file_buf_validate_validate, file_keyhub_console_v1_common]);
 
 /**
  * @generated from message keyhub.console.v1.CreateKeyRequest
@@ -53,6 +55,40 @@ export const CreateKeyResponseSchema: GenMessage<CreateKeyResponse> = /*@__PURE_
   messageDesc(file_keyhub_console_v1_key, 1);
 
 /**
+ * @generated from message keyhub.console.v1.GetKeysByRoomRequest
+ */
+export type GetKeysByRoomRequest = Message<"keyhub.console.v1.GetKeysByRoomRequest"> & {
+  /**
+   * @generated from field: string room_id = 1;
+   */
+  roomId: string;
+};
+
+/**
+ * Describes the message keyhub.console.v1.GetKeysByRoomRequest.
+ * Use `create(GetKeysByRoomRequestSchema)` to create a new message.
+ */
+export const GetKeysByRoomRequestSchema: GenMessage<GetKeysByRoomRequest> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_key, 2);
+
+/**
+ * @generated from message keyhub.console.v1.GetKeysByRoomResponse
+ */
+export type GetKeysByRoomResponse = Message<"keyhub.console.v1.GetKeysByRoomResponse"> & {
+  /**
+   * @generated from field: repeated keyhub.console.v1.Key keys = 1;
+   */
+  keys: Key[];
+};
+
+/**
+ * Describes the message keyhub.console.v1.GetKeysByRoomResponse.
+ * Use `create(GetKeysByRoomResponseSchema)` to create a new message.
+ */
+export const GetKeysByRoomResponseSchema: GenMessage<GetKeysByRoomResponse> = /*@__PURE__*/
+  messageDesc(file_keyhub_console_v1_key, 3);
+
+/**
  * @generated from service keyhub.console.v1.ConsoleKeyService
  */
 export const ConsoleKeyService: GenService<{
@@ -65,6 +101,16 @@ export const ConsoleKeyService: GenService<{
     methodKind: "unary";
     input: typeof CreateKeyRequestSchema;
     output: typeof CreateKeyResponseSchema;
+  },
+  /**
+   * Roomに紐付く鍵一覧を取得
+   *
+   * @generated from rpc keyhub.console.v1.ConsoleKeyService.GetKeysByRoom
+   */
+  getKeysByRoom: {
+    methodKind: "unary";
+    input: typeof GetKeysByRoomRequestSchema;
+    output: typeof GetKeysByRoomResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_keyhub_console_v1_key, 0);

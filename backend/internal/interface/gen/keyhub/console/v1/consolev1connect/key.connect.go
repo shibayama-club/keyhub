@@ -36,12 +36,17 @@ const (
 	// ConsoleKeyServiceCreateKeyProcedure is the fully-qualified name of the ConsoleKeyService's
 	// CreateKey RPC.
 	ConsoleKeyServiceCreateKeyProcedure = "/keyhub.console.v1.ConsoleKeyService/CreateKey"
+	// ConsoleKeyServiceGetKeysByRoomProcedure is the fully-qualified name of the ConsoleKeyService's
+	// GetKeysByRoom RPC.
+	ConsoleKeyServiceGetKeysByRoomProcedure = "/keyhub.console.v1.ConsoleKeyService/GetKeysByRoom"
 )
 
 // ConsoleKeyServiceClient is a client for the keyhub.console.v1.ConsoleKeyService service.
 type ConsoleKeyServiceClient interface {
 	// 鍵を作成（Roomに紐付けて作成）
 	CreateKey(context.Context, *connect.Request[v1.CreateKeyRequest]) (*connect.Response[v1.CreateKeyResponse], error)
+	// Roomに紐付く鍵一覧を取得
+	GetKeysByRoom(context.Context, *connect.Request[v1.GetKeysByRoomRequest]) (*connect.Response[v1.GetKeysByRoomResponse], error)
 }
 
 // NewConsoleKeyServiceClient constructs a client for the keyhub.console.v1.ConsoleKeyService
@@ -61,12 +66,19 @@ func NewConsoleKeyServiceClient(httpClient connect.HTTPClient, baseURL string, o
 			connect.WithSchema(consoleKeyServiceMethods.ByName("CreateKey")),
 			connect.WithClientOptions(opts...),
 		),
+		getKeysByRoom: connect.NewClient[v1.GetKeysByRoomRequest, v1.GetKeysByRoomResponse](
+			httpClient,
+			baseURL+ConsoleKeyServiceGetKeysByRoomProcedure,
+			connect.WithSchema(consoleKeyServiceMethods.ByName("GetKeysByRoom")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
 // consoleKeyServiceClient implements ConsoleKeyServiceClient.
 type consoleKeyServiceClient struct {
-	createKey *connect.Client[v1.CreateKeyRequest, v1.CreateKeyResponse]
+	createKey     *connect.Client[v1.CreateKeyRequest, v1.CreateKeyResponse]
+	getKeysByRoom *connect.Client[v1.GetKeysByRoomRequest, v1.GetKeysByRoomResponse]
 }
 
 // CreateKey calls keyhub.console.v1.ConsoleKeyService.CreateKey.
@@ -74,10 +86,17 @@ func (c *consoleKeyServiceClient) CreateKey(ctx context.Context, req *connect.Re
 	return c.createKey.CallUnary(ctx, req)
 }
 
+// GetKeysByRoom calls keyhub.console.v1.ConsoleKeyService.GetKeysByRoom.
+func (c *consoleKeyServiceClient) GetKeysByRoom(ctx context.Context, req *connect.Request[v1.GetKeysByRoomRequest]) (*connect.Response[v1.GetKeysByRoomResponse], error) {
+	return c.getKeysByRoom.CallUnary(ctx, req)
+}
+
 // ConsoleKeyServiceHandler is an implementation of the keyhub.console.v1.ConsoleKeyService service.
 type ConsoleKeyServiceHandler interface {
 	// 鍵を作成（Roomに紐付けて作成）
 	CreateKey(context.Context, *connect.Request[v1.CreateKeyRequest]) (*connect.Response[v1.CreateKeyResponse], error)
+	// Roomに紐付く鍵一覧を取得
+	GetKeysByRoom(context.Context, *connect.Request[v1.GetKeysByRoomRequest]) (*connect.Response[v1.GetKeysByRoomResponse], error)
 }
 
 // NewConsoleKeyServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -93,10 +112,18 @@ func NewConsoleKeyServiceHandler(svc ConsoleKeyServiceHandler, opts ...connect.H
 		connect.WithSchema(consoleKeyServiceMethods.ByName("CreateKey")),
 		connect.WithHandlerOptions(opts...),
 	)
+	consoleKeyServiceGetKeysByRoomHandler := connect.NewUnaryHandler(
+		ConsoleKeyServiceGetKeysByRoomProcedure,
+		svc.GetKeysByRoom,
+		connect.WithSchema(consoleKeyServiceMethods.ByName("GetKeysByRoom")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/keyhub.console.v1.ConsoleKeyService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ConsoleKeyServiceCreateKeyProcedure:
 			consoleKeyServiceCreateKeyHandler.ServeHTTP(w, r)
+		case ConsoleKeyServiceGetKeysByRoomProcedure:
+			consoleKeyServiceGetKeysByRoomHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -108,4 +135,8 @@ type UnimplementedConsoleKeyServiceHandler struct{}
 
 func (UnimplementedConsoleKeyServiceHandler) CreateKey(context.Context, *connect.Request[v1.CreateKeyRequest]) (*connect.Response[v1.CreateKeyResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleKeyService.CreateKey is not implemented"))
+}
+
+func (UnimplementedConsoleKeyServiceHandler) GetKeysByRoom(context.Context, *connect.Request[v1.GetKeysByRoomRequest]) (*connect.Response[v1.GetKeysByRoomResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleKeyService.GetKeysByRoom is not implemented"))
 }
