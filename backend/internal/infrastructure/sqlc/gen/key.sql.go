@@ -46,3 +46,42 @@ func (q *Queries) CreateKey(ctx context.Context, arg CreateKeyParams) error {
 	)
 	return err
 }
+
+const getKeysByRoom = `-- name: GetKeysByRoom :many
+SELECT k.id, k.room_id, k.organization_id, k.key_number, k.status, k.created_at, k.updated_at
+FROM keys k
+WHERE k.room_id = $1
+ORDER BY k.created_at DESC
+`
+
+type GetKeysByRoomRow struct {
+	Key Key
+}
+
+func (q *Queries) GetKeysByRoom(ctx context.Context, roomID uuid.UUID) ([]GetKeysByRoomRow, error) {
+	rows, err := q.db.Query(ctx, getKeysByRoom, roomID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetKeysByRoomRow
+	for rows.Next() {
+		var i GetKeysByRoomRow
+		if err := rows.Scan(
+			&i.Key.ID,
+			&i.Key.RoomID,
+			&i.Key.OrganizationID,
+			&i.Key.KeyNumber,
+			&i.Key.Status,
+			&i.Key.CreatedAt,
+			&i.Key.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

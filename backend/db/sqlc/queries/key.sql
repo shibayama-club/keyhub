@@ -13,3 +13,9 @@ VALUES(
     @key_number,
     @status
 );
+
+-- name: GetKeysByRoom :many
+SELECT sqlc.embed(k)
+FROM keys k
+WHERE k.room_id = $1
+ORDER BY k.created_at DESC;

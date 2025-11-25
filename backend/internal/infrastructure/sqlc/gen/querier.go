@@ -29,6 +29,7 @@ type Querier interface {
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
+	GetKeysByRoom(ctx context.Context, roomID uuid.UUID) ([]GetKeysByRoomRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetRoomById(ctx context.Context, id uuid.UUID) (GetRoomByIdRow, error)
 	GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error)
