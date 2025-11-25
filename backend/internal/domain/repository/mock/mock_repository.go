@@ -272,6 +272,21 @@ func (mr *MockRepositoryMockRecorder) GetRoomByID(ctx, id any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoomByID", reflect.TypeOf((*MockRepository)(nil).GetRoomByID), ctx, id)
 }
 
+// GetRoomsByTenant mocks base method.
+func (m *MockRepository) GetRoomsByTenant(ctx context.Context, tenantID model.TenantID) ([]model.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRoomsByTenant", ctx, tenantID)
+	ret0, _ := ret[0].([]model.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRoomsByTenant indicates an expected call of GetRoomsByTenant.
+func (mr *MockRepositoryMockRecorder) GetRoomsByTenant(ctx, tenantID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoomsByTenant", reflect.TypeOf((*MockRepository)(nil).GetRoomsByTenant), ctx, tenantID)
+}
+
 // GetSession mocks base method.
 func (m *MockRepository) GetSession(ctx context.Context, sessionID model.ConsoleSessionID) (model.ConsoleSession, error) {
 	m.ctrl.T.Helper()
@@ -742,6 +757,21 @@ func (m *MockTransaction) GetRoomByID(ctx context.Context, id model.RoomID) (mod
 func (mr *MockTransactionMockRecorder) GetRoomByID(ctx, id any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoomByID", reflect.TypeOf((*MockTransaction)(nil).GetRoomByID), ctx, id)
+}
+
+// GetRoomsByTenant mocks base method.
+func (m *MockTransaction) GetRoomsByTenant(ctx context.Context, tenantID model.TenantID) ([]model.Room, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRoomsByTenant", ctx, tenantID)
+	ret0, _ := ret[0].([]model.Room)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRoomsByTenant indicates an expected call of GetRoomsByTenant.
+func (mr *MockTransactionMockRecorder) GetRoomsByTenant(ctx, tenantID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoomsByTenant", reflect.TypeOf((*MockTransaction)(nil).GetRoomsByTenant), ctx, tenantID)
 }
 
 // GetSession mocks base method.
