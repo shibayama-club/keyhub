@@ -1,15 +1,7 @@
 import type { Key } from '../../../gen/src/keyhub/console/v1/common_pb';
 import { getKeyStatusLabel, getKeyStatusBadgeColor } from '../utils/key';
 
-export const KeyList = ({
-  keys,
-  isLoading,
-  isError,
-}: {
-  keys: Key[];
-  isLoading: boolean;
-  isError: boolean;
-}) => {
+export const KeyList = ({ keys, isLoading, isError }: { keys: Key[]; isLoading: boolean; isError: boolean }) => {
   if (isLoading) {
     return (
       <div className="px-4 py-12 text-center">
@@ -43,7 +35,12 @@ export const KeyList = ({
             <div className="flex-1">
               <div className="flex items-center space-x-3">
                 <h4 className="text-base font-medium text-gray-900">{key.keyNumber}</h4>
-                <span className={'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ' + getKeyStatusBadgeColor(key.status)}>
+                <span
+                  className={
+                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ' +
+                    getKeyStatusBadgeColor(key.status)
+                  }
+                >
                   {getKeyStatusLabel(key.status)}
                 </span>
               </div>
