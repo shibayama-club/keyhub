@@ -227,6 +227,21 @@ func (mr *MockRepositoryMockRecorder) GetAppSession(ctx, sessionID any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockRepository)(nil).GetAppSession), ctx, sessionID)
 }
 
+// GetKeysByRoom mocks base method.
+func (m *MockRepository) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKeysByRoom", ctx, roomID)
+	ret0, _ := ret[0].([]model.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKeysByRoom indicates an expected call of GetKeysByRoom.
+func (mr *MockRepositoryMockRecorder) GetKeysByRoom(ctx, roomID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeysByRoom", reflect.TypeOf((*MockRepository)(nil).GetKeysByRoom), ctx, roomID)
+}
+
 // GetOAuthState mocks base method.
 func (m *MockRepository) GetOAuthState(ctx context.Context, state string) (model.OAuthState, error) {
 	m.ctrl.T.Helper()
@@ -682,6 +697,21 @@ func (m *MockTransaction) GetAppSession(ctx context.Context, sessionID model.App
 func (mr *MockTransactionMockRecorder) GetAppSession(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAppSession", reflect.TypeOf((*MockTransaction)(nil).GetAppSession), ctx, sessionID)
+}
+
+// GetKeysByRoom mocks base method.
+func (m *MockTransaction) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKeysByRoom", ctx, roomID)
+	ret0, _ := ret[0].([]model.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKeysByRoom indicates an expected call of GetKeysByRoom.
+func (mr *MockTransactionMockRecorder) GetKeysByRoom(ctx, roomID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeysByRoom", reflect.TypeOf((*MockTransaction)(nil).GetKeysByRoom), ctx, roomID)
 }
 
 // GetOAuthState mocks base method.

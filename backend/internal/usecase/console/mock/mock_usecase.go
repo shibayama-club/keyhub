@@ -132,6 +132,21 @@ func (mr *MockIUseCaseMockRecorder) GetAllTenants(ctx, organizationID any) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockIUseCase)(nil).GetAllTenants), ctx, organizationID)
 }
 
+// GetKeysByRoom mocks base method.
+func (m *MockIUseCase) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetKeysByRoom", ctx, roomID)
+	ret0, _ := ret[0].([]model.Key)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetKeysByRoom indicates an expected call of GetKeysByRoom.
+func (mr *MockIUseCaseMockRecorder) GetKeysByRoom(ctx, roomID any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetKeysByRoom", reflect.TypeOf((*MockIUseCase)(nil).GetKeysByRoom), ctx, roomID)
+}
+
 // GetTenantById mocks base method.
 func (m *MockIUseCase) GetTenantById(ctx context.Context, tenantId model.TenantID) (dto.GetTenantByIdOutput, error) {
 	m.ctrl.T.Helper()
