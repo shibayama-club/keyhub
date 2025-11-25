@@ -132,16 +132,32 @@ func (h *Handler) GetAllRooms(
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	protoRooms := lo.Map(rooms, func(room model.Room, _ int) *consolev1.Room {
-		return &consolev1.Room{
+	protoRooms := make([]*consolev1.Room, 0, len(rooms))
+	for _, room := range rooms {
+		keys, err := h.useCase.GetKeysByRoom(ctx, room.ID)
+		if err != nil {
+			return nil, connect.NewError(connect.CodeInternal, errors.Wrap(err, "failed to get keys for room"))
+		}
+
+		protoKeys := lo.Map(keys, func(key model.Key, _ int) *consolev1.Key {
+			return &consolev1.Key{
+				Id:        key.ID.String(),
+				KeyNumber: key.KeyNumber.String(),
+				RoomId:    key.RoomID.String(),
+				Status:    convertToProtoKeyStatus(key.Status),
+			}
+		})
+
+		protoRooms = append(protoRooms, &consolev1.Room{
 			Id:           room.ID.String(),
 			Name:         room.Name.String(),
 			BuildingName: room.BuildingName.String(),
 			FloorNumber:  room.FloorNumber.String(),
 			RoomType:     convertToProtoRoomType(room.Type),
 			Description:  room.Description.String(),
-		}
-	})
+			Keys:         protoKeys,
+		})
+	}
 
 	return connect.NewResponse(&consolev1.GetAllRoomsResponse{
 		Rooms: protoRooms,
