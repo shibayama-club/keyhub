@@ -50,3 +50,11 @@ func (u *UseCase) CreateKey(ctx context.Context, input dto.CreateKeyInput) (stri
 
 	return key.ID.String(), nil
 }
+
+func (u *UseCase) GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error) {
+	keys, err := u.repo.GetKeysByRoom(ctx, roomID)
+	if err != nil {
+		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get keys by room")
+	}
+	return keys, nil
+}

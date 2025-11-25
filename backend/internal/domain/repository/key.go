@@ -16,4 +16,5 @@ type CreateKeyArg struct {
 
 type KeyRepository interface {
 	CreateKey(ctx context.Context, arg CreateKeyArg) error
+	GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error)
 }

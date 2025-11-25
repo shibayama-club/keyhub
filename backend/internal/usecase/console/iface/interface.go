@@ -21,4 +21,5 @@ type IUseCase interface {
 	GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error)
 	AssignRoomToTenant(ctx context.Context, input dto.AssignRoomToTenantInput) (string, error)
 	CreateKey(ctx context.Context, input dto.CreateKeyInput) (string, error)
+	GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error)
 }
