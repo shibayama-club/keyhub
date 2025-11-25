@@ -269,6 +269,7 @@ type Room struct {
 	FloorNumber   string                 `protobuf:"bytes,4,opt,name=floor_number,json=floorNumber,proto3" json:"floor_number,omitempty"`
 	RoomType      RoomType               `protobuf:"varint,5,opt,name=room_type,json=roomType,proto3,enum=keyhub.console.v1.RoomType" json:"room_type,omitempty"`
 	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	Keys          []*Key                 `protobuf:"bytes,7,rep,name=keys,proto3" json:"keys,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -343,6 +344,13 @@ func (x *Room) GetDescription() string {
 		return x.Description
 	}
 	return ""
+}
+
+func (x *Room) GetKeys() []*Key {
+	if x != nil {
+		return x.Keys
+	}
+	return nil
 }
 
 type Key struct {
@@ -423,14 +431,15 @@ const file_keyhub_console_v1_common_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
 	"\vdescription\x18\x03 \x01(\tR\vdescription\x12>\n" +
 	"\vtenant_type\x18\x04 \x01(\x0e2\x1d.keyhub.console.v1.TenantTypeR\n" +
-	"tenantType\"\xd8\x01\n" +
+	"tenantType\"\x84\x02\n" +
 	"\x04Room\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12#\n" +
 	"\rbuilding_name\x18\x03 \x01(\tR\fbuildingName\x12!\n" +
 	"\ffloor_number\x18\x04 \x01(\tR\vfloorNumber\x128\n" +
 	"\troom_type\x18\x05 \x01(\x0e2\x1b.keyhub.console.v1.RoomTypeR\broomType\x12 \n" +
-	"\vdescription\x18\x06 \x01(\tR\vdescription\"\x97\x01\n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12*\n" +
+	"\x04keys\x18\a \x03(\v2\x16.keyhub.console.v1.KeyR\x04keys\"\x97\x01\n" +
 	"\x03Key\x12\x18\n" +
 	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x1d\n" +
 	"\n" +
@@ -485,12 +494,13 @@ var file_keyhub_console_v1_common_proto_goTypes = []any{
 var file_keyhub_console_v1_common_proto_depIdxs = []int32{
 	0, // 0: keyhub.console.v1.Tenant.tenant_type:type_name -> keyhub.console.v1.TenantType
 	2, // 1: keyhub.console.v1.Room.room_type:type_name -> keyhub.console.v1.RoomType
-	1, // 2: keyhub.console.v1.Key.status:type_name -> keyhub.console.v1.KeyStatus
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	5, // 2: keyhub.console.v1.Room.keys:type_name -> keyhub.console.v1.Key
+	1, // 3: keyhub.console.v1.Key.status:type_name -> keyhub.console.v1.KeyStatus
+	4, // [4:4] is the sub-list for method output_type
+	4, // [4:4] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_console_v1_common_proto_init() }
