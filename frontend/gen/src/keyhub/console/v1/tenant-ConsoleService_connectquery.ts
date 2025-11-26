@@ -31,3 +31,10 @@ export const getTenantById = ConsoleService.method.getTenantById;
  * @generated from rpc keyhub.console.v1.ConsoleService.UpdateTenant
  */
 export const updateTenant = ConsoleService.method.updateTenant;
+
+/**
+ * Tenant削除
+ *
+ * @generated from rpc keyhub.console.v1.ConsoleService.DeleteTenant
+ */
+export const deleteTenant = ConsoleService.method.deleteTenant;

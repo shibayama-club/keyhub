@@ -45,6 +45,9 @@ const (
 	// ConsoleServiceUpdateTenantProcedure is the fully-qualified name of the ConsoleService's
 	// UpdateTenant RPC.
 	ConsoleServiceUpdateTenantProcedure = "/keyhub.console.v1.ConsoleService/UpdateTenant"
+	// ConsoleServiceDeleteTenantProcedure is the fully-qualified name of the ConsoleService's
+	// DeleteTenant RPC.
+	ConsoleServiceDeleteTenantProcedure = "/keyhub.console.v1.ConsoleService/DeleteTenant"
 )
 
 // ConsoleServiceClient is a client for the keyhub.console.v1.ConsoleService service.
@@ -57,6 +60,8 @@ type ConsoleServiceClient interface {
 	GetTenantById(context.Context, *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error)
 	// Tenant編集
 	UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
+	// Tenant削除
+	DeleteTenant(context.Context, *connect.Request[v1.DeleteTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
 }
 
 // NewConsoleServiceClient constructs a client for the keyhub.console.v1.ConsoleService service. By
@@ -94,6 +99,12 @@ func NewConsoleServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 			connect.WithSchema(consoleServiceMethods.ByName("UpdateTenant")),
 			connect.WithClientOptions(opts...),
 		),
+		deleteTenant: connect.NewClient[v1.DeleteTenantRequest, v1.UpdateTenantResponse](
+			httpClient,
+			baseURL+ConsoleServiceDeleteTenantProcedure,
+			connect.WithSchema(consoleServiceMethods.ByName("DeleteTenant")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -103,6 +114,7 @@ type consoleServiceClient struct {
 	getAllTenants *connect.Client[v1.GetAllTenantsRequest, v1.GetAllTenantsResponse]
 	getTenantById *connect.Client[v1.GetTenantByIdRequest, v1.GetTenantByIdResponse]
 	updateTenant  *connect.Client[v1.UpdateTenantRequest, v1.UpdateTenantResponse]
+	deleteTenant  *connect.Client[v1.DeleteTenantRequest, v1.UpdateTenantResponse]
 }
 
 // CreateTenant calls keyhub.console.v1.ConsoleService.CreateTenant.
@@ -125,6 +137,11 @@ func (c *consoleServiceClient) UpdateTenant(ctx context.Context, req *connect.Re
 	return c.updateTenant.CallUnary(ctx, req)
 }
 
+// DeleteTenant calls keyhub.console.v1.ConsoleService.DeleteTenant.
+func (c *consoleServiceClient) DeleteTenant(ctx context.Context, req *connect.Request[v1.DeleteTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error) {
+	return c.deleteTenant.CallUnary(ctx, req)
+}
+
 // ConsoleServiceHandler is an implementation of the keyhub.console.v1.ConsoleService service.
 type ConsoleServiceHandler interface {
 	// Tenant作成
@@ -135,6 +152,8 @@ type ConsoleServiceHandler interface {
 	GetTenantById(context.Context, *connect.Request[v1.GetTenantByIdRequest]) (*connect.Response[v1.GetTenantByIdResponse], error)
 	// Tenant編集
 	UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
+	// Tenant削除
+	DeleteTenant(context.Context, *connect.Request[v1.DeleteTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error)
 }
 
 // NewConsoleServiceHandler builds an HTTP handler from the service implementation. It returns the
@@ -168,6 +187,12 @@ func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.Handler
 		connect.WithSchema(consoleServiceMethods.ByName("UpdateTenant")),
 		connect.WithHandlerOptions(opts...),
 	)
+	consoleServiceDeleteTenantHandler := connect.NewUnaryHandler(
+		ConsoleServiceDeleteTenantProcedure,
+		svc.DeleteTenant,
+		connect.WithSchema(consoleServiceMethods.ByName("DeleteTenant")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/keyhub.console.v1.ConsoleService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case ConsoleServiceCreateTenantProcedure:
@@ -178,6 +203,8 @@ func NewConsoleServiceHandler(svc ConsoleServiceHandler, opts ...connect.Handler
 			consoleServiceGetTenantByIdHandler.ServeHTTP(w, r)
 		case ConsoleServiceUpdateTenantProcedure:
 			consoleServiceUpdateTenantHandler.ServeHTTP(w, r)
+		case ConsoleServiceDeleteTenantProcedure:
+			consoleServiceDeleteTenantHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -201,4 +228,8 @@ func (UnimplementedConsoleServiceHandler) GetTenantById(context.Context, *connec
 
 func (UnimplementedConsoleServiceHandler) UpdateTenant(context.Context, *connect.Request[v1.UpdateTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.UpdateTenant is not implemented"))
+}
+
+func (UnimplementedConsoleServiceHandler) DeleteTenant(context.Context, *connect.Request[v1.DeleteTenantRequest]) (*connect.Response[v1.UpdateTenantResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("keyhub.console.v1.ConsoleService.DeleteTenant is not implemented"))
 }
