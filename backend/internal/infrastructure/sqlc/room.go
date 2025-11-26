@@ -3,6 +3,7 @@ package sqlc
 import (
 	"context"
 
+	"github.com/samber/lo"
 	"github.com/shibayama-club/keyhub/internal/domain/model"
 	"github.com/shibayama-club/keyhub/internal/domain/repository"
 	sqlcgen "github.com/shibayama-club/keyhub/internal/infrastructure/sqlc/gen"
@@ -40,4 +41,18 @@ func (t *SqlcTransaction) GetRoomByID(ctx context.Context, id model.RoomID) (mod
 		return model.Room{}, err
 	}
 	return parseSqlcRoom(row.Room)
+}
+
+func (t *SqlcTransaction) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
+	rows, err := t.queries.GetAllRooms(ctx, organizationID.UUID())
+	if err != nil {
+		return nil, err
+	}
+
+	rooms := lo.Map(rows, func(row sqlcgen.GetAllRoomsRow, _ int) model.Room {
+		room, _ := parseSqlcRoom(row.Room)
+		return room
+	})
+
+	return rooms, nil
 }

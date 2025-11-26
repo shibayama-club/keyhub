@@ -22,3 +22,9 @@ VALUES(
 SELECT sqlc.embed(r)
 FROM rooms r
 WHERE r.id = $1;
+
+-- name: GetAllRooms :many
+SELECT sqlc.embed(r)
+FROM rooms r
+WHERE organization_id = $1
+ORDER BY created_at DESC;

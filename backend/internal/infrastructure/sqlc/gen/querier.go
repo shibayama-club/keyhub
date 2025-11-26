@@ -18,15 +18,18 @@ type Querier interface {
 	ConsumeOAuthState(ctx context.Context, state string) error
 	CreateAppSession(ctx context.Context, arg CreateAppSessionParams) error
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) error
+	CreateKey(ctx context.Context, arg CreateKeyParams) error
 	CreateRoom(ctx context.Context, arg CreateRoomParams) error
 	CreateRoomAssignment(ctx context.Context, arg CreateRoomAssignmentParams) error
 	CreateTenant(ctx context.Context, arg CreateTenantParams) error
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) error
 	CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) error
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
+	GetAllRooms(ctx context.Context, organizationID uuid.UUID) ([]GetAllRoomsRow, error)
 	GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)
 	GetConsoleSession(ctx context.Context, sessionID string) (GetConsoleSessionRow, error)
+	GetKeysByRoom(ctx context.Context, roomID uuid.UUID) ([]GetKeysByRoomRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetRoomById(ctx context.Context, id uuid.UUID) (GetRoomByIdRow, error)
 	GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error)

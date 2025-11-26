@@ -143,6 +143,86 @@ func (x *CreateRoomResponse) GetId() string {
 	return ""
 }
 
+type GetAllRoomsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllRoomsRequest) Reset() {
+	*x = GetAllRoomsRequest{}
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllRoomsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllRoomsRequest) ProtoMessage() {}
+
+func (x *GetAllRoomsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllRoomsRequest.ProtoReflect.Descriptor instead.
+func (*GetAllRoomsRequest) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{2}
+}
+
+type GetAllRoomsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Rooms         []*Room                `protobuf:"bytes,1,rep,name=rooms,proto3" json:"rooms,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAllRoomsResponse) Reset() {
+	*x = GetAllRoomsResponse{}
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAllRoomsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAllRoomsResponse) ProtoMessage() {}
+
+func (x *GetAllRoomsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAllRoomsResponse.ProtoReflect.Descriptor instead.
+func (*GetAllRoomsResponse) Descriptor() ([]byte, []int) {
+	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GetAllRoomsResponse) GetRooms() []*Room {
+	if x != nil {
+		return x.Rooms
+	}
+	return nil
+}
+
 type AssignRoomToTenantRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	TenantId      string                 `protobuf:"bytes,1,opt,name=tenant_id,json=tenantId,proto3" json:"tenant_id,omitempty"`
@@ -154,7 +234,7 @@ type AssignRoomToTenantRequest struct {
 
 func (x *AssignRoomToTenantRequest) Reset() {
 	*x = AssignRoomToTenantRequest{}
-	mi := &file_keyhub_console_v1_room_proto_msgTypes[2]
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -166,7 +246,7 @@ func (x *AssignRoomToTenantRequest) String() string {
 func (*AssignRoomToTenantRequest) ProtoMessage() {}
 
 func (x *AssignRoomToTenantRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_console_v1_room_proto_msgTypes[2]
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -179,7 +259,7 @@ func (x *AssignRoomToTenantRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignRoomToTenantRequest.ProtoReflect.Descriptor instead.
 func (*AssignRoomToTenantRequest) Descriptor() ([]byte, []int) {
-	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{2}
+	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *AssignRoomToTenantRequest) GetTenantId() string {
@@ -212,7 +292,7 @@ type AssignRoomToTenantResponse struct {
 
 func (x *AssignRoomToTenantResponse) Reset() {
 	*x = AssignRoomToTenantResponse{}
-	mi := &file_keyhub_console_v1_room_proto_msgTypes[3]
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -224,7 +304,7 @@ func (x *AssignRoomToTenantResponse) String() string {
 func (*AssignRoomToTenantResponse) ProtoMessage() {}
 
 func (x *AssignRoomToTenantResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_keyhub_console_v1_room_proto_msgTypes[3]
+	mi := &file_keyhub_console_v1_room_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +317,7 @@ func (x *AssignRoomToTenantResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssignRoomToTenantResponse.ProtoReflect.Descriptor instead.
 func (*AssignRoomToTenantResponse) Descriptor() ([]byte, []int) {
-	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{3}
+	return file_keyhub_console_v1_room_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AssignRoomToTenantResponse) GetAssignmentId() string {
@@ -259,7 +339,10 @@ const file_keyhub_console_v1_room_proto_rawDesc = "" +
 	"\troom_type\x18\x04 \x01(\x0e2\x1b.keyhub.console.v1.RoomTypeR\broomType\x12 \n" +
 	"\vdescription\x18\x05 \x01(\tR\vdescription\".\n" +
 	"\x12CreateRoomResponse\x12\x18\n" +
-	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\xb4\x01\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\"\x14\n" +
+	"\x12GetAllRoomsRequest\"D\n" +
+	"\x13GetAllRoomsResponse\x12-\n" +
+	"\x05rooms\x18\x01 \x03(\v2\x17.keyhub.console.v1.RoomR\x05rooms\"\xb4\x01\n" +
 	"\x19AssignRoomToTenantRequest\x12%\n" +
 	"\ttenant_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\btenantId\x12!\n" +
 	"\aroom_id\x18\x02 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06roomId\x12>\n" +
@@ -267,10 +350,11 @@ const file_keyhub_console_v1_room_proto_rawDesc = "" +
 	"expires_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\texpiresAt\x88\x01\x01B\r\n" +
 	"\v_expires_at\"K\n" +
 	"\x1aAssignRoomToTenantResponse\x12-\n" +
-	"\rassignment_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\fassignmentId2\xe2\x01\n" +
+	"\rassignment_id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\fassignmentId2\xc0\x02\n" +
 	"\x12ConsoleRoomService\x12Y\n" +
 	"\n" +
-	"CreateRoom\x12$.keyhub.console.v1.CreateRoomRequest\x1a%.keyhub.console.v1.CreateRoomResponse\x12q\n" +
+	"CreateRoom\x12$.keyhub.console.v1.CreateRoomRequest\x1a%.keyhub.console.v1.CreateRoomResponse\x12\\\n" +
+	"\vGetAllRooms\x12%.keyhub.console.v1.GetAllRoomsRequest\x1a&.keyhub.console.v1.GetAllRoomsResponse\x12q\n" +
 	"\x12AssignRoomToTenant\x12,.keyhub.console.v1.AssignRoomToTenantRequest\x1a-.keyhub.console.v1.AssignRoomToTenantResponseB\xdd\x01\n" +
 	"\x15com.keyhub.console.v1B\tRoomProtoP\x01ZSgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1;consolev1\xa2\x02\x03KCX\xaa\x02\x11Keyhub.Console.V1\xca\x02\x11Keyhub\\Console\\V1\xe2\x02\x1dKeyhub\\Console\\V1\\GPBMetadata\xea\x02\x13Keyhub::Console::V1b\x06proto3"
 
@@ -286,27 +370,33 @@ func file_keyhub_console_v1_room_proto_rawDescGZIP() []byte {
 	return file_keyhub_console_v1_room_proto_rawDescData
 }
 
-var file_keyhub_console_v1_room_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_keyhub_console_v1_room_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_keyhub_console_v1_room_proto_goTypes = []any{
 	(*CreateRoomRequest)(nil),          // 0: keyhub.console.v1.CreateRoomRequest
 	(*CreateRoomResponse)(nil),         // 1: keyhub.console.v1.CreateRoomResponse
-	(*AssignRoomToTenantRequest)(nil),  // 2: keyhub.console.v1.AssignRoomToTenantRequest
-	(*AssignRoomToTenantResponse)(nil), // 3: keyhub.console.v1.AssignRoomToTenantResponse
-	(RoomType)(0),                      // 4: keyhub.console.v1.RoomType
-	(*timestamppb.Timestamp)(nil),      // 5: google.protobuf.Timestamp
+	(*GetAllRoomsRequest)(nil),         // 2: keyhub.console.v1.GetAllRoomsRequest
+	(*GetAllRoomsResponse)(nil),        // 3: keyhub.console.v1.GetAllRoomsResponse
+	(*AssignRoomToTenantRequest)(nil),  // 4: keyhub.console.v1.AssignRoomToTenantRequest
+	(*AssignRoomToTenantResponse)(nil), // 5: keyhub.console.v1.AssignRoomToTenantResponse
+	(RoomType)(0),                      // 6: keyhub.console.v1.RoomType
+	(*Room)(nil),                       // 7: keyhub.console.v1.Room
+	(*timestamppb.Timestamp)(nil),      // 8: google.protobuf.Timestamp
 }
 var file_keyhub_console_v1_room_proto_depIdxs = []int32{
-	4, // 0: keyhub.console.v1.CreateRoomRequest.room_type:type_name -> keyhub.console.v1.RoomType
-	5, // 1: keyhub.console.v1.AssignRoomToTenantRequest.expires_at:type_name -> google.protobuf.Timestamp
-	0, // 2: keyhub.console.v1.ConsoleRoomService.CreateRoom:input_type -> keyhub.console.v1.CreateRoomRequest
-	2, // 3: keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant:input_type -> keyhub.console.v1.AssignRoomToTenantRequest
-	1, // 4: keyhub.console.v1.ConsoleRoomService.CreateRoom:output_type -> keyhub.console.v1.CreateRoomResponse
-	3, // 5: keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant:output_type -> keyhub.console.v1.AssignRoomToTenantResponse
-	4, // [4:6] is the sub-list for method output_type
-	2, // [2:4] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	6, // 0: keyhub.console.v1.CreateRoomRequest.room_type:type_name -> keyhub.console.v1.RoomType
+	7, // 1: keyhub.console.v1.GetAllRoomsResponse.rooms:type_name -> keyhub.console.v1.Room
+	8, // 2: keyhub.console.v1.AssignRoomToTenantRequest.expires_at:type_name -> google.protobuf.Timestamp
+	0, // 3: keyhub.console.v1.ConsoleRoomService.CreateRoom:input_type -> keyhub.console.v1.CreateRoomRequest
+	2, // 4: keyhub.console.v1.ConsoleRoomService.GetAllRooms:input_type -> keyhub.console.v1.GetAllRoomsRequest
+	4, // 5: keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant:input_type -> keyhub.console.v1.AssignRoomToTenantRequest
+	1, // 6: keyhub.console.v1.ConsoleRoomService.CreateRoom:output_type -> keyhub.console.v1.CreateRoomResponse
+	3, // 7: keyhub.console.v1.ConsoleRoomService.GetAllRooms:output_type -> keyhub.console.v1.GetAllRoomsResponse
+	5, // 8: keyhub.console.v1.ConsoleRoomService.AssignRoomToTenant:output_type -> keyhub.console.v1.AssignRoomToTenantResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_console_v1_room_proto_init() }
@@ -315,14 +405,14 @@ func file_keyhub_console_v1_room_proto_init() {
 		return
 	}
 	file_keyhub_console_v1_common_proto_init()
-	file_keyhub_console_v1_room_proto_msgTypes[2].OneofWrappers = []any{}
+	file_keyhub_console_v1_room_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_console_v1_room_proto_rawDesc), len(file_keyhub_console_v1_room_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

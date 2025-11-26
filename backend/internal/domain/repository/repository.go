@@ -20,4 +20,5 @@ type Transaction interface {
 	OAuthStateRepository
 	RoomRepository
 	RoomAssignmentRepository
+	KeyRepository
 }

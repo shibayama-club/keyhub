@@ -3,16 +3,22 @@ syntax = "proto3";
 package keyhub.console.v1;
 
 import "buf/validate/validate.proto";
-import "google/protobuf/timestamp.proto";
 
 message Tenant {
   string id = 1 [(buf.validate.field).string.uuid = true];
-  string organization_id = 2;
-  string name = 3;
-  string description = 4;
-  TenantType tenant_type = 5;
-  google.protobuf.Timestamp created_at = 6;
-  google.protobuf.Timestamp updated_at = 7;
+  string name = 2;
+  string description = 3;
+  TenantType tenant_type = 4;
+}
+
+message Room {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string building_name = 3;
+  string floor_number = 4;
+  RoomType room_type = 5;
+  string description = 6;
+  repeated Key keys = 7;
 }
 
 enum TenantType {
@@ -21,6 +27,21 @@ enum TenantType {
   TENANT_TYPE_DEPARTMENT = 2; // 部署
   TENANT_TYPE_PROJECT = 3; // プロジェクト
   TENANT_TYPE_LABORATORY = 4; // 研究室
+}
+
+message Key {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string key_number = 2;
+  string room_id = 3 [(buf.validate.field).string.uuid = true];
+  KeyStatus status = 4;
+}
+
+enum KeyStatus {
+  KEY_STATUS_UNSPECIFIED = 0;
+  KEY_STATUS_AVAILABLE = 1; // 利用可能
+  KEY_STATUS_IN_USE = 2; // 使用中
+  KEY_STATUS_LOST = 3; // 紛失
+  KEY_STATUS_DAMAGED = 4; // 破損
 }
 
 enum RoomType {
