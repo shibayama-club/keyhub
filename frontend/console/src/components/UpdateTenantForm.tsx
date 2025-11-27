@@ -1,0 +1,185 @@
+import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
+import { useMemo } from 'react';
+import type { GetTenantByIdResponse } from '../../../gen/src/keyhub/console/v1/tenant_pb';
+import { timestampDate } from '@bufbuild/protobuf/wkt';
+import { useForm } from '../hooks/useForm';
+import { tenantSchema } from '../libs/utils/schema';
+import { useFormField } from '../hooks/useFormField';
+import type { TenantFormData } from '../libs/utils/schema';
+import { TENANT_TYPE_OPTIONS } from '../constants/tenant';
+import { useNavigate } from 'react-router-dom';
+
+type UpdateTenantFormProps = {
+  onSubmit: (data: TenantFormData) => void;
+  isSubmitting?: boolean;
+  tenantData: GetTenantByIdResponse;
+};
+
+export const UpdateTenantForm = ({ onSubmit, isSubmitting = false, tenantData }: UpdateTenantFormProps) => {
+  const initialValues = useMemo(
+    () => ({
+      name: tenantData.tenant?.name || '',
+      description: tenantData.tenant?.description || '',
+      tenantType: tenantData.tenant?.tenantType || TenantType.TEAM,
+      joinCode: tenantData.joinCode || '',
+      joinCodeExpiry: tenantData.joinCodeExpiry ? timestampDate(tenantData.joinCodeExpiry) : undefined,
+      joinCodeMaxUse: tenantData.joinCodeMaxUse || 0,
+    }),
+    [onsubmit],
+  );
+
+  const navigate = useNavigate();
+
+  const form = useForm(tenantSchema, {
+    revalidate: true,
+    initialValues,
+  });
+
+  const nameField = useFormField(form, 'name');
+  const descriptionField = useFormField(form, 'description');
+  const tenantTypeField = useFormField(form, 'tenantType', {
+    transform: (value) => Number(value) as TenantType,
+  });
+  const joinCodeField = useFormField(form, 'joinCode');
+  const joinCodeExpiryField = useFormField(form, 'joinCodeExpiry', {
+    transform: (value) => (value ? new Date(value) : undefined),
+  });
+  const joinCodeMaxUseField = useFormField(form, 'joinCodeMaxUse', {
+    transform: (value) => (value ? Number(value) : undefined),
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = form.validate();
+    if (result.success) {
+      onSubmit(result.data);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-8">
+      <div>
+        <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
+          テナント名 <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="name"
+          value={nameField.value || ''}
+          onChange={nameField.onChange}
+          onBlur={nameField.onBlur}
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {nameField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{nameField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="description" className="mb-2 block text-sm font-medium text-gray-700">
+          説明
+        </label>
+        <textarea
+          id="description"
+          rows={4}
+          value={descriptionField.value || ''}
+          onChange={descriptionField.onChange}
+          onBlur={descriptionField.onBlur}
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {descriptionField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{descriptionField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="tenantType" className="mb-2 block text-sm font-medium text-gray-700">
+          テナントタイプ <span className="text-red-500">*</span>
+        </label>
+        <select
+          id="tenantType"
+          value={tenantTypeField.value ?? TenantType.TEAM}
+          onChange={tenantTypeField.onChange}
+          onBlur={tenantTypeField.onBlur}
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        >
+          {TENANT_TYPE_OPTIONS.map((type) => (
+            <option key={type.value} value={type.value}>
+              {type.label}
+            </option>
+          ))}
+        </select>
+        {tenantTypeField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{tenantTypeField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="joinCode" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          id="joinCode"
+          value={joinCodeField.value || ''}
+          onChange={joinCodeField.onChange}
+          onBlur={joinCodeField.onBlur}
+          placeholder="英数字6-20文字"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeField.error.length > 0 && <p className="mt-2 text-sm text-red-600">{joinCodeField.error[0]}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="joinCodeExpiry" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード有効期限
+        </label>
+        <input
+          type="date"
+          id="joinCodeExpiry"
+          value={
+            joinCodeExpiryField.value instanceof Date
+              ? joinCodeExpiryField.value.toISOString().slice(0, 10)
+              : joinCodeExpiryField.value || ''
+          }
+          onChange={joinCodeExpiryField.onChange}
+          onBlur={joinCodeExpiryField.onBlur}
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeExpiryField.error.length > 0 && (
+          <p className="mt-2 text-sm text-red-600">{joinCodeExpiryField.error[0]}</p>
+        )}
+      </div>
+
+      <div>
+        <label htmlFor="joinCodeMaxUse" className="mb-2 block text-sm font-medium text-gray-700">
+          参加コード最大使用回数
+        </label>
+        <input
+          type="number"
+          id="joinCodeMaxUse"
+          value={joinCodeMaxUseField.value ?? ''}
+          onChange={joinCodeMaxUseField.onChange}
+          onBlur={joinCodeMaxUseField.onBlur}
+          placeholder="0以上の整数"
+          min="0"
+          className="mt-1 block w-full rounded-md border-gray-300 px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          disabled={isSubmitting}
+        />
+        {joinCodeMaxUseField.error.length > 0 && (
+          <p className="mt-2 text-sm text-red-600">{joinCodeMaxUseField.error[0]}</p>
+        )}
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <button
+          type="submit"
+          onClick={() => navigate(`/tenants`)}
+          disabled={isSubmitting}
+          className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSubmitting ? '更新中...' : '更新'}
+        </button>
+      </div>
+    </form>
+  );
+};

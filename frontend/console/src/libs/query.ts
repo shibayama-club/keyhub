@@ -6,6 +6,7 @@ import {
   createTenant,
   getAllTenants,
   getTenantById,
+  updateTenant,
 } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
 import {
   createRoom,
@@ -59,6 +60,10 @@ export const useQueryGetAllTenants = () => {
 
 export const useQueryGetTenantById = (id: string) => {
   return useQuery(getTenantById, { id });
+};
+
+export const useMutationUpdateTenant = () => {
+  return useMutation(updateTenant);
 };
 
 export const useMutationCreateRoom = () => {
