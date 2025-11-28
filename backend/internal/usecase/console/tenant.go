@@ -180,7 +180,7 @@ func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
