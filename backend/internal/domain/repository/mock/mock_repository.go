@@ -182,6 +182,20 @@ func (mr *MockRepositoryMockRecorder) DeleteSession(ctx, sessionID any) *gomock.
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSession", reflect.TypeOf((*MockRepository)(nil).DeleteSession), ctx, sessionID)
 }
 
+// DeleteTenant mocks base method.
+func (m *MockRepository) DeleteTenant(ctx context.Context, id model.TenantID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTenant", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTenant indicates an expected call of DeleteTenant.
+func (mr *MockRepositoryMockRecorder) DeleteTenant(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTenant", reflect.TypeOf((*MockRepository)(nil).DeleteTenant), ctx, id)
+}
+
 // GetAllRooms mocks base method.
 func (m *MockRepository) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
 	m.ctrl.T.Helper()
@@ -652,6 +666,20 @@ func (m *MockTransaction) DeleteSession(ctx context.Context, sessionID model.Con
 func (mr *MockTransactionMockRecorder) DeleteSession(ctx, sessionID any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSession", reflect.TypeOf((*MockTransaction)(nil).DeleteSession), ctx, sessionID)
+}
+
+// DeleteTenant mocks base method.
+func (m *MockTransaction) DeleteTenant(ctx context.Context, id model.TenantID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTenant", ctx, id)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTenant indicates an expected call of DeleteTenant.
+func (mr *MockTransactionMockRecorder) DeleteTenant(ctx, id any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTenant", reflect.TypeOf((*MockTransaction)(nil).DeleteTenant), ctx, id)
 }
 
 // GetAllRooms mocks base method.
