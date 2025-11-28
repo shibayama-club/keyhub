@@ -42,6 +42,20 @@ func (m *MockRepository) EXPECT() *MockRepositoryMockRecorder {
 	return m.recorder
 }
 
+// ClearActiveMembershipByTenantID mocks base method.
+func (m *MockRepository) ClearActiveMembershipByTenantID(ctx context.Context, tenantId model.TenantID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClearActiveMembershipByTenantID", ctx, tenantId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ClearActiveMembershipByTenantID indicates an expected call of ClearActiveMembershipByTenantID.
+func (mr *MockRepositoryMockRecorder) ClearActiveMembershipByTenantID(ctx, tenantId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearActiveMembershipByTenantID", reflect.TypeOf((*MockRepository)(nil).ClearActiveMembershipByTenantID), ctx, tenantId)
+}
+
 // ConsumeOAuthState mocks base method.
 func (m *MockRepository) ConsumeOAuthState(ctx context.Context, state string) error {
 	m.ctrl.T.Helper()
@@ -526,6 +540,20 @@ func NewMockTransaction(ctrl *gomock.Controller) *MockTransaction {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransaction) EXPECT() *MockTransactionMockRecorder {
 	return m.recorder
+}
+
+// ClearActiveMembershipByTenantID mocks base method.
+func (m *MockTransaction) ClearActiveMembershipByTenantID(ctx context.Context, tenantId model.TenantID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ClearActiveMembershipByTenantID", ctx, tenantId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// ClearActiveMembershipByTenantID indicates an expected call of ClearActiveMembershipByTenantID.
+func (mr *MockTransactionMockRecorder) ClearActiveMembershipByTenantID(ctx, tenantId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ClearActiveMembershipByTenantID", reflect.TypeOf((*MockTransaction)(nil).ClearActiveMembershipByTenantID), ctx, tenantId)
 }
 
 // ConsumeOAuthState mocks base method.
