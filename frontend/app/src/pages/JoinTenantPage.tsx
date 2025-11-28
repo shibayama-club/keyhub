@@ -3,16 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import * as Sentry from '@sentry/react';
 import { Header } from '../components/Header';
-import { useQueryGetTenantByJoinCode, useMutationJoinTenant } from '../lib/query';
-import { TenantType } from '../../../gen/src/keyhub/app/v1/app_pb';
-
-const TENANT_TYPE_LABELS: Record<TenantType, string> = {
-  [TenantType.UNSPECIFIED]: '未指定',
-  [TenantType.TEAM]: 'チーム',
-  [TenantType.DEPARTMENT]: '部署',
-  [TenantType.PROJECT]: 'プロジェクト',
-  [TenantType.LABORATORY]: '研究室',
-};
+import { useQueryGetTenantByJoinCode, useMutationJoinTenant, queryClient } from '../lib/query';
+import { getMyTenants } from '../../../gen/src/keyhub/app/v1/app-TenantService_connectquery';
+import { TENANT_TYPE_LABELS } from '../lib/constants/tenant';
 
 export function JoinTenantPage() {
   const [joinCode, setJoinCode] = useState('');
@@ -35,8 +28,9 @@ export function JoinTenantPage() {
   const handleJoin = async () => {
     try {
       await joinMutation.mutateAsync({ joinCode: searchCode });
+      await queryClient.invalidateQueries({ queryKey: [getMyTenants] });
       toast.success('テナントに参加しました');
-      navigate('/home');
+      navigate('/tenants');
     } catch (error) {
       Sentry.captureException(error);
       toast.error('テナントへの参加に失敗しました');
