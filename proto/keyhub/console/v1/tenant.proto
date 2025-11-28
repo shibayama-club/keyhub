@@ -16,7 +16,7 @@ service ConsoleService {
   // Tenant編集
   rpc UpdateTenant(UpdateTenantRequest) returns (UpdateTenantResponse);
   // Tenant削除
-  rpc DeleteTenant(DeleteTenantRequest) returns (UpdateTenantResponse);
+  rpc DeleteTenant(DeleteTenantRequest) returns (DeleteTenantResponse);
 }
 
 message CreateTenantRequest {

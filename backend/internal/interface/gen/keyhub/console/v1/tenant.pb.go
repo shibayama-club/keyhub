@@ -594,7 +594,7 @@ const file_keyhub_console_v1_tenant_proto_rawDesc = "" +
 	"\rGetAllTenants\x12'.keyhub.console.v1.GetAllTenantsRequest\x1a(.keyhub.console.v1.GetAllTenantsResponse\x12b\n" +
 	"\rGetTenantById\x12'.keyhub.console.v1.GetTenantByIdRequest\x1a(.keyhub.console.v1.GetTenantByIdResponse\x12_\n" +
 	"\fUpdateTenant\x12&.keyhub.console.v1.UpdateTenantRequest\x1a'.keyhub.console.v1.UpdateTenantResponse\x12_\n" +
-	"\fDeleteTenant\x12&.keyhub.console.v1.DeleteTenantRequest\x1a'.keyhub.console.v1.UpdateTenantResponseB\xdf\x01\n" +
+	"\fDeleteTenant\x12&.keyhub.console.v1.DeleteTenantRequest\x1a'.keyhub.console.v1.DeleteTenantResponseB\xdf\x01\n" +
 	"\x15com.keyhub.console.v1B\vTenantProtoP\x01ZSgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/console/v1;consolev1\xa2\x02\x03KCX\xaa\x02\x11Keyhub.Console.V1\xca\x02\x11Keyhub\\Console\\V1\xe2\x02\x1dKeyhub\\Console\\V1\\GPBMetadata\xea\x02\x13Keyhub::Console::V1b\x06proto3"
 
 var (
@@ -642,7 +642,7 @@ var file_keyhub_console_v1_tenant_proto_depIdxs = []int32{
 	3,  // 13: keyhub.console.v1.ConsoleService.GetAllTenants:output_type -> keyhub.console.v1.GetAllTenantsResponse
 	5,  // 14: keyhub.console.v1.ConsoleService.GetTenantById:output_type -> keyhub.console.v1.GetTenantByIdResponse
 	7,  // 15: keyhub.console.v1.ConsoleService.UpdateTenant:output_type -> keyhub.console.v1.UpdateTenantResponse
-	7,  // 16: keyhub.console.v1.ConsoleService.DeleteTenant:output_type -> keyhub.console.v1.UpdateTenantResponse
+	9,  // 16: keyhub.console.v1.ConsoleService.DeleteTenant:output_type -> keyhub.console.v1.DeleteTenantResponse
 	12, // [12:17] is the sub-list for method output_type
 	7,  // [7:12] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
