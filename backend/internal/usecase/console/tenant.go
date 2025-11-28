@@ -184,7 +184,7 @@ func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)
 	return nil
 }
 
-func (u *UseCase)DeleteTenantById(ctx context.Context, tenantId model.TenantID) error{
+func (u *UseCase) DeleteTenantById(ctx context.Context, tenantId model.TenantID) error {
 	err := u.repo.DeleteTenant(ctx, tenantId)
 	if err != nil {
 		return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to delete a tenant by id from repository")
