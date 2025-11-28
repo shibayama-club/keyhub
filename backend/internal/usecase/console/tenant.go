@@ -180,7 +180,7 @@ func (u *UseCase) UpdateTenant(ctx context.Context, input dto.UpdateTenantInput)
 	if err != nil {
 		return err
 	}
-
+	
 	return nil
 }
 
@@ -188,6 +188,10 @@ func (u *UseCase) DeleteTenantById(ctx context.Context, tenantId model.TenantID)
 	err := u.repo.DeleteTenant(ctx, tenantId)
 	if err != nil {
 		return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to delete a tenant by id from repository")
+	}
+	err = u.repo.ClearActiveMembershipByTenantID(ctx, tenantId)
+	if err != nil {
+		return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to clear active membership by tenant id from repository")
 	}
 	return nil
 }
