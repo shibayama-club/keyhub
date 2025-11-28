@@ -94,3 +94,11 @@ func (t *SqlcTransaction) UpdateTenant(ctx context.Context, arg repository.Updat
 	}
 	return nil
 }
+
+func (t *SqlcTransaction) DeleteTenant(ctx context.Context, id model.TenantID) error {
+	err := t.queries.DeleteTenantById(ctx, id.UUID())
+	if err != nil {
+		return err
+	}
+	return nil
+}
