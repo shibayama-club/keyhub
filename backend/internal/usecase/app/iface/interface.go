@@ -16,4 +16,6 @@ type IUseCase interface {
 	GetTenantByJoinCode(ctx context.Context, joinCode string) (dto.GetTenantByJoinCodeOutput, error)
 	JoinTenant(ctx context.Context, userID model.UserID, joinCode string) error
 	GetMyTenants(ctx context.Context, userID model.UserID) (dto.GetMyTenantsOutput, error)
+	GetRoomsByTenant(ctx context.Context, tenantID model.TenantID) ([]model.Room, error)
+	GetKeysByRoom(ctx context.Context, roomID model.RoomID) ([]model.Key, error)
 }

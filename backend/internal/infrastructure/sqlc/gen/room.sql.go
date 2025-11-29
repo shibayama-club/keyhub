@@ -122,3 +122,46 @@ func (q *Queries) GetRoomById(ctx context.Context, id uuid.UUID) (GetRoomByIdRow
 	)
 	return i, err
 }
+
+const getRoomsByTenant = `-- name: GetRoomsByTenant :many
+SELECT r.id, r.organization_id, r.name, r.building_name, r.floor_number, r.room_type, r.description, r.created_at, r.updated_at
+FROM rooms r
+INNER JOIN room_assignments ra ON r.id = ra.room_id
+WHERE ra.tenant_id = $1
+  AND (ra.expires_at IS NULL OR ra.expires_at > NOW())
+ORDER BY r.created_at DESC
+`
+
+type GetRoomsByTenantRow struct {
+	Room Room
+}
+
+func (q *Queries) GetRoomsByTenant(ctx context.Context, tenantID uuid.UUID) ([]GetRoomsByTenantRow, error) {
+	rows, err := q.db.Query(ctx, getRoomsByTenant, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRoomsByTenantRow
+	for rows.Next() {
+		var i GetRoomsByTenantRow
+		if err := rows.Scan(
+			&i.Room.ID,
+			&i.Room.OrganizationID,
+			&i.Room.Name,
+			&i.Room.BuildingName,
+			&i.Room.FloorNumber,
+			&i.Room.RoomType,
+			&i.Room.Description,
+			&i.Room.CreatedAt,
+			&i.Room.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}

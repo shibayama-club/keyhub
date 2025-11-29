@@ -32,6 +32,7 @@ type Querier interface {
 	GetKeysByRoom(ctx context.Context, roomID uuid.UUID) ([]GetKeysByRoomRow, error)
 	GetOAuthState(ctx context.Context, state string) (GetOAuthStateRow, error)
 	GetRoomById(ctx context.Context, id uuid.UUID) (GetRoomByIdRow, error)
+	GetRoomsByTenant(ctx context.Context, tenantID uuid.UUID) ([]GetRoomsByTenantRow, error)
 	GetTenantById(ctx context.Context, id uuid.UUID) (GetTenantByIdRow, error)
 	GetTenantByJoinCode(ctx context.Context, code string) (GetTenantByJoinCodeRow, error)
 	GetTenantMembershipByTenantAndUser(ctx context.Context, arg GetTenantMembershipByTenantAndUserParams) (GetTenantMembershipByTenantAndUserRow, error)

@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import type { Tenant } from '@keyhub/gen/keyhub/app/v1/app_pb.ts';
 import { TENANT_TYPE_LABELS } from '../lib/constants/tenant';
 import { formatTimestampToJapaneseDate } from '../utils/date';
@@ -7,10 +8,11 @@ interface TenantCardProps {
 }
 
 export const TenantCard = ({ tenant }: TenantCardProps) => {
+  const navigate = useNavigate();
   const formattedDate = formatTimestampToJapaneseDate(tenant.createdAt);
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <h3 className="text-lg font-semibold text-gray-900">{tenant.name}</h3>
@@ -45,6 +47,13 @@ export const TenantCard = ({ tenant }: TenantCardProps) => {
           <span>{formattedDate}</span>
         </div>
       </div>
+
+      <button
+        onClick={() => navigate(`/tenants/${tenant.id}/rooms`)}
+        className="mt-4 w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+      >
+        部屋一覧を見る
+      </button>
     </div>
   );
 };
