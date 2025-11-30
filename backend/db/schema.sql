@@ -36,7 +36,7 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 CREATE FUNCTION public.current_membership_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
-  SELECT current_setting('keyhub.membership_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.membership_id', true), '')::uuid
 $$;
 
 
@@ -47,7 +47,7 @@ $$;
 CREATE FUNCTION public.current_organization_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
-  SELECT current_setting('keyhub.organization_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.organization_id', true), '')::uuid
 $$;
 
 
@@ -625,7 +625,7 @@ ALTER TABLE public.keys ENABLE ROW LEVEL SECURITY;
 -- Name: keys keys_org_isolation; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY keys_org_isolation ON public.keys TO keyhub USING ((organization_id = public.current_organization_id()));
+CREATE POLICY keys_org_isolation ON public.keys TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
 
 
 --
@@ -638,9 +638,9 @@ ALTER TABLE public.room_assignments ENABLE ROW LEVEL SECURITY;
 -- Name: room_assignments room_assignments_org_isolation; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY room_assignments_org_isolation ON public.room_assignments TO keyhub USING ((tenant_id IN ( SELECT tenants.id
+CREATE POLICY room_assignments_org_isolation ON public.room_assignments TO keyhub USING (((public.current_organization_id() IS NULL) OR (tenant_id IN ( SELECT tenants.id
    FROM public.tenants
-  WHERE (tenants.organization_id = public.current_organization_id()))));
+  WHERE (tenants.organization_id = public.current_organization_id())))));
 
 
 --
@@ -653,7 +653,7 @@ ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
 -- Name: rooms rooms_org_isolation; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY rooms_org_isolation ON public.rooms TO keyhub USING ((organization_id = public.current_organization_id()));
+CREATE POLICY rooms_org_isolation ON public.rooms TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
 
 
 --
@@ -666,9 +666,9 @@ ALTER TABLE public.tenant_join_codes ENABLE ROW LEVEL SECURITY;
 -- Name: tenant_join_codes tenant_join_codes_org_isolation; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY tenant_join_codes_org_isolation ON public.tenant_join_codes TO keyhub USING ((tenant_id IN ( SELECT tenants.id
+CREATE POLICY tenant_join_codes_org_isolation ON public.tenant_join_codes TO keyhub USING (((public.current_organization_id() IS NULL) OR (tenant_id IN ( SELECT tenants.id
    FROM public.tenants
-  WHERE (tenants.organization_id = public.current_organization_id()))));
+  WHERE (tenants.organization_id = public.current_organization_id())))));
 
 
 --
@@ -681,7 +681,7 @@ ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
 -- Name: tenants tenants_org_isolation; Type: POLICY; Schema: public; Owner: -
 --
 
-CREATE POLICY tenants_org_isolation ON public.tenants TO keyhub USING ((organization_id = public.current_organization_id()));
+CREATE POLICY tenants_org_isolation ON public.tenants TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
 
 
 --
