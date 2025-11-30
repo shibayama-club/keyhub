@@ -18,6 +18,19 @@ GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE tenant_join_codes TO keyhub;
 
 CREATE INDEX idx_join_codes_tenant ON tenant_join_codes(tenant_id);
 CREATE INDEX idx_join_codes_exp ON tenant_join_codes(expires_at);
+
+-- Enable RLS
+ALTER TABLE tenant_join_codes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenant_join_codes FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_join_codes_org_isolation ON tenant_join_codes
+    FOR ALL
+    TO keyhub
+    USING (
+        tenant_id IN (
+            SELECT id FROM tenants WHERE organization_id = current_organization_id()
+        )
+    );
 -- +goose StatementEnd
 
 -- +goose Down
@@ -26,6 +39,8 @@ SELECT 'down SQL query - tenant_join_codes table rollback';
 
 DROP INDEX IF EXISTS idx_join_codes_exp;
 DROP INDEX IF EXISTS idx_join_codes_tenant;
+
+DROP POLICY IF EXISTS tenant_join_codes_org_isolation ON tenant_join_codes;
 
 DROP TABLE IF EXISTS tenant_join_codes;
 -- +goose StatementEnd
