@@ -31,7 +31,7 @@ type TenantWithJoinCode struct {
 
 type TenantRepository interface {
 	CreateTenant(ctx context.Context, arg CreateTenantArg) error
-	GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error)
+	GetAllTenants(ctx context.Context) ([]model.Tenant, error)
 	GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]TenantWithMemberCount, error)
 	GetTenantByID(ctx context.Context, id model.TenantID) (TenantWithJoinCode, error)
 	UpdateTenant(ctx context.Context, arg UpdateTenantArg) error

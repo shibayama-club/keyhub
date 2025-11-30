@@ -25,6 +25,16 @@ ALTER TABLE sessions
     FOREIGN KEY (active_membership_id) REFERENCES tenant_memberships(id);
 
 CREATE INDEX idx_sessions_active_membership ON sessions(active_membership_id);
+
+-- Create current_tenant_id function (depends on tenant_memberships table)
+CREATE OR REPLACE FUNCTION current_tenant_id()
+RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT tm.tenant_id
+  FROM tenant_memberships tm
+  WHERE tm.id = current_membership_id()
+$$;
+
+GRANT EXECUTE ON FUNCTION current_tenant_id() TO keyhub;
 -- +goose StatementEnd
 
 -- +goose Down
@@ -38,6 +48,8 @@ ALTER TABLE sessions
     DROP CONSTRAINT IF EXISTS fk_sessions_active_membership;
 
 DROP INDEX IF EXISTS idx_memberships_user;
+
+DROP FUNCTION IF EXISTS current_tenant_id();
 
 DROP TABLE IF EXISTS tenant_memberships;
 -- +goose StatementEnd

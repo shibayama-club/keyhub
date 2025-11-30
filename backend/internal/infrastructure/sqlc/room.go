@@ -43,8 +43,8 @@ func (t *SqlcTransaction) GetRoomByID(ctx context.Context, id model.RoomID) (mod
 	return parseSqlcRoom(row.Room)
 }
 
-func (t *SqlcTransaction) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
-	rows, err := t.queries.GetAllRooms(ctx, organizationID.UUID())
+func (t *SqlcTransaction) GetAllRooms(ctx context.Context) ([]model.Room, error) {
+	rows, err := t.queries.GetAllRooms(ctx)
 	if err != nil {
 		return nil, err
 	}

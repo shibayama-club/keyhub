@@ -111,12 +111,7 @@ func (h *Handler) GetAllTenants(
 	ctx context.Context,
 	req *connect.Request[consolev1.GetAllTenantsRequest],
 ) (*connect.Response[consolev1.GetAllTenantsResponse], error) {
-	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
-	}
-
-	tenants, err := h.useCase.GetAllTenants(ctx, orgID)
+	tenants, err := h.useCase.GetAllTenants(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
