@@ -17,6 +17,15 @@ GRANT SELECT,INSERT,UPDATE ON TABLE tenants TO keyhub;
 
 CREATE INDEX idx_tenants_organization_id ON tenants(organization_id);
 
+-- Enable RLS
+ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenants FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenants_org_isolation ON tenants
+    FOR ALL
+    TO keyhub
+    USING (organization_id = current_organization_id());
+
 CREATE TRIGGER refresh_tenants_updated_at
 BEFORE UPDATE ON tenants
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -27,6 +36,8 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 SELECT 'down SQL query - tenants table rollback';
 
 DROP TRIGGER IF EXISTS refresh_tenants_updated_at ON tenants;
+
+DROP POLICY IF EXISTS tenants_org_isolation ON tenants;
 
 DROP INDEX IF EXISTS idx_tenants_organization_id;
 
