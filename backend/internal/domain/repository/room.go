@@ -19,6 +19,6 @@ type CreateRoomArg struct {
 type RoomRepository interface {
 	CreateRoom(ctx context.Context, arg CreateRoomArg) error
 	GetRoomByID(ctx context.Context, id model.RoomID) (model.Room, error)
-	GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error)
+	GetAllRooms(ctx context.Context) ([]model.Room, error)
 	GetRoomsByTenant(ctx context.Context, tenantID model.TenantID) ([]model.Room, error)
 }
