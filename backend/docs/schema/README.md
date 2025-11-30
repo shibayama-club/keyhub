@@ -32,8 +32,8 @@
 | public.uuid_generate_v5 | uuid | namespace uuid, name text | FUNCTION |
 | public.update_updated_at_column | trigger |  | FUNCTION |
 | public.current_membership_id | uuid |  | FUNCTION |
-| public.current_tenant_id | uuid |  | FUNCTION |
 | public.current_organization_id | uuid |  | FUNCTION |
+| public.current_tenant_id | uuid |  | FUNCTION |
 
 ## Relations
 
