@@ -58,7 +58,6 @@ func (q *Queries) CreateRoom(ctx context.Context, arg CreateRoomParams) error {
 const getAllRooms = `-- name: GetAllRooms :many
 SELECT r.id, r.organization_id, r.name, r.building_name, r.floor_number, r.room_type, r.description, r.created_at, r.updated_at
 FROM rooms r
-WHERE organization_id = $1
 ORDER BY created_at DESC
 `
 
@@ -66,8 +65,8 @@ type GetAllRoomsRow struct {
 	Room Room
 }
 
-func (q *Queries) GetAllRooms(ctx context.Context, organizationID uuid.UUID) ([]GetAllRoomsRow, error) {
-	rows, err := q.db.Query(ctx, getAllRooms, organizationID)
+func (q *Queries) GetAllRooms(ctx context.Context) ([]GetAllRoomsRow, error) {
+	rows, err := q.db.Query(ctx, getAllRooms)
 	if err != nil {
 		return nil, err
 	}
