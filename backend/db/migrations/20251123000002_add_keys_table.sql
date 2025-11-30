@@ -24,7 +24,10 @@ ALTER TABLE keys FORCE ROW LEVEL SECURITY;
 CREATE POLICY keys_org_isolation ON keys
     FOR ALL
     TO keyhub
-    USING (organization_id = current_organization_id());
+    USING (
+        current_organization_id() IS NULL
+        OR organization_id = current_organization_id()
+    );
 
 CREATE TRIGGER refresh_keys_updated_at
 BEFORE UPDATE ON keys

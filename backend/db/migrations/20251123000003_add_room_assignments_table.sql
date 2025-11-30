@@ -26,7 +26,8 @@ CREATE POLICY room_assignments_org_isolation ON room_assignments
     FOR ALL
     TO keyhub
     USING (
-        tenant_id IN (
+        current_organization_id() IS NULL
+        OR tenant_id IN (
             SELECT id FROM tenants WHERE organization_id = current_organization_id()
         )
     );

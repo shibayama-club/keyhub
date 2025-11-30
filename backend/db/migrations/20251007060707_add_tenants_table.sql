@@ -24,7 +24,10 @@ ALTER TABLE tenants FORCE ROW LEVEL SECURITY;
 CREATE POLICY tenants_org_isolation ON tenants
     FOR ALL
     TO keyhub
-    USING (organization_id = current_organization_id());
+    USING (
+        current_organization_id() IS NULL
+        OR organization_id = current_organization_id()
+    );
 
 CREATE TRIGGER refresh_tenants_updated_at
 BEFORE UPDATE ON tenants

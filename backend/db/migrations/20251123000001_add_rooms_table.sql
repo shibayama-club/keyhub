@@ -25,7 +25,10 @@ ALTER TABLE rooms FORCE ROW LEVEL SECURITY;
 CREATE POLICY rooms_org_isolation ON rooms
     FOR ALL
     TO keyhub
-    USING (organization_id = current_organization_id());
+    USING (
+        current_organization_id() IS NULL
+        OR organization_id = current_organization_id()
+    );
 
 CREATE TRIGGER refresh_rooms_updated_at
 BEFORE UPDATE ON rooms

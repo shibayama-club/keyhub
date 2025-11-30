@@ -3,14 +3,15 @@
 SELECT 'up SQL query - RLS Functions (Basic)';
 
 -- These functions only read session variables, no table dependencies
+-- NULLIF returns NULL if the value equals the second argument (empty string)
 CREATE OR REPLACE FUNCTION current_membership_id()
 RETURNS uuid LANGUAGE sql STABLE AS $$
-  SELECT current_setting('keyhub.membership_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.membership_id', true), '')::uuid
 $$;
 
 CREATE OR REPLACE FUNCTION current_organization_id()
 RETURNS uuid LANGUAGE sql STABLE AS $$
-  SELECT current_setting('keyhub.organization_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.organization_id', true), '')::uuid
 $$;
 
 GRANT EXECUTE ON FUNCTION current_membership_id() TO keyhub;
