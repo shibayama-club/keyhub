@@ -18,6 +18,15 @@ CREATE TABLE rooms (
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE rooms TO keyhub;
 
+-- Enable RLS
+ALTER TABLE rooms ENABLE ROW LEVEL SECURITY;
+ALTER TABLE rooms FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY rooms_org_isolation ON rooms
+    FOR ALL
+    TO keyhub
+    USING (organization_id = current_organization_id());
+
 CREATE TRIGGER refresh_rooms_updated_at
 BEFORE UPDATE ON rooms
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -28,6 +37,8 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 SELECT 'down SQL query - rooms table rollback';
 
 DROP TRIGGER IF EXISTS refresh_rooms_updated_at ON rooms;
+
+DROP POLICY IF EXISTS rooms_org_isolation ON rooms;
 
 DROP TABLE IF EXISTS rooms;
 -- +goose StatementEnd
