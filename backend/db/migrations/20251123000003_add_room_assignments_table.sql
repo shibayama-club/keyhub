@@ -18,6 +18,19 @@ CREATE TABLE room_assignments (
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE room_assignments TO keyhub;
 
+-- Enable RLS
+ALTER TABLE room_assignments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE room_assignments FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY room_assignments_org_isolation ON room_assignments
+    FOR ALL
+    TO keyhub
+    USING (
+        tenant_id IN (
+            SELECT id FROM tenants WHERE organization_id = current_organization_id()
+        )
+    );
+
 CREATE TRIGGER refresh_room_assignments_updated_at
 BEFORE UPDATE ON room_assignments
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -28,6 +41,8 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 SELECT 'down SQL query - room_assignments table rollback';
 
 DROP TRIGGER IF EXISTS refresh_room_assignments_updated_at ON room_assignments;
+
+DROP POLICY IF EXISTS room_assignments_org_isolation ON room_assignments;
 
 DROP TABLE IF EXISTS room_assignments;
 -- +goose StatementEnd
