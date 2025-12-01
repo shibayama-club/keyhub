@@ -38,6 +38,7 @@ export const UpdateTenantPage = () => {
       });
       await queryClient.invalidateQueries();
       toast.success('テナント情報を更新しました');
+      navigate('/tenants', { replace: true });
     } catch (error) {
       Sentry.captureException(error);
       toast.error('テナント情報の更新に失敗しました');

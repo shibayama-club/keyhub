@@ -173,7 +173,6 @@ export const UpdateTenantForm = ({ onSubmit, isSubmitting = false, tenantData }:
       <div className="flex justify-end space-x-3 pt-4">
         <button
           type="submit"
-          onClick={() => navigate(`/tenants`)}
           disabled={isSubmitting}
           className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
