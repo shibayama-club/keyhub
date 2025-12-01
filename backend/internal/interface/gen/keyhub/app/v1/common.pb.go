@@ -78,6 +78,122 @@ func (TenantType) EnumDescriptor() ([]byte, []int) {
 	return file_keyhub_app_v1_common_proto_rawDescGZIP(), []int{0}
 }
 
+type RoomType int32
+
+const (
+	RoomType_ROOM_TYPE_UNSPECIFIED  RoomType = 0
+	RoomType_ROOM_TYPE_CLASSROOM    RoomType = 1 // 教室
+	RoomType_ROOM_TYPE_MEETING_ROOM RoomType = 2 // 会議室
+	RoomType_ROOM_TYPE_LABORATORY   RoomType = 3 // 実験室
+	RoomType_ROOM_TYPE_OFFICE       RoomType = 4 // オフィス
+	RoomType_ROOM_TYPE_WORKSHOP     RoomType = 5 // 作業室
+	RoomType_ROOM_TYPE_STORAGE      RoomType = 6 // 倉庫
+)
+
+// Enum value maps for RoomType.
+var (
+	RoomType_name = map[int32]string{
+		0: "ROOM_TYPE_UNSPECIFIED",
+		1: "ROOM_TYPE_CLASSROOM",
+		2: "ROOM_TYPE_MEETING_ROOM",
+		3: "ROOM_TYPE_LABORATORY",
+		4: "ROOM_TYPE_OFFICE",
+		5: "ROOM_TYPE_WORKSHOP",
+		6: "ROOM_TYPE_STORAGE",
+	}
+	RoomType_value = map[string]int32{
+		"ROOM_TYPE_UNSPECIFIED":  0,
+		"ROOM_TYPE_CLASSROOM":    1,
+		"ROOM_TYPE_MEETING_ROOM": 2,
+		"ROOM_TYPE_LABORATORY":   3,
+		"ROOM_TYPE_OFFICE":       4,
+		"ROOM_TYPE_WORKSHOP":     5,
+		"ROOM_TYPE_STORAGE":      6,
+	}
+)
+
+func (x RoomType) Enum() *RoomType {
+	p := new(RoomType)
+	*p = x
+	return p
+}
+
+func (x RoomType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RoomType) Descriptor() protoreflect.EnumDescriptor {
+	return file_keyhub_app_v1_common_proto_enumTypes[1].Descriptor()
+}
+
+func (RoomType) Type() protoreflect.EnumType {
+	return &file_keyhub_app_v1_common_proto_enumTypes[1]
+}
+
+func (x RoomType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RoomType.Descriptor instead.
+func (RoomType) EnumDescriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
+type KeyStatus int32
+
+const (
+	KeyStatus_KEY_STATUS_UNSPECIFIED KeyStatus = 0
+	KeyStatus_KEY_STATUS_AVAILABLE   KeyStatus = 1 // 利用可能
+	KeyStatus_KEY_STATUS_IN_USE      KeyStatus = 2 // 使用中
+	KeyStatus_KEY_STATUS_LOST        KeyStatus = 3 // 紛失
+	KeyStatus_KEY_STATUS_DAMAGED     KeyStatus = 4 // 破損
+)
+
+// Enum value maps for KeyStatus.
+var (
+	KeyStatus_name = map[int32]string{
+		0: "KEY_STATUS_UNSPECIFIED",
+		1: "KEY_STATUS_AVAILABLE",
+		2: "KEY_STATUS_IN_USE",
+		3: "KEY_STATUS_LOST",
+		4: "KEY_STATUS_DAMAGED",
+	}
+	KeyStatus_value = map[string]int32{
+		"KEY_STATUS_UNSPECIFIED": 0,
+		"KEY_STATUS_AVAILABLE":   1,
+		"KEY_STATUS_IN_USE":      2,
+		"KEY_STATUS_LOST":        3,
+		"KEY_STATUS_DAMAGED":     4,
+	}
+)
+
+func (x KeyStatus) Enum() *KeyStatus {
+	p := new(KeyStatus)
+	*p = x
+	return p
+}
+
+func (x KeyStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (KeyStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_keyhub_app_v1_common_proto_enumTypes[2].Descriptor()
+}
+
+func (KeyStatus) Type() protoreflect.EnumType {
+	return &file_keyhub_app_v1_common_proto_enumTypes[2]
+}
+
+func (x KeyStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use KeyStatus.Descriptor instead.
+func (KeyStatus) EnumDescriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_common_proto_rawDescGZIP(), []int{2}
+}
+
 type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -262,6 +378,166 @@ func (x *Tenant) GetUpdatedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+type Room struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	BuildingName  string                 `protobuf:"bytes,3,opt,name=building_name,json=buildingName,proto3" json:"building_name,omitempty"`
+	FloorNumber   string                 `protobuf:"bytes,4,opt,name=floor_number,json=floorNumber,proto3" json:"floor_number,omitempty"`
+	RoomType      RoomType               `protobuf:"varint,5,opt,name=room_type,json=roomType,proto3,enum=keyhub.app.v1.RoomType" json:"room_type,omitempty"`
+	Description   string                 `protobuf:"bytes,6,opt,name=description,proto3" json:"description,omitempty"`
+	Keys          []*Key                 `protobuf:"bytes,7,rep,name=keys,proto3" json:"keys,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Room) Reset() {
+	*x = Room{}
+	mi := &file_keyhub_app_v1_common_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Room) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Room) ProtoMessage() {}
+
+func (x *Room) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_app_v1_common_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Room.ProtoReflect.Descriptor instead.
+func (*Room) Descriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_common_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *Room) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Room) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Room) GetBuildingName() string {
+	if x != nil {
+		return x.BuildingName
+	}
+	return ""
+}
+
+func (x *Room) GetFloorNumber() string {
+	if x != nil {
+		return x.FloorNumber
+	}
+	return ""
+}
+
+func (x *Room) GetRoomType() RoomType {
+	if x != nil {
+		return x.RoomType
+	}
+	return RoomType_ROOM_TYPE_UNSPECIFIED
+}
+
+func (x *Room) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *Room) GetKeys() []*Key {
+	if x != nil {
+		return x.Keys
+	}
+	return nil
+}
+
+type Key struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	KeyNumber     string                 `protobuf:"bytes,2,opt,name=key_number,json=keyNumber,proto3" json:"key_number,omitempty"`
+	RoomId        string                 `protobuf:"bytes,3,opt,name=room_id,json=roomId,proto3" json:"room_id,omitempty"`
+	Status        KeyStatus              `protobuf:"varint,4,opt,name=status,proto3,enum=keyhub.app.v1.KeyStatus" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Key) Reset() {
+	*x = Key{}
+	mi := &file_keyhub_app_v1_common_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Key) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Key) ProtoMessage() {}
+
+func (x *Key) ProtoReflect() protoreflect.Message {
+	mi := &file_keyhub_app_v1_common_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Key.ProtoReflect.Descriptor instead.
+func (*Key) Descriptor() ([]byte, []int) {
+	return file_keyhub_app_v1_common_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Key) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Key) GetKeyNumber() string {
+	if x != nil {
+		return x.KeyNumber
+	}
+	return ""
+}
+
+func (x *Key) GetRoomId() string {
+	if x != nil {
+		return x.RoomId
+	}
+	return ""
+}
+
+func (x *Key) GetStatus() KeyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return KeyStatus_KEY_STATUS_UNSPECIFIED
+}
+
 var File_keyhub_app_v1_common_proto protoreflect.FileDescriptor
 
 const file_keyhub_app_v1_common_proto_rawDesc = "" +
@@ -287,14 +563,42 @@ const file_keyhub_app_v1_common_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt*\x90\x01\n" +
+	"updated_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xfc\x01\n" +
+	"\x04Room\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12#\n" +
+	"\rbuilding_name\x18\x03 \x01(\tR\fbuildingName\x12!\n" +
+	"\ffloor_number\x18\x04 \x01(\tR\vfloorNumber\x124\n" +
+	"\troom_type\x18\x05 \x01(\x0e2\x17.keyhub.app.v1.RoomTypeR\broomType\x12 \n" +
+	"\vdescription\x18\x06 \x01(\tR\vdescription\x12&\n" +
+	"\x04keys\x18\a \x03(\v2\x12.keyhub.app.v1.KeyR\x04keys\"\x93\x01\n" +
+	"\x03Key\x12\x18\n" +
+	"\x02id\x18\x01 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x02id\x12\x1d\n" +
+	"\n" +
+	"key_number\x18\x02 \x01(\tR\tkeyNumber\x12!\n" +
+	"\aroom_id\x18\x03 \x01(\tB\b\xbaH\x05r\x03\xb0\x01\x01R\x06roomId\x120\n" +
+	"\x06status\x18\x04 \x01(\x0e2\x18.keyhub.app.v1.KeyStatusR\x06status*\x90\x01\n" +
 	"\n" +
 	"TenantType\x12\x1b\n" +
 	"\x17TENANT_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10TENANT_TYPE_TEAM\x10\x01\x12\x1a\n" +
 	"\x16TENANT_TYPE_DEPARTMENT\x10\x02\x12\x17\n" +
 	"\x13TENANT_TYPE_PROJECT\x10\x03\x12\x1a\n" +
-	"\x16TENANT_TYPE_LABORATORY\x10\x04B\xc3\x01\n" +
+	"\x16TENANT_TYPE_LABORATORY\x10\x04*\xb9\x01\n" +
+	"\bRoomType\x12\x19\n" +
+	"\x15ROOM_TYPE_UNSPECIFIED\x10\x00\x12\x17\n" +
+	"\x13ROOM_TYPE_CLASSROOM\x10\x01\x12\x1a\n" +
+	"\x16ROOM_TYPE_MEETING_ROOM\x10\x02\x12\x18\n" +
+	"\x14ROOM_TYPE_LABORATORY\x10\x03\x12\x14\n" +
+	"\x10ROOM_TYPE_OFFICE\x10\x04\x12\x16\n" +
+	"\x12ROOM_TYPE_WORKSHOP\x10\x05\x12\x15\n" +
+	"\x11ROOM_TYPE_STORAGE\x10\x06*\x85\x01\n" +
+	"\tKeyStatus\x12\x1a\n" +
+	"\x16KEY_STATUS_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14KEY_STATUS_AVAILABLE\x10\x01\x12\x15\n" +
+	"\x11KEY_STATUS_IN_USE\x10\x02\x12\x13\n" +
+	"\x0fKEY_STATUS_LOST\x10\x03\x12\x16\n" +
+	"\x12KEY_STATUS_DAMAGED\x10\x04B\xc3\x01\n" +
 	"\x11com.keyhub.app.v1B\vCommonProtoP\x01ZKgithub.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1;appv1\xa2\x02\x03KAX\xaa\x02\rKeyhub.App.V1\xca\x02\rKeyhub\\App\\V1\xe2\x02\x19Keyhub\\App\\V1\\GPBMetadata\xea\x02\x0fKeyhub::App::V1b\x06proto3"
 
 var (
@@ -309,25 +613,32 @@ func file_keyhub_app_v1_common_proto_rawDescGZIP() []byte {
 	return file_keyhub_app_v1_common_proto_rawDescData
 }
 
-var file_keyhub_app_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_keyhub_app_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_keyhub_app_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_keyhub_app_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_keyhub_app_v1_common_proto_goTypes = []any{
 	(TenantType)(0),               // 0: keyhub.app.v1.TenantType
-	(*User)(nil),                  // 1: keyhub.app.v1.User
-	(*Tenant)(nil),                // 2: keyhub.app.v1.Tenant
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(RoomType)(0),                 // 1: keyhub.app.v1.RoomType
+	(KeyStatus)(0),                // 2: keyhub.app.v1.KeyStatus
+	(*User)(nil),                  // 3: keyhub.app.v1.User
+	(*Tenant)(nil),                // 4: keyhub.app.v1.Tenant
+	(*Room)(nil),                  // 5: keyhub.app.v1.Room
+	(*Key)(nil),                   // 6: keyhub.app.v1.Key
+	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 }
 var file_keyhub_app_v1_common_proto_depIdxs = []int32{
-	3, // 0: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	3, // 1: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	7, // 0: keyhub.app.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	7, // 1: keyhub.app.v1.User.updated_at:type_name -> google.protobuf.Timestamp
 	0, // 2: keyhub.app.v1.Tenant.tenant_type:type_name -> keyhub.app.v1.TenantType
-	3, // 3: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
-	3, // 4: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	7, // 3: keyhub.app.v1.Tenant.created_at:type_name -> google.protobuf.Timestamp
+	7, // 4: keyhub.app.v1.Tenant.updated_at:type_name -> google.protobuf.Timestamp
+	1, // 5: keyhub.app.v1.Room.room_type:type_name -> keyhub.app.v1.RoomType
+	6, // 6: keyhub.app.v1.Room.keys:type_name -> keyhub.app.v1.Key
+	2, // 7: keyhub.app.v1.Key.status:type_name -> keyhub.app.v1.KeyStatus
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_keyhub_app_v1_common_proto_init() }
@@ -340,8 +651,8 @@ func file_keyhub_app_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_keyhub_app_v1_common_proto_rawDesc), len(file_keyhub_app_v1_common_proto_rawDesc)),
-			NumEnums:      1,
-			NumMessages:   2,
+			NumEnums:      3,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

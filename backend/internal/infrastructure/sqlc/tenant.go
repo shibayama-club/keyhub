@@ -31,8 +31,8 @@ func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.Creat
 	})
 }
 
-func (t *SqlcTransaction) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
-	rows, err := t.queries.GetAllTenants(ctx, organizationID.UUID())
+func (t *SqlcTransaction) GetAllTenants(ctx context.Context) ([]model.Tenant, error) {
+	rows, err := t.queries.GetAllTenants(ctx)
 	if err != nil {
 		return nil, err
 	}

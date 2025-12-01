@@ -36,7 +36,7 @@ COMMENT ON EXTENSION "uuid-ossp" IS 'generate universally unique identifiers (UU
 CREATE FUNCTION public.current_membership_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
-  SELECT current_setting('keyhub.membership_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.membership_id', true), '')::uuid
 $$;
 
 
@@ -47,7 +47,7 @@ $$;
 CREATE FUNCTION public.current_organization_id() RETURNS uuid
     LANGUAGE sql STABLE
     AS $$
-  SELECT current_setting('keyhub.organization_id', true)::uuid
+  SELECT NULLIF(current_setting('keyhub.organization_id', true), '')::uuid
 $$;
 
 
@@ -135,6 +135,8 @@ CREATE TABLE public.keys (
     CONSTRAINT keys_status_check CHECK ((status = ANY (ARRAY['available'::text, 'in_use'::text, 'lost'::text, 'damaged'::text])))
 );
 
+ALTER TABLE ONLY public.keys FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: oauth_states; Type: TABLE; Schema: public; Owner: -
@@ -164,6 +166,8 @@ CREATE TABLE public.room_assignments (
     CONSTRAINT room_assignments_date_check CHECK (((expires_at IS NULL) OR (expires_at > assigned_at)))
 );
 
+ALTER TABLE ONLY public.room_assignments FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: rooms; Type: TABLE; Schema: public; Owner: -
@@ -181,6 +185,8 @@ CREATE TABLE public.rooms (
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT rooms_room_type_check CHECK ((room_type = ANY (ARRAY['classroom'::text, 'meeting_room'::text, 'laboratory'::text, 'office'::text, 'workshop'::text, 'storage'::text])))
 );
+
+ALTER TABLE ONLY public.rooms FORCE ROW LEVEL SECURITY;
 
 
 --
@@ -212,6 +218,8 @@ CREATE TABLE public.tenant_join_codes (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE ONLY public.tenant_join_codes FORCE ROW LEVEL SECURITY;
+
 
 --
 -- Name: tenant_memberships; Type: TABLE; Schema: public; Owner: -
@@ -241,6 +249,8 @@ CREATE TABLE public.tenants (
     created_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
+
+ALTER TABLE ONLY public.tenants FORCE ROW LEVEL SECURITY;
 
 
 --
@@ -603,6 +613,75 @@ ALTER TABLE ONLY public.tenant_memberships
 
 ALTER TABLE ONLY public.user_identities
     ADD CONSTRAINT user_identities_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: keys; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.keys ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: keys keys_org_isolation; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY keys_org_isolation ON public.keys TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
+
+
+--
+-- Name: room_assignments; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.room_assignments ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: room_assignments room_assignments_org_isolation; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY room_assignments_org_isolation ON public.room_assignments TO keyhub USING (((public.current_organization_id() IS NULL) OR (tenant_id IN ( SELECT tenants.id
+   FROM public.tenants
+  WHERE (tenants.organization_id = public.current_organization_id())))));
+
+
+--
+-- Name: rooms; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.rooms ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: rooms rooms_org_isolation; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY rooms_org_isolation ON public.rooms TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
+
+
+--
+-- Name: tenant_join_codes; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tenant_join_codes ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tenant_join_codes tenant_join_codes_org_isolation; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY tenant_join_codes_org_isolation ON public.tenant_join_codes TO keyhub USING (((public.current_organization_id() IS NULL) OR (tenant_id IN ( SELECT tenants.id
+   FROM public.tenants
+  WHERE (tenants.organization_id = public.current_organization_id())))));
+
+
+--
+-- Name: tenants; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tenants ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: tenants tenants_org_isolation; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY tenants_org_isolation ON public.tenants TO keyhub USING (((public.current_organization_id() IS NULL) OR (organization_id = public.current_organization_id())));
 
 
 --

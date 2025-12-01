@@ -112,8 +112,8 @@ func (u *UseCase) AssignRoomToTenant(ctx context.Context, input dto.AssignRoomTo
 	return assignment.ID.String(), nil
 }
 
-func (u *UseCase) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
-	rooms, err := u.repo.GetAllRooms(ctx, organizationID)
+func (u *UseCase) GetAllRooms(ctx context.Context) ([]model.Room, error) {
+	rooms, err := u.repo.GetAllRooms(ctx)
 	if err != nil {
 		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get all rooms")
 	}

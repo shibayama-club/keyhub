@@ -3,6 +3,9 @@ config.yaml
 config.yml
 .env
 
+# Task runner cache
+.task/
+
 # Dependencies
 node_modules/
 **/node_modules/
