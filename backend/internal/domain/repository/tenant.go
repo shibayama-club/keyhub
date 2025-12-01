@@ -35,4 +35,5 @@ type TenantRepository interface {
 	GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]TenantWithMemberCount, error)
 	GetTenantByID(ctx context.Context, id model.TenantID) (TenantWithJoinCode, error)
 	UpdateTenant(ctx context.Context, arg UpdateTenantArg) error
+	DeleteTenant(ctx context.Context, id model.TenantID) error
 }

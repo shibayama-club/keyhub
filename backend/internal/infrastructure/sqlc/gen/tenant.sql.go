@@ -47,6 +47,16 @@ func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) erro
 	return err
 }
 
+const deleteTenantById = `-- name: DeleteTenantById :exec
+DELETE FROM tenants
+WHERE id = $1
+`
+
+func (q *Queries) DeleteTenantById(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteTenantById, id)
+	return err
+}
+
 const getAllTenants = `-- name: GetAllTenants :many
 SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
 FROM tenants t
