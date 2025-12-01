@@ -94,8 +94,8 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 	return tenant.ID.String(), nil
 }
 
-func (u *UseCase) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
-	tenants, err := u.repo.GetAllTenants(ctx, organizationID)
+func (u *UseCase) GetAllTenants(ctx context.Context) ([]model.Tenant, error) {
+	tenants, err := u.repo.GetAllTenants(ctx)
 	if err != nil {
 		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get all tenants from repository")
 	}

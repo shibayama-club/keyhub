@@ -60,7 +60,6 @@ func (q *Queries) DeleteTenantById(ctx context.Context, id uuid.UUID) error {
 const getAllTenants = `-- name: GetAllTenants :many
 SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
 FROM tenants t
-WHERE organization_id = $1
 ORDER BY created_at DESC
 `
 
@@ -68,8 +67,8 @@ type GetAllTenantsRow struct {
 	Tenant Tenant
 }
 
-func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error) {
-	rows, err := q.db.Query(ctx, getAllTenants, organizationID)
+func (q *Queries) GetAllTenants(ctx context.Context) ([]GetAllTenantsRow, error) {
+	rows, err := q.db.Query(ctx, getAllTenants)
 	if err != nil {
 		return nil, err
 	}

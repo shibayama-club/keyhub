@@ -17,6 +17,18 @@ CREATE TABLE keys (
 
 GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE keys TO keyhub;
 
+-- Enable RLS
+ALTER TABLE keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE keys FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY keys_org_isolation ON keys
+    FOR ALL
+    TO keyhub
+    USING (
+        current_organization_id() IS NULL
+        OR organization_id = current_organization_id()
+    );
+
 CREATE TRIGGER refresh_keys_updated_at
 BEFORE UPDATE ON keys
 FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -27,6 +39,8 @@ FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 SELECT 'down SQL query - keys table rollback';
 
 DROP TRIGGER IF EXISTS refresh_keys_updated_at ON keys;
+
+DROP POLICY IF EXISTS keys_org_isolation ON keys;
 
 DROP TABLE IF EXISTS keys;
 -- +goose StatementEnd

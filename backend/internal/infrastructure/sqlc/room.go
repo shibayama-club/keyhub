@@ -43,13 +43,27 @@ func (t *SqlcTransaction) GetRoomByID(ctx context.Context, id model.RoomID) (mod
 	return parseSqlcRoom(row.Room)
 }
 
-func (t *SqlcTransaction) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
-	rows, err := t.queries.GetAllRooms(ctx, organizationID.UUID())
+func (t *SqlcTransaction) GetAllRooms(ctx context.Context) ([]model.Room, error) {
+	rows, err := t.queries.GetAllRooms(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	rooms := lo.Map(rows, func(row sqlcgen.GetAllRoomsRow, _ int) model.Room {
+		room, _ := parseSqlcRoom(row.Room)
+		return room
+	})
+
+	return rooms, nil
+}
+
+func (t *SqlcTransaction) GetRoomsByTenant(ctx context.Context, tenantID model.TenantID) ([]model.Room, error) {
+	rows, err := t.queries.GetRoomsByTenant(ctx, tenantID.UUID())
+	if err != nil {
+		return nil, err
+	}
+
+	rooms := lo.Map(rows, func(row sqlcgen.GetRoomsByTenantRow, _ int) model.Room {
 		room, _ := parseSqlcRoom(row.Room)
 		return room
 	})

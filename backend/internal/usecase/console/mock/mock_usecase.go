@@ -117,33 +117,33 @@ func (mr *MockIUseCaseMockRecorder) DeleteTenantById(ctx, tenantId any) *gomock.
 }
 
 // GetAllRooms mocks base method.
-func (m *MockIUseCase) GetAllRooms(ctx context.Context, organizationID model.OrganizationID) ([]model.Room, error) {
+func (m *MockIUseCase) GetAllRooms(ctx context.Context) ([]model.Room, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllRooms", ctx, organizationID)
+	ret := m.ctrl.Call(m, "GetAllRooms", ctx)
 	ret0, _ := ret[0].([]model.Room)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllRooms indicates an expected call of GetAllRooms.
-func (mr *MockIUseCaseMockRecorder) GetAllRooms(ctx, organizationID any) *gomock.Call {
+func (mr *MockIUseCaseMockRecorder) GetAllRooms(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockIUseCase)(nil).GetAllRooms), ctx, organizationID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllRooms", reflect.TypeOf((*MockIUseCase)(nil).GetAllRooms), ctx)
 }
 
 // GetAllTenants mocks base method.
-func (m *MockIUseCase) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
+func (m *MockIUseCase) GetAllTenants(ctx context.Context) ([]model.Tenant, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAllTenants", ctx, organizationID)
+	ret := m.ctrl.Call(m, "GetAllTenants", ctx)
 	ret0, _ := ret[0].([]model.Tenant)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetAllTenants indicates an expected call of GetAllTenants.
-func (mr *MockIUseCaseMockRecorder) GetAllTenants(ctx, organizationID any) *gomock.Call {
+func (mr *MockIUseCaseMockRecorder) GetAllTenants(ctx any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockIUseCase)(nil).GetAllTenants), ctx, organizationID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllTenants", reflect.TypeOf((*MockIUseCase)(nil).GetAllTenants), ctx)
 }
 
 // GetKeysByRoom mocks base method.

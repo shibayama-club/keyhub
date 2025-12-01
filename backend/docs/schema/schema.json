@@ -1281,13 +1281,13 @@
       "type": "FUNCTION"
     },
     {
-      "name": "public.current_tenant_id",
+      "name": "public.current_organization_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"
     },
     {
-      "name": "public.current_organization_id",
+      "name": "public.current_tenant_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"

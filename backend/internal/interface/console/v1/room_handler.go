@@ -122,12 +122,7 @@ func (h *Handler) GetAllRooms(
 	ctx context.Context,
 	req *connect.Request[consolev1.GetAllRoomsRequest],
 ) (*connect.Response[consolev1.GetAllRoomsResponse], error) {
-	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
-	}
-
-	rooms, err := h.useCase.GetAllRooms(ctx, orgID)
+	rooms, err := h.useCase.GetAllRooms(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

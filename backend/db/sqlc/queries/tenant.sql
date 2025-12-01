@@ -26,7 +26,6 @@ WHERE t.id = $1;
 -- name: GetAllTenants :many
 SELECT sqlc.embed(t)
 FROM tenants t
-WHERE organization_id = $1
 ORDER BY created_at DESC;
 
 -- name: UpdateTenant :exec

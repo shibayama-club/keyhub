@@ -212,8 +212,7 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 		setupMock func(*mock.MockRepository)
 	}
 	type args struct {
-		ctx            context.Context
-		organizationID model.OrganizationID
+		ctx context.Context
 	}
 	tests := []struct {
 		name    string
@@ -244,13 +243,12 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 					}
 
 					m.EXPECT().
-						GetAllTenants(gomock.Any(), gomock.Any()).
+						GetAllTenants(gomock.Any()).
 						Return(expectedTenants, nil)
 				},
 			},
 			args: args{
-				ctx:            context.Background(),
-				organizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
+				ctx: context.Background(),
 			},
 			want: []model.Tenant{
 				{
@@ -275,13 +273,12 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 			fields: fields{
 				setupMock: func(m *mock.MockRepository) {
 					m.EXPECT().
-						GetAllTenants(gomock.Any(), gomock.Any()).
+						GetAllTenants(gomock.Any()).
 						Return([]model.Tenant{}, nil)
 				},
 			},
 			args: args{
-				ctx:            context.Background(),
-				organizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
+				ctx: context.Background(),
 			},
 			want:    []model.Tenant{},
 			wantErr: false,
@@ -303,7 +300,7 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 			}
 
 			// Act
-			got, err := u.GetAllTenants(tt.args.ctx, tt.args.organizationID)
+			got, err := u.GetAllTenants(tt.args.ctx)
 
 			// Assert
 			if tt.wantErr {
