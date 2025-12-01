@@ -44,16 +44,6 @@ export const UpdateTenantPage = () => {
     }
   };
 
-  console.log(tenantData);
-  console.log(tenantData?.tenant?.name);
-  console.log(tenantData?.tenant?.description);
-  console.log(tenantData?.tenant?.tenantType);
-  console.log(tenantData?.joinCode);
-  console.log(tenantData?.joinCodeExpiry);
-  console.log(tenantData?.joinCodeMaxUse);
-  console.log(tenantData);
-  console.log(updateTenant, isPending);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
