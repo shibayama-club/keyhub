@@ -28,3 +28,24 @@ func PaeseTimeToPgtypeTimestamptz(t *time.Time) pgtype.Timestamptz {
 		Valid: true,
 	}
 }
+
+// GoのtimeをPgのtimestamptzに変換
+func GoTimeToPgTimestamptz(t *time.Time) pgtype.Timestamptz {
+	if t == nil {
+		return pgtype.Timestamptz{
+			Valid: false,
+		}
+	}
+	return pgtype.Timestamptz{
+		Time:  *t,
+		Valid: true,
+	}
+}
+
+// PgのtimestamptzをGoのtimeに変換
+func PgTimestamptzToGoTime(ts pgtype.Timestamptz) *time.Time {
+	if !ts.Valid {
+		return nil
+	}
+	return &ts.Time
+}

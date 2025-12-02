@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { isBlankOrInvisible } from './string';
 import { TenantType } from '../../../../gen/src/keyhub/console/v1/console_pb';
+import { RoomType } from '../../../../gen/src/keyhub/console/v1/common_pb';
 
 export const tenantnameValidation = z.preprocess(
   (val) => (typeof val === 'string' ? val.trim() : val),
@@ -58,3 +59,59 @@ export const tenantSchema = z.object({
 });
 
 export type TenantFormData = z.infer<typeof tenantSchema>;
+
+// Room validation
+export const roomNameValidation = z.preprocess(
+  (val) => (typeof val === 'string' ? val.trim() : val),
+  z
+    .string({ message: '部屋名を文字列で入力してください' })
+    .nonempty({ message: '部屋名を1文字以上入力してください' })
+    .max(20, { message: '部屋名は20文字以内で入力してください' })
+    .refine((value: string) => !isBlankOrInvisible(value), {
+      message: '部屋名を1文字以上で入力してください',
+    }),
+);
+
+export const buildingNameValidation = z.preprocess(
+  (val) => (typeof val === 'string' ? val.trim() : val),
+  z
+    .string({ message: '建物名を文字列で入力してください' })
+    .nonempty({ message: '建物名を1文字以上入力してください' })
+    .max(20, { message: '建物名は20文字以内で入力してください' }),
+);
+
+export const floorNumberValidation = z.preprocess(
+  (val) => (typeof val === 'string' ? val.trim() : val),
+  z
+    .string({ message: '階数を文字列で入力してください' })
+    .nonempty({ message: '階数を入力してください' })
+    .max(10, { message: '階数は10文字以内で入力してください' }),
+);
+
+export const roomTypeValidation = z
+  .number({ message: '部屋タイプを選択してください' })
+  .int({ message: '部屋タイプは整数である必要があります' })
+  .refine((val) => Object.values(RoomType).includes(val), {
+    message: '有効な部屋タイプを選択してください',
+  });
+
+export const roomDescriptionValidation = z.preprocess(
+  (val) => (typeof val == 'string' ? val.trim() : val),
+  z
+    .string({ message: '説明を文字列で入力してください' })
+    .max(200, { message: '説明を200文字以内で入力してください' })
+    .refine((value: string) => !isBlankOrInvisible(value), {
+      message: '説明を1文字以上で入力してください',
+    }),
+);
+
+// 部屋作成フォームのスキーマ
+export const roomSchema = z.object({
+  name: roomNameValidation,
+  buildingName: buildingNameValidation,
+  floorNumber: floorNumberValidation,
+  roomType: roomTypeValidation,
+  description: roomDescriptionValidation.optional(),
+});
+
+export type RoomFormData = z.infer<typeof roomSchema>;

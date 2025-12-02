@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const createTenant = `-- name: CreateTenant :one
+const createTenant = `-- name: CreateTenant :exec
 INSERT INTO tenants(
     id,
     organization_id,
@@ -26,7 +26,6 @@ VALUES(
     $4,
     $5
 )
-RETURNING tenants.id, tenants.organization_id, tenants.name, tenants.description, tenants.tenant_type, tenants.created_at, tenants.updated_at
 `
 
 type CreateTenantParams struct {
@@ -37,35 +36,20 @@ type CreateTenantParams struct {
 	TenantType     string
 }
 
-type CreateTenantRow struct {
-	Tenant Tenant
-}
-
-func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) (CreateTenantRow, error) {
-	row := q.db.QueryRow(ctx, createTenant,
+func (q *Queries) CreateTenant(ctx context.Context, arg CreateTenantParams) error {
+	_, err := q.db.Exec(ctx, createTenant,
 		arg.ID,
 		arg.OrganizationID,
 		arg.Name,
 		arg.Description,
 		arg.TenantType,
 	)
-	var i CreateTenantRow
-	err := row.Scan(
-		&i.Tenant.ID,
-		&i.Tenant.OrganizationID,
-		&i.Tenant.Name,
-		&i.Tenant.Description,
-		&i.Tenant.TenantType,
-		&i.Tenant.CreatedAt,
-		&i.Tenant.UpdatedAt,
-	)
-	return i, err
+	return err
 }
 
 const getAllTenants = `-- name: GetAllTenants :many
 SELECT t.id, t.organization_id, t.name, t.description, t.tenant_type, t.created_at, t.updated_at
 FROM tenants t
-WHERE organization_id = $1
 ORDER BY created_at DESC
 `
 
@@ -73,8 +57,8 @@ type GetAllTenantsRow struct {
 	Tenant Tenant
 }
 
-func (q *Queries) GetAllTenants(ctx context.Context, organizationID uuid.UUID) ([]GetAllTenantsRow, error) {
-	rows, err := q.db.Query(ctx, getAllTenants, organizationID)
+func (q *Queries) GetAllTenants(ctx context.Context) ([]GetAllTenantsRow, error) {
+	rows, err := q.db.Query(ctx, getAllTenants)
 	if err != nil {
 		return nil, err
 	}

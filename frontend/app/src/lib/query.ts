@@ -3,6 +3,8 @@ import { useMutation, useQuery } from '@connectrpc/connect-query';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { getMe, logout } from '../../../gen/src/keyhub/app/v1/app-AuthService_connectquery';
 import { getTenantByJoinCode, joinTenant } from '../../../gen/src/keyhub/app/v1/app-TenantService_connectquery';
+import { getRoomsByTenant } from '../../../gen/src/keyhub/app/v1/room-RoomService_connectquery';
+import { transport } from './connect';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -45,4 +47,8 @@ export const useQueryGetTenantByJoinCode = (joinCode: string) => {
 
 export const useMutationJoinTenant = () => {
   return useMutation(joinTenant);
+};
+
+export const useQueryGetRoomsByTenant = (tenantId: string) => {
+  return useQuery(getRoomsByTenant, { tenantId }, { transport, enabled: !!tenantId });
 };

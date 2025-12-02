@@ -23,7 +23,7 @@ func (q *Queries) CleanupExpiredAppSessions(ctx context.Context) error {
 	return err
 }
 
-const createAppSession = `-- name: CreateAppSession :one
+const createAppSession = `-- name: CreateAppSession :exec
 INSERT INTO sessions (
     session_id,
     user_id,
@@ -33,7 +33,7 @@ INSERT INTO sessions (
     revoked
 ) VALUES (
     $1, $2, $3, $4, $5, FALSE
-) RETURNING sessions.session_id, sessions.user_id, sessions.active_membership_id, sessions.created_at, sessions.expires_at, sessions.csrf_token, sessions.revoked
+)
 `
 
 type CreateAppSessionParams struct {
@@ -44,29 +44,15 @@ type CreateAppSessionParams struct {
 	CsrfToken          *string
 }
 
-type CreateAppSessionRow struct {
-	Session Session
-}
-
-func (q *Queries) CreateAppSession(ctx context.Context, arg CreateAppSessionParams) (CreateAppSessionRow, error) {
-	row := q.db.QueryRow(ctx, createAppSession,
+func (q *Queries) CreateAppSession(ctx context.Context, arg CreateAppSessionParams) error {
+	_, err := q.db.Exec(ctx, createAppSession,
 		arg.SessionID,
 		arg.UserID,
 		arg.ActiveMembershipID,
 		arg.ExpiresAt,
 		arg.CsrfToken,
 	)
-	var i CreateAppSessionRow
-	err := row.Scan(
-		&i.Session.SessionID,
-		&i.Session.UserID,
-		&i.Session.ActiveMembershipID,
-		&i.Session.CreatedAt,
-		&i.Session.ExpiresAt,
-		&i.Session.CsrfToken,
-		&i.Session.Revoked,
-	)
-	return i, err
+	return err
 }
 
 const getAppSession = `-- name: GetAppSession :one

@@ -36,14 +36,6 @@ func TestUseCase_CreateTenant(t *testing.T) {
 			name: "正常系: テナント作成成功",
 			fields: fields{
 				setupMock: func(m *mock.MockRepository) {
-					expectedTenant := model.Tenant{
-						ID:             model.TenantID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440001")),
-						OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-						Name:           "テストテナント",
-						Description:    "テスト説明",
-						Type:           model.TenantTypeTeam,
-					}
-
 					m.EXPECT().
 						WithTransaction(gomock.Any(), gomock.Any()).
 						DoAndReturn(func(ctx context.Context, fn func(context.Context, repository.Transaction) error) error {
@@ -51,10 +43,10 @@ func TestUseCase_CreateTenant(t *testing.T) {
 							mockTx := mock.NewMockTransaction(gomock.NewController(t))
 							mockTx.EXPECT().
 								CreateTenant(gomock.Any(), gomock.Any()).
-								Return(expectedTenant, nil)
+								Return(nil)
 							mockTx.EXPECT().
 								CreateTenantJoinCode(gomock.Any(), gomock.Any()).
-								Return(model.TenantJoinCodeEntity{}, nil)
+								Return(nil)
 							return fn(ctx, mockTx)
 						})
 				},
@@ -71,7 +63,7 @@ func TestUseCase_CreateTenant(t *testing.T) {
 					JoinCodeMaxUse: 0,
 				},
 			},
-			want:    "550e8400-e29b-41d4-a716-446655440001",
+			want:    "", // UUID is generated dynamically, will be validated separately
 			wantErr: false,
 		},
 		{
@@ -147,24 +139,16 @@ func TestUseCase_CreateTenant(t *testing.T) {
 			name: "正常系: 説明が空でも成功",
 			fields: fields{
 				setupMock: func(m *mock.MockRepository) {
-					expectedTenant := model.Tenant{
-						ID:             model.TenantID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440002")),
-						OrganizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
-						Name:           "テストテナント2",
-						Description:    "",
-						Type:           model.TenantTypeDepartment,
-					}
-
 					m.EXPECT().
 						WithTransaction(gomock.Any(), gomock.Any()).
 						DoAndReturn(func(ctx context.Context, fn func(context.Context, repository.Transaction) error) error {
 							mockTx := mock.NewMockTransaction(gomock.NewController(t))
 							mockTx.EXPECT().
 								CreateTenant(gomock.Any(), gomock.Any()).
-								Return(expectedTenant, nil)
+								Return(nil)
 							mockTx.EXPECT().
 								CreateTenantJoinCode(gomock.Any(), gomock.Any()).
-								Return(model.TenantJoinCodeEntity{}, nil)
+								Return(nil)
 							return fn(ctx, mockTx)
 						})
 				},
@@ -181,7 +165,7 @@ func TestUseCase_CreateTenant(t *testing.T) {
 					JoinCodeMaxUse: 0,
 				},
 			},
-			want:    "550e8400-e29b-41d4-a716-446655440002",
+			want:    "", // UUID is generated dynamically, will be validated separately
 			wantErr: false,
 		},
 	}
@@ -211,7 +195,13 @@ func TestUseCase_CreateTenant(t *testing.T) {
 				}
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
+				if tt.want != "" {
+					assert.Equal(t, tt.want, got)
+				} else {
+					// Validate that the returned value is a valid UUID
+					_, parseErr := uuid.Parse(got)
+					assert.NoError(t, parseErr, "returned value should be a valid UUID")
+				}
 			}
 		})
 	}
@@ -222,8 +212,7 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 		setupMock func(*mock.MockRepository)
 	}
 	type args struct {
-		ctx            context.Context
-		organizationID model.OrganizationID
+		ctx context.Context
 	}
 	tests := []struct {
 		name    string
@@ -254,13 +243,12 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 					}
 
 					m.EXPECT().
-						GetAllTenants(gomock.Any(), gomock.Any()).
+						GetAllTenants(gomock.Any()).
 						Return(expectedTenants, nil)
 				},
 			},
 			args: args{
-				ctx:            context.Background(),
-				organizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
+				ctx: context.Background(),
 			},
 			want: []model.Tenant{
 				{
@@ -285,13 +273,12 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 			fields: fields{
 				setupMock: func(m *mock.MockRepository) {
 					m.EXPECT().
-						GetAllTenants(gomock.Any(), gomock.Any()).
+						GetAllTenants(gomock.Any()).
 						Return([]model.Tenant{}, nil)
 				},
 			},
 			args: args{
-				ctx:            context.Background(),
-				organizationID: model.OrganizationID(uuid.MustParse("550e8400-e29b-41d4-a716-446655440000")),
+				ctx: context.Background(),
 			},
 			want:    []model.Tenant{},
 			wantErr: false,
@@ -313,7 +300,7 @@ func TestUseCase_GetAllTenants(t *testing.T) {
 			}
 
 			// Act
-			got, err := u.GetAllTenants(tt.args.ctx, tt.args.organizationID)
+			got, err := u.GetAllTenants(tt.args.ctx)
 
 			// Assert
 			if tt.wantErr {

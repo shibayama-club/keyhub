@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package keyhub.app.v1;
+
+import "buf/validate/validate.proto";
+import "keyhub/app/v1/common.proto";
+
+service TenantService {
+  // 参加コードからテナント情報を取得
+  rpc GetTenantByJoinCode(GetTenantByJoinCodeRequest) returns (GetTenantByJoinCodeResponse);
+
+  // テナントに参加
+  rpc JoinTenant(JoinTenantRequest) returns (JoinTenantResponse);
+
+  // ログインユーザーが参加しているテナント一覧を取得
+  rpc GetMyTenants(GetMyTenantsRequest) returns (GetMyTenantsResponse);
+}
+
+message GetTenantByJoinCodeRequest {
+  string join_code = 1;
+}
+
+message GetTenantByJoinCodeResponse {
+  string id = 1 [(buf.validate.field).string.uuid = true];
+  string name = 2;
+  string description = 3;
+  TenantType tenant_type = 4;
+}
+
+message JoinTenantRequest {
+  string join_code = 1;
+}
+
+message JoinTenantResponse {
+  Tenant tenant = 1;
+  string message = 2; // 成功メッセージ
+}
+
+message GetMyTenantsRequest {}
+
+message GetMyTenantsResponse {
+  repeated Tenant tenants = 1;
+}

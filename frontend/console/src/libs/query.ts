@@ -2,7 +2,17 @@ import { Code, ConnectError } from '@connectrpc/connect';
 import { useMutation, useQuery } from '@connectrpc/connect-query';
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
 import { loginWithOrgId, logout } from '../../../gen/src/keyhub/console/v1/console-ConsoleAuthService_connectquery';
-import { createTenant, getAllTenants } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
+import {
+  createTenant,
+  getAllTenants,
+  getTenantById,
+} from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
+import {
+  createRoom,
+  getAllRooms,
+  assignRoomToTenant,
+} from '../../../gen/src/keyhub/console/v1/room-ConsoleRoomService_connectquery';
+import { createKey, getKeysByRoom } from '../../../gen/src/keyhub/console/v1/key-ConsoleKeyService_connectquery';
 
 const retry = (failureCount: number, err: unknown) => {
   if (err instanceof ConnectError) {
@@ -45,4 +55,28 @@ export const useMutationCreateTenant = () => {
 
 export const useQueryGetAllTenants = () => {
   return useQuery(getAllTenants, {});
+};
+
+export const useQueryGetTenantById = (id: string) => {
+  return useQuery(getTenantById, { id });
+};
+
+export const useMutationCreateRoom = () => {
+  return useMutation(createRoom);
+};
+
+export const useQueryGetAllRooms = () => {
+  return useQuery(getAllRooms, {});
+};
+
+export const useMutationAssignRoomToTenant = () => {
+  return useMutation(assignRoomToTenant);
+};
+
+export const useMutationCreateKey = () => {
+  return useMutation(createKey);
+};
+
+export const useQueryGetKeysByRoom = (roomId: string) => {
+  return useQuery(getKeysByRoom, { roomId });
 };

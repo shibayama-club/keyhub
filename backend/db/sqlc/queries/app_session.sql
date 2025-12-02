@@ -1,4 +1,4 @@
--- name: CreateAppSession :one
+-- name: CreateAppSession :exec
 INSERT INTO sessions (
     session_id,
     user_id,
@@ -8,7 +8,7 @@ INSERT INTO sessions (
     revoked
 ) VALUES (
     $1, $2, $3, $4, $5, FALSE
-) RETURNING sqlc.embed(sessions);
+);
 
 -- name: GetAppSession :one
 SELECT sqlc.embed(s)

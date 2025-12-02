@@ -12,6 +12,9 @@
 | [public.tenant_join_codes](public.tenant_join_codes.md) | 7 |  | BASE TABLE |
 | [public.tenant_memberships](public.tenant_memberships.md) | 6 |  | BASE TABLE |
 | [public.console_sessions](public.console_sessions.md) | 4 |  | BASE TABLE |
+| [public.rooms](public.rooms.md) | 9 |  | BASE TABLE |
+| [public.keys](public.keys.md) | 7 |  | BASE TABLE |
+| [public.room_assignments](public.room_assignments.md) | 7 |  | BASE TABLE |
 
 ## Stored procedures and functions
 
@@ -29,8 +32,8 @@
 | public.uuid_generate_v5 | uuid | namespace uuid, name text | FUNCTION |
 | public.update_updated_at_column | trigger |  | FUNCTION |
 | public.current_membership_id | uuid |  | FUNCTION |
-| public.current_tenant_id | uuid |  | FUNCTION |
 | public.current_organization_id | uuid |  | FUNCTION |
+| public.current_tenant_id | uuid |  | FUNCTION |
 
 ## Relations
 

@@ -27,17 +27,13 @@ func timestamptzPtrValue(t pgtype.Timestamptz) *time.Time {
 	return &t.Time
 }
 
-func (t *SqlcTransaction) CreateTenantMembership(ctx context.Context, membership model.TenantMembership) (model.TenantMembership, error) {
-	sqlcRow, err := t.queries.CreateTenantMembership(ctx, sqlcgen.CreateTenantMembershipParams{
+func (t *SqlcTransaction) CreateTenantMembership(ctx context.Context, membership model.TenantMembership) error {
+	return t.queries.CreateTenantMembership(ctx, sqlcgen.CreateTenantMembershipParams{
 		ID:       membership.ID.UUID(),
 		TenantID: membership.TenantID.UUID(),
 		UserID:   membership.UserID.UUID(),
 		Role:     membership.Role.String(),
 	})
-	if err != nil {
-		return model.TenantMembership{}, err
-	}
-	return parseSqlcTenantMembership(sqlcRow.TenantMembership)
 }
 
 func (t *SqlcTransaction) IncrementJoinCodeUsedCount(ctx context.Context, code model.TenantJoinCode) error {

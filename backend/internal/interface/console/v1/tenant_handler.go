@@ -87,13 +87,10 @@ func convertModelTenantTypeToProto(modelType model.TenantType) consolev1.TenantT
 
 func convertModelTenantToProto(tenant model.Tenant) *consolev1.Tenant {
 	return &consolev1.Tenant{
-		Id:             tenant.ID.String(),
-		OrganizationId: tenant.OrganizationID.String(),
-		Name:           tenant.Name.String(),
-		Description:    tenant.Description.String(),
-		TenantType:     convertModelTenantTypeToProto(tenant.Type),
-		CreatedAt:      timestamppb.New(tenant.CreatedAt),
-		UpdatedAt:      timestamppb.New(tenant.UpdatedAt),
+		Id:          tenant.ID.String(),
+		Name:        tenant.Name.String(),
+		Description: tenant.Description.String(),
+		TenantType:  convertModelTenantTypeToProto(tenant.Type),
 	}
 }
 
@@ -114,12 +111,7 @@ func (h *Handler) GetAllTenants(
 	ctx context.Context,
 	req *connect.Request[consolev1.GetAllTenantsRequest],
 ) (*connect.Response[consolev1.GetAllTenantsResponse], error) {
-	orgID, ok := domain.Value[model.OrganizationID](ctx)
-	if !ok {
-		return nil, connect.NewError(connect.CodeUnauthenticated, errors.WithMessage(domainerrors.ErrNotFound, "organization not found"))
-	}
-
-	tenants, err := h.useCase.GetAllTenants(ctx, orgID)
+	tenants, err := h.useCase.GetAllTenants(ctx)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}

@@ -21,22 +21,18 @@ func parseSqlcTenant(tenant sqlcgen.Tenant) (model.Tenant, error) {
 	}, nil
 }
 
-func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.CreateTenantArg) (model.Tenant, error) {
-	sqlcTenantRow, err := t.queries.CreateTenant(ctx, sqlcgen.CreateTenantParams{
+func (t *SqlcTransaction) CreateTenant(ctx context.Context, arg repository.CreateTenantArg) error {
+	return t.queries.CreateTenant(ctx, sqlcgen.CreateTenantParams{
 		ID:             arg.ID.UUID(),
 		OrganizationID: arg.OrganizationID.UUID(),
 		Name:           arg.Name.String(),
 		Description:    arg.Description.String(),
 		TenantType:     arg.Type.String(),
 	})
-	if err != nil {
-		return model.Tenant{}, err
-	}
-	return parseSqlcTenant(sqlcTenantRow.Tenant)
 }
 
-func (t *SqlcTransaction) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
-	rows, err := t.queries.GetAllTenants(ctx, organizationID.UUID())
+func (t *SqlcTransaction) GetAllTenants(ctx context.Context) ([]model.Tenant, error) {
+	rows, err := t.queries.GetAllTenants(ctx)
 	if err != nil {
 		return nil, err
 	}

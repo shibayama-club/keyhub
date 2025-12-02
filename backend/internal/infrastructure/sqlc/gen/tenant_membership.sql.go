@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const createTenantMembership = `-- name: CreateTenantMembership :one
+const createTenantMembership = `-- name: CreateTenantMembership :exec
 INSERT INTO tenant_memberships(
     id,
     tenant_id,
@@ -24,7 +24,6 @@ VALUES(
     $3,
     $4
 )
-RETURNING tenant_memberships.id, tenant_memberships.tenant_id, tenant_memberships.user_id, tenant_memberships.role, tenant_memberships.created_at, tenant_memberships.left_at
 `
 
 type CreateTenantMembershipParams struct {
@@ -34,27 +33,14 @@ type CreateTenantMembershipParams struct {
 	Role     string
 }
 
-type CreateTenantMembershipRow struct {
-	TenantMembership TenantMembership
-}
-
-func (q *Queries) CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) (CreateTenantMembershipRow, error) {
-	row := q.db.QueryRow(ctx, createTenantMembership,
+func (q *Queries) CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) error {
+	_, err := q.db.Exec(ctx, createTenantMembership,
 		arg.ID,
 		arg.TenantID,
 		arg.UserID,
 		arg.Role,
 	)
-	var i CreateTenantMembershipRow
-	err := row.Scan(
-		&i.TenantMembership.ID,
-		&i.TenantMembership.TenantID,
-		&i.TenantMembership.UserID,
-		&i.TenantMembership.Role,
-		&i.TenantMembership.CreatedAt,
-		&i.TenantMembership.LeftAt,
-	)
-	return i, err
+	return err
 }
 
 const getTenantMembershipByTenantAndUser = `-- name: GetTenantMembershipByTenantAndUser :one

@@ -49,7 +49,7 @@ func (u *UseCase) JoinTenant(ctx context.Context, userID model.UserID, joinCode 
 			Role:     model.TenantMembershipRoleMember,
 		}
 
-		_, err = tx.CreateTenantMembership(ctx, membership)
+		err = tx.CreateTenantMembership(ctx, membership)
 		if err != nil {
 			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant membership in repository")
 		}

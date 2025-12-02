@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package keyhub.app.v1;
+
+import "keyhub/app/v1/common.proto";
+
+service AuthService {
+  // 現在のユーザー情報取得
+  rpc GetMe(GetMeRequest) returns (GetMeResponse);
+
+  // ログアウト
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
+
+message GetMeRequest {}
+
+message GetMeResponse {
+  User user = 1;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {
+  bool success = 1;
+}

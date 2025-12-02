@@ -121,6 +121,20 @@ func SetupConsole(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	)
 	e.Any(servicePath+"*", echo.WrapHandler(serviceHandler))
 
+	// ConsoleRoomServiceをConnectRPCに登録
+	roomPath, roomHandler := consolev1connect.NewConsoleRoomServiceHandler(
+		consoleHandler,
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
+	)
+	e.Any(roomPath+"*", echo.WrapHandler(roomHandler))
+
+	// ConsoleKeyServiceをConnectRPCに登録
+	keyPath, keyHandler := consolev1connect.NewConsoleKeyServiceHandler(
+		consoleHandler,
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
+	)
+	e.Any(keyPath+"*", echo.WrapHandler(keyHandler))
+
 	healthHandler := health.NewHealthCheck(healthCheckers...)
 	e.GET("/keyhub.console.v1.HealthService/Check", healthHandler.Check)
 

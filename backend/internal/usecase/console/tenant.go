@@ -61,9 +61,8 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 		return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "failed to create tenant join code entity")
 	}
 
-	var createdTenant model.Tenant
 	err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
-		createdTenant, err = tx.CreateTenant(ctx, repository.CreateTenantArg{
+		err = tx.CreateTenant(ctx, repository.CreateTenantArg{
 			ID:             tenant.ID,
 			OrganizationID: tenant.OrganizationID,
 			Name:           tenant.Name,
@@ -74,7 +73,7 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 			return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant in repository")
 		}
 
-		_, err = tx.CreateTenantJoinCode(ctx, repository.CreateTenantJoinCodeArg{
+		err = tx.CreateTenantJoinCode(ctx, repository.CreateTenantJoinCodeArg{
 			ID:        joinCodeEntity.ID,
 			TenantID:  joinCodeEntity.TenantID,
 			Code:      joinCodeEntity.Code,
@@ -92,11 +91,11 @@ func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput)
 		return "", err
 	}
 
-	return createdTenant.ID.String(), nil
+	return tenant.ID.String(), nil
 }
 
-func (u *UseCase) GetAllTenants(ctx context.Context, organizationID model.OrganizationID) ([]model.Tenant, error) {
-	tenants, err := u.repo.GetAllTenants(ctx, organizationID)
+func (u *UseCase) GetAllTenants(ctx context.Context) ([]model.Tenant, error) {
+	tenants, err := u.repo.GetAllTenants(ctx)
 	if err != nil {
 		return nil, errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to get all tenants from repository")
 	}

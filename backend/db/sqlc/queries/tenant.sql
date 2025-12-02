@@ -1,4 +1,4 @@
--- name: CreateTenant :one
+-- name: CreateTenant :exec
 INSERT INTO tenants(
     id,
     organization_id,
@@ -12,8 +12,7 @@ VALUES(
     @name,
     @description,
     @tenant_type
-)
-RETURNING sqlc.embed(tenants);
+);
 
 -- name: GetTenantById :one
 SELECT
@@ -27,7 +26,6 @@ WHERE t.id = $1;
 -- name: GetAllTenants :many
 SELECT sqlc.embed(t)
 FROM tenants t
-WHERE organization_id = $1
 ORDER BY created_at DESC;
 
 -- name: UpdateTenant :exec

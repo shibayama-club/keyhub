@@ -785,6 +785,307 @@
           ]
         }
       ]
+    },
+    {
+      "name": "public.rooms",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "'550e8400-e29b-41d4-a716-446655440000'::uuid"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "building_name",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "floor_number",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "room_type",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": false,
+          "default": "''::text"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "rooms_pkey",
+          "def": "CREATE UNIQUE INDEX rooms_pkey ON public.rooms USING btree (id)",
+          "table": "public.rooms",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "rooms_room_type_check",
+          "type": "CHECK",
+          "def": "CHECK ((room_type = ANY (ARRAY['classroom'::text, 'meeting_room'::text, 'laboratory'::text, 'office'::text, 'workshop'::text, 'storage'::text])))",
+          "table": "public.rooms",
+          "referenced_table": "",
+          "columns": [
+            "room_type"
+          ]
+        },
+        {
+          "name": "rooms_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.rooms",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "refresh_rooms_updated_at",
+          "def": "CREATE TRIGGER refresh_rooms_updated_at BEFORE UPDATE ON public.rooms FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ]
+    },
+    {
+      "name": "public.keys",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "room_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "organization_id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "'550e8400-e29b-41d4-a716-446655440000'::uuid"
+        },
+        {
+          "name": "key_number",
+          "type": "text",
+          "nullable": false
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": false,
+          "default": "'available'::text"
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "keys_pkey",
+          "def": "CREATE UNIQUE INDEX keys_pkey ON public.keys USING btree (id)",
+          "table": "public.keys",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "keys_status_check",
+          "type": "CHECK",
+          "def": "CHECK ((status = ANY (ARRAY['available'::text, 'in_use'::text, 'lost'::text, 'damaged'::text])))",
+          "table": "public.keys",
+          "referenced_table": "",
+          "columns": [
+            "status"
+          ]
+        },
+        {
+          "name": "keys_room_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE",
+          "table": "public.keys",
+          "referenced_table": "rooms",
+          "columns": [
+            "room_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "keys_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.keys",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "refresh_keys_updated_at",
+          "def": "CREATE TRIGGER refresh_keys_updated_at BEFORE UPDATE ON public.keys FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ]
+    },
+    {
+      "name": "public.room_assignments",
+      "type": "BASE TABLE",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": false,
+          "default": "uuid_generate_v4()"
+        },
+        {
+          "name": "tenant_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "room_id",
+          "type": "uuid",
+          "nullable": false
+        },
+        {
+          "name": "assigned_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "nullable": true
+        },
+        {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "room_assignments_pkey",
+          "def": "CREATE UNIQUE INDEX room_assignments_pkey ON public.room_assignments USING btree (id)",
+          "table": "public.room_assignments",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "name": "room_assignments_date_check",
+          "type": "CHECK",
+          "def": "CHECK (((expires_at IS NULL) OR (expires_at \u003e assigned_at)))",
+          "table": "public.room_assignments",
+          "referenced_table": "",
+          "columns": [
+            "expires_at",
+            "assigned_at"
+          ]
+        },
+        {
+          "name": "room_assignments_tenant_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE",
+          "table": "public.room_assignments",
+          "referenced_table": "tenants",
+          "columns": [
+            "tenant_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "room_assignments_room_id_fkey",
+          "type": "FOREIGN KEY",
+          "def": "FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE",
+          "table": "public.room_assignments",
+          "referenced_table": "rooms",
+          "columns": [
+            "room_id"
+          ],
+          "referenced_columns": [
+            "id"
+          ]
+        },
+        {
+          "name": "room_assignments_pkey",
+          "type": "PRIMARY KEY",
+          "def": "PRIMARY KEY (id)",
+          "table": "public.room_assignments",
+          "referenced_table": "",
+          "columns": [
+            "id"
+          ]
+        }
+      ],
+      "triggers": [
+        {
+          "name": "refresh_room_assignments_updated_at",
+          "def": "CREATE TRIGGER refresh_room_assignments_updated_at BEFORE UPDATE ON public.room_assignments FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()"
+        }
+      ]
     }
   ],
   "relations": [
@@ -865,6 +1166,45 @@
       ],
       "parent_cardinality": "exactly_one",
       "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.keys",
+      "columns": [
+        "room_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.rooms",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.room_assignments",
+      "columns": [
+        "tenant_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.tenants",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE"
+    },
+    {
+      "table": "public.room_assignments",
+      "columns": [
+        "room_id"
+      ],
+      "cardinality": "zero_or_more",
+      "parent_table": "public.rooms",
+      "parent_columns": [
+        "id"
+      ],
+      "parent_cardinality": "exactly_one",
+      "def": "FOREIGN KEY (room_id) REFERENCES rooms(id) ON DELETE CASCADE"
     }
   ],
   "functions": [
@@ -941,13 +1281,13 @@
       "type": "FUNCTION"
     },
     {
-      "name": "public.current_tenant_id",
+      "name": "public.current_organization_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"
     },
     {
-      "name": "public.current_organization_id",
+      "name": "public.current_tenant_id",
       "return_type": "uuid",
       "arguments": "",
       "type": "FUNCTION"
