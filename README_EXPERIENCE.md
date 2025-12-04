@@ -87,7 +87,165 @@ func NewTenant(
 
 ---
 
-## 2. 型安全なContext管理
+## 2. インターフェース設計によるDI（依存性注入）とテスト容易性
+
+**適用箇所**:
+- [internal/domain/repository/repository.go](backend/internal/domain/repository/repository.go) - Repositoryインターフェース
+- [internal/domain/authenticator/auth_console.go](backend/internal/domain/authenticator/auth_console.go) - 認証インターフェース
+- [internal/usecase/console/iface/interface.go](backend/internal/usecase/console/iface/interface.go) - Usecaseインターフェース
+- [cmd/serve/console.go](backend/cmd/serve/console.go) - DI（依存性注入）の実装
+
+**詳細**:
+
+各層でインターフェースを定義し、コンストラクタインジェクションによるDIを実現しています。
+
+**層ごとのインターフェース設計**:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Interface層 (Handler)                                           │
+│   └── iface.IUseCase に依存（Usecaseインターフェース）            │
+├─────────────────────────────────────────────────────────────────┤
+│ Usecase層                                                        │
+│   ├── repository.Repository に依存（Repositoryインターフェース）  │
+│   └── authenticator.ConsoleAuthenticator に依存                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Domain層                                                         │
+│   └── インターフェースを定義（実装には依存しない）                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Infrastructure層                                                 │
+│   └── Domain層のインターフェースを実装                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Usecaseインターフェースの定義**:
+```go
+// internal/usecase/console/iface/interface.go:3-25
+//go:generate go run go.uber.org/mock/mockgen@latest -source=$GOFILE -destination=../mock/mock_usecase.go -package=mock
+
+type IUseCase interface {
+    LoginWithOrgId(ctx context.Context, orgID, orgKey string) (string, int64, error)
+    Logout(ctx context.Context, sessionID string) error
+    ValidateSession(ctx context.Context, token string) (model.ConsoleSession, error)
+    CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error)
+    GetAllTenants(ctx context.Context) ([]model.Tenant, error)
+    GetTenantById(ctx context.Context, tenantId model.TenantID) (dto.GetTenantByIdOutput, error)
+    UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) error
+    CreateRoom(ctx context.Context, input dto.CreateRoomInput) (string, error)
+    // ...
+}
+```
+
+**Usecase実装でのインターフェース準拠チェック**:
+```go
+// internal/usecase/console/console.go:19-25
+type UseCase struct {
+    repo        repository.Repository      // インターフェースに依存
+    config      config.Config
+    authService authenticator.ConsoleAuthenticator  // インターフェースに依存
+}
+
+// コンパイル時にインターフェース実装を検証
+var _ iface.IUseCase = (*UseCase)(nil)
+```
+
+**エントリーポイントでのDI（依存性注入）**:
+```go
+// cmd/serve/console.go:82-107
+// Infrastructure層の実装を生成
+pool, err := sqlc.NewPool(ctx, cfg.Postgres)
+repo := sqlc.NewRepository(pool)
+
+consoleAuth, err := consoleauth.NewAuthService(jwtSecret)
+
+// Usecase層にインターフェース経由で注入
+consoleUseCase, err := console.NewUseCase(ctx, repo, cfg, consoleAuth)
+
+// Interface層にインターフェース経由で注入
+consoleHandler, err := consolev1.NewHandler(consoleUseCase, jwtSecret)
+```
+
+**こだわりポイント**:
+
+| 観点 | メリット |
+|------|---------|
+| **テスト容易性** | `go:generate mockgen`でインターフェースからモックを自動生成。ユニットテストでDBや外部サービスなしにテスト可能 |
+| **依存性逆転の原則** | 上位層（Usecase）は下位層（Infrastructure）の具体実装に依存せず、抽象（インターフェース）に依存 |
+| **コンパイル時検証** | `var _ iface.IUseCase = (*UseCase)(nil)`で実装漏れをコンパイル時に検出 |
+| **疎結合** | DBをPostgreSQLから別のDBに変更しても、Repositoryインターフェースを実装するだけでUsecase層は変更不要 |
+
+---
+
+## 3. DTOによる層間のデータ受け渡し
+
+**適用箇所**:
+- [internal/usecase/console/dto/tenant.go](backend/internal/usecase/console/dto/tenant.go)
+- [internal/usecase/console/dto/room.go](backend/internal/usecase/console/dto/room.go)
+- [internal/usecase/console/dto/key.go](backend/internal/usecase/console/dto/key.go)
+
+**詳細**:
+
+Interface層とUsecase層の間でデータを受け渡すためにDTO（Data Transfer Object）を使用しています。
+
+**入力DTO（Input）**:
+```go
+// internal/usecase/console/dto/tenant.go:9-17
+type CreateTenantInput struct {
+    OrganizationID model.OrganizationID  // 型安全なID
+    Name           string                 // バリデーション前の生値
+    Description    string
+    TenantType     string
+    JoinCode       string
+    JoinCodeExpiry *time.Time            // nullableはポインタ
+    JoinCodeMaxUse int32
+}
+```
+
+**出力DTO（Output）**:
+```go
+// internal/usecase/console/dto/tenant.go:29-32
+type GetTenantByIdOutput struct {
+    Tenant   model.Tenant              // ドメインモデルを含む
+    JoinCode model.TenantJoinCodeEntity
+}
+```
+
+**UsecaseでのDTOの使用**:
+```go
+// internal/usecase/console/tenant.go:13-37
+func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error) {
+    // DTOから値オブジェクトへの変換（バリデーション込み）
+    tenantName, err := model.NewTenantName(input.Name)
+    if err != nil {
+        return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant name")
+    }
+
+    tenantDescription, err := model.NewTenantDescription(input.Description)
+    // ...
+
+    // ドメインモデルの生成
+    tenant, err := model.NewTenant(
+        input.OrganizationID,
+        tenantName,
+        tenantDescription,
+        tenantType,
+    )
+    // ...
+}
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **protobuf型との分離** | Interface層のprotobuf生成型に直接依存せず、DTOを介することでUsecase層の独立性を保つ |
+| **バリデーション責務の明確化** | DTOは生の値を持ち、Usecase内で値オブジェクトに変換する際にバリデーション |
+| **nullable表現の統一** | `*time.Time`のようにポインタでnullableを表現し、SQLCの生成コードとも整合 |
+| **Input/Outputの分離** | 入力と出力で別の構造体を定義し、責務を明確化 |
+
+---
+
+## 4. 型安全なContext管理
 
 **適用箇所**:
 - [internal/domain/context.go](backend/internal/domain/context.go)
@@ -127,7 +285,7 @@ func Value[T any](ctx context.Context) (T, bool) {
 
 ---
 
-## 3. Contextの応用(contextへのさまざまデータの格納、各層での値の取り出し、自動ロギング)
+## 5. Contextの応用(contextへのさまざまデータの格納、各層での値の取り出し、自動ロギング)
 
 **適用箇所**:
 - [internal/interface/console/v1/interceptor/auth.go](backend/internal/interface/console/v1/interceptor/auth.go)
@@ -203,7 +361,7 @@ func (h contextualLoggingHandler) Handle(ctx context.Context, record slog.Record
 
 ---
 
-## 4. DBのTransaction, pool, bulk, migration
+## 6. DBのTransaction, pool, bulk, migration
 
 **適用箇所**:
 - [internal/infrastructure/sqlc/sqlc.go](backend/internal/infrastructure/sqlc/sqlc.go)
@@ -309,7 +467,7 @@ func NewPool(ctx context.Context, cf config.DBConfig) (*pgxpool.Pool, error) {
 
 ---
 
-## 5. エラーのラッピング、キャプチャー(Sentry)
+## 7. エラーのラッピング、キャプチャー(Sentry)
 
 **適用箇所**:
 - [internal/domain/errors/errors.go](backend/internal/domain/errors/errors.go)
@@ -400,7 +558,7 @@ if len(hints) > 0 {
 
 ---
 
-## 6. DDDの実践
+## 8. DDDの実践
 
 **適用箇所**:
 - [internal/domain/model/](backend/internal/domain/model/) - エンティティ・値オブジェクト
@@ -463,7 +621,7 @@ type TenantRepository interface {
 
 ---
 
-## 7. クリーンアーキテクチャの実践
+## 9. クリーンアーキテクチャの実践
 
 **適用箇所**:
 ```
@@ -498,7 +656,7 @@ backend/internal/
 
 ---
 
-## 8. テスト&mock
+## 10. テスト&mock
 
 **適用箇所**:
 - [internal/usecase/console/tenant_test.go](backend/internal/usecase/console/tenant_test.go)
@@ -586,7 +744,7 @@ func TestUseCase_CreateTenant(t *testing.T) {
 
 ---
 
-## 9. SQL(RowLevelSecurity, sqlc.embed)
+## 11. SQL(RowLevelSecurity, sqlc.embed)
 
 **適用箇所**:
 - [db/migrations/20251007060706_add_rls_functions.sql](backend/db/migrations/20251007060706_add_rls_functions.sql)
@@ -685,6 +843,7 @@ export const useQueryGetTenantByJoinCode = (joinCode: string) => {
 ```
 
 **こだわりポイント**:
+- **query.tsへの一元化による可読性向上**: TanStack Queryのカスタムフック（`useQueryGetMe`、`useMutationLogout`など）を`query.ts`に集約。各コンポーネントでは`import { useQueryGetMe } from '../lib/query'`のようにシンプルにインポートでき、API呼び出しロジックの重複を排除
 - **@connectrpc/connect-queryとの統合**: Protocol Buffersで定義したAPIをTanStack Queryのhooksとして使用
 - **スマートなリトライ戦略**: 認証エラーは即座に失敗、その他は3回まで再試行
 - **適切なキャッシュ設定**: `staleTime`で不要なリフェッチを防止
