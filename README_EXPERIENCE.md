@@ -22,26 +22,14 @@
 ## 1. ポインタと値渡しの適切な使い分け
 
 **適用箇所**:
-- [internal/domain/model/tenant.go](backend/internal/domain/model/tenant.go)
-- [internal/domain/model/key.go](backend/internal/domain/model/key.go)
-- [internal/domain/model/room.go](backend/internal/domain/model/room.go)
+- [internal/domain/model/tenant.go](backend/internal/domain/model/tenant.go) - ドメインモデル
+- [internal/domain/repository/tenant.go](backend/internal/domain/repository/tenant.go) - Repository引数構造体
+- [internal/usecase/console/dto/tenant.go](backend/internal/usecase/console/dto/tenant.go) - DTO
+- [internal/interface/console/v1/tenant_handler.go](backend/internal/interface/console/v1/tenant_handler.go) - Handler
 
 **詳細**:
 
-構造体のサイズが大きくない限り、ポインタを使用しない設計方針を採用しています。
-
-```go
-// internal/domain/model/tenant.go:127-135
-type Tenant struct {
-    ID             TenantID
-    OrganizationID OrganizationID
-    Name           TenantName
-    Description    TenantDescription
-    Type           TenantType
-    CreatedAt      time.Time
-    UpdatedAt      time.Time
-}
-```
+構造体のサイズが大きくない限り、ポインタを使用しない設計方針を全層で採用しています。
 
 **こだわりポイント**:
 
@@ -53,7 +41,54 @@ type Tenant struct {
 | **並行処理の安全性** | 値渡しによりデータがコピーされるため、複数のgoroutineから同時にアクセスしても競合が発生しない |
 | **不変性の保証** | 関数に渡した値が意図せず変更される（エイリアシング問題）を防止 |
 
-**ファクトリ関数での実装例**:
+### 各層での実装例
+
+**① Interface層（Handler）: DTOへの値代入**
+```go
+// internal/interface/console/v1/tenant_handler.go:48-55
+input := dto.CreateTenantInput{
+    OrganizationID: orgID,           // 値で代入
+    Name:           req.Msg.Name,
+    Description:    req.Msg.Description,
+    TenantType:     tenantTypeStr,
+    JoinCode:       req.Msg.JoinCode,
+    JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
+}
+
+tenantID, err := h.useCase.CreateTenant(ctx, input)  // DTOを値渡し
+```
+
+**② Usecase層: Repository引数構造体への値代入**
+```go
+// internal/usecase/console/tenant.go:65-71
+err = tx.CreateTenant(ctx, repository.CreateTenantArg{
+    ID:             tenant.ID,           // 値オブジェクトを値で代入
+    OrganizationID: tenant.OrganizationID,
+    Name:           tenant.Name,
+    Description:    tenant.Description,
+    Type:           tenant.Type,
+})  // 引数構造体を値渡し
+```
+
+**③ Domain層（Repository）: 引数構造体の定義**
+```go
+// internal/domain/repository/tenant.go:9-15
+type CreateTenantArg struct {
+    ID             model.TenantID          // 値オブジェクト（ポインタではない）
+    OrganizationID model.OrganizationID
+    Name           model.TenantName
+    Description    model.TenantDescription
+    Type           model.TenantType
+}
+
+// internal/domain/repository/tenant.go:27-30
+type TenantWithJoinCode struct {
+    Tenant   model.Tenant                  // エンティティを値で保持
+    JoinCode model.TenantJoinCodeEntity
+}
+```
+
+**④ Domain層（Model）: ファクトリ関数**
 ```go
 // internal/domain/model/tenant.go:171-193
 func NewTenant(
@@ -83,7 +118,7 @@ func NewTenant(
 
 **ポインタを使用する例外ケース**:
 - SQLCの自動生成コードではnull許容カラムに対してポインタを使用（[sqlc.yaml:13](backend/sqlc.yaml#L13)で設定）
-- DBから取得した値が`NULL`の可能性がある場合のみポインタで表現
+- DTOでnullableなフィールド（例: `JoinCodeExpiry *time.Time`）のみポインタで表現
 
 ---
 
