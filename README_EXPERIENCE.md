@@ -779,21 +779,96 @@ func TestUseCase_CreateTenant(t *testing.T) {
 
 ---
 
-## 11. SQL(RowLevelSecurity, sqlc.embed)
+## 11. SQL設計（Migration, Seed, RLS, インデックス, Trigger）
 
 **適用箇所**:
-- [db/migrations/20251007060706_add_rls_functions.sql](backend/db/migrations/20251007060706_add_rls_functions.sql)
-- [db/migrations/20251007060707_add_tenants_table.sql](backend/db/migrations/20251007060707_add_tenants_table.sql)
-- [db/sqlc/queries/tenant.sql](backend/db/sqlc/queries/tenant.sql)
+- [db/migrations/](backend/db/migrations/) - マイグレーションファイル
+- [db/seeds/](backend/db/seeds/) - シードファイル
+- [db/sqlc/queries/](backend/db/sqlc/queries/) - SQLクエリ
 
 **詳細**:
 
-**RLS関数の定義**:
+### マイグレーション設計
+
+**gooseによる双方向マイグレーション**:
 ```sql
--- db/migrations/20251007060706_add_rls_functions.sql:7-15
+-- db/migrations/20251007060707_add_tenants_table.sql
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE tenants (
+    id UUID NOT NULL DEFAULT UUID_GENERATE_V4(),
+    organization_id UUID NOT NULL,
+    name TEXT NOT NULL UNIQUE,
+    tenant_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+GRANT SELECT,INSERT,UPDATE ON TABLE tenants TO keyhub;
+CREATE INDEX idx_tenants_organization_id ON tenants(organization_id);
+-- +goose StatementEnd
+
+-- +goose Down（ロールバック用）
+-- +goose StatementBegin
+DROP INDEX IF EXISTS idx_tenants_organization_id;
+DROP TABLE IF EXISTS tenants;
+-- +goose StatementEnd
+```
+
+**共通関数のベースライン定義**:
+```sql
+-- db/migrations/1_baseline.sql
+-- updated_atの自動更新トリガー関数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+```
+
+**テーブルへのトリガー適用**:
+```sql
+-- db/migrations/20251007060707_add_tenants_table.sql:32-34
+CREATE TRIGGER refresh_tenants_updated_at
+BEFORE UPDATE ON tenants
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+### パフォーマンス最適化（部分インデックス）
+
+```sql
+-- db/migrations/20251118000000_add_tenant_membership_performance_indexes.sql
+-- アクティブなメンバーシップのみを対象とした部分インデックス
+CREATE INDEX idx_memberships_user_left_tenant
+ON tenant_memberships(user_id, left_at, tenant_id)
+WHERE left_at IS NULL;  -- 退会していないメンバーのみ
+
+-- テナントごとのメンバー数カウント用インデックス
+CREATE INDEX idx_memberships_tenant_left
+ON tenant_memberships(tenant_id, left_at)
+WHERE left_at IS NULL;
+```
+
+### Row Level Security（RLS）
+
+**RLS用関数の定義**:
+```sql
+-- db/migrations/20251007060706_add_rls_functions.sql
+-- セッション変数から現在のorganization_idを取得
 CREATE OR REPLACE FUNCTION current_organization_id()
 RETURNS uuid LANGUAGE sql STABLE AS $$
   SELECT NULLIF(current_setting('keyhub.organization_id', true), '')::uuid
+$$;
+
+-- membership_idからtenant_idを取得（JOINを使った派生関数）
+CREATE OR REPLACE FUNCTION current_tenant_id()
+RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT tm.tenant_id
+  FROM tenant_memberships tm
+  WHERE tm.id = current_membership_id()
 $$;
 ```
 
@@ -807,28 +882,58 @@ CREATE POLICY tenants_org_isolation ON tenants
     FOR ALL
     TO keyhub
     USING (
-        current_organization_id() IS NULL
+        current_organization_id() IS NULL  -- 管理者はNULLで全データアクセス
         OR organization_id = current_organization_id()
     );
 ```
 
-**sqlc.embedによるJOIN結果の構造化**:
+### シードデータ設計
+
+**識別しやすいUUIDパターン**:
 ```sql
--- db/sqlc/queries/tenant.sql:17-24
+-- db/seeds/003_tenants.sql
+INSERT INTO tenants (id, organization_id, name, description, tenant_type) VALUES
+    ('10000000-0000-0000-0000-000000000001', '550e8400-...', '開発チームAlpha', '...', 'TENANT_TYPE_TEAM'),
+    ('10000000-0000-0000-0000-000000000002', '550e8400-...', '総務部', '...', 'TENANT_TYPE_DEPARTMENT');
+--   ^^^^^^^^                          ^^^
+--   テーブル識別用               連番
+```
+
+**リレーション関係のシード**:
+```sql
+-- db/seeds/004_tenant_memberships.sql
+INSERT INTO tenant_memberships (id, tenant_id, user_id, role) VALUES
+    -- 開発チームAlpha: 山田(admin), 鈴木(member)
+    ('20000000-...001', '10000000-...001', '11111111-...', 'admin'),
+    ('20000000-...002', '10000000-...001', '22222222-...', 'member'),
+    -- 総務部: 鈴木(admin), 佐藤(member)
+    ('20000000-...003', '10000000-...002', '22222222-...', 'admin'),
+    ('20000000-...004', '10000000-...002', '33333333-...', 'member');
+```
+
+### sqlc.embedによるJOIN結果の構造化
+
+```sql
+-- db/sqlc/queries/tenant.sql
 -- name: GetTenantById :one
 SELECT
     sqlc.embed(t),
     sqlc.embed(jc)
 FROM tenants t
-INNER JOIN tenant_join_codes jc
-    ON jc.tenant_id = t.id
+INNER JOIN tenant_join_codes jc ON jc.tenant_id = t.id
 WHERE t.id = $1;
 ```
 
 **こだわりポイント**:
-- **PostgreSQL RLSによるマルチテナント分離**: アプリケーションコードに依存せずDB層でデータ分離を保証
-- **セッション変数によるRLS制御**: Contextから取得したorganization_idをDB接続時に自動設定
-- **sqlc.embed**: JOIN結果を個別の構造体として取得、型安全なマッピング
+
+| 観点 | 設計意図 |
+|------|---------|
+| **双方向マイグレーション** | `+goose Up`と`+goose Down`で安全なロールバックを保証 |
+| **共通トリガー関数** | `update_updated_at_column()`を全テーブルで再利用し、`updated_at`の自動更新を統一 |
+| **部分インデックス** | `WHERE left_at IS NULL`でアクティブなレコードのみをインデックス化し、性能とストレージを最適化 |
+| **RLSによるデータ分離** | アプリケーションコードに依存せずDB層でマルチテナント分離を保証 |
+| **識別しやすいシードUUID** | `10000000-...-001`のようなパターンでテーブルと連番が一目でわかる |
+| **sqlc.embed** | JOIN結果を個別の構造体として取得、型安全なマッピング |
 
 ---
 
