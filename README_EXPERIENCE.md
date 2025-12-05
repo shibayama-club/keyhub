@@ -22,11 +22,12 @@
 9. [クリーンアーキテクチャの実践](#9-クリーンアーキテクチャの実践)
 10. [テスト&mock](#10-テストmock)
 11. [SQL設計（Migration, Seed, RLS, インデックス, Trigger）](#11-sql設計migration-seed-rls-インデックス-trigger)
+12. [Viper/Cobraによる環境変数管理とContextへのバインド](#12-vipercobraによる環境変数管理とcontextへのバインド)
 
 ### フロントエンド
 1. [TanStack Queryの活用](#1-tanstack-queryの活用)
 2. [Sentryの活用](#2-sentryの活用)
-3. [Zodの活用(バリデーション)](#3-zodの活用バリデーション)
+3. [Zodバリデーションとカスタムフォームフックの連携](#3-zodバリデーションとカスタムフォームフックの連携)
 4. [適切な責任分離(Presentation Layerパターン)](#4-適切な責任分離presentation-layerパターン)
 
 ### その他
@@ -970,6 +971,136 @@ WHERE t.id = $1;
 
 ---
 
+## 12. Viper/Cobraによる環境変数管理とContextへのバインド
+
+**適用箇所**:
+- [cmd/cmd.go](backend/cmd/cmd.go) - CLIエントリーポイント
+- [cmd/config/config.go](backend/cmd/config/config.go) - 設定構造体とパース
+- [cmd/serve/console.go](backend/cmd/serve/console.go) - サブコマンド定義
+
+**詳細**:
+
+### 設定構造体の定義（mapstructureタグ）
+
+```go
+// cmd/config/config.go:12-54
+type DBConfig struct {
+    Host     string `mapstructure:"host"`
+    Port     int    `mapstructure:"port"`
+    User     string `mapstructure:"user"`
+    Password string `mapstructure:"password"`
+    Database string `mapstructure:"database"`
+}
+
+type Config struct {
+    Port        int               `mapstructure:"port"`
+    Env         string            `mapstructure:"env"`
+    FrontendURL FrontendURLConfig `mapstructure:"frontend_url"`
+    Postgres    DBConfig          `mapstructure:"postgres"`
+    Sentry      struct {
+        DSN string `mapstructure:"dsn"`
+    } `mapstructure:"sentry"`
+    Console ConsoleConfig `mapstructure:"console"`
+    Auth    AuthConfig    `mapstructure:"auth"`
+}
+```
+
+### Viperによる環境変数の自動バインド
+
+```go
+// cmd/cmd.go:26-35
+cobra.OnInitialize(func() {
+    if configFile != "" {
+        viper.SetConfigFile(configFile)
+        if err := viper.ReadInConfig(); err != nil {
+            log.Fatal(err)
+        }
+    }
+    // 環境変数のキー変換: POSTGRES_HOST → postgres.host
+    viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+    viper.AutomaticEnv()  // 環境変数を自動読み込み
+})
+```
+
+### Cobraフラグの定義とViperバインド
+
+```go
+// cmd/config/config.go:56-71
+func ConfigFlags(flags *pflag.FlagSet) {
+    flags.String("env", "dev", "Environment (dev, prod)")
+    flags.String("frontend_url.app", "http://localhost:5173", "App Frontend URL")
+    flags.String("postgres.host", "localhost", "DB host")
+    flags.Int("postgres.port", 5432, "DB port")
+    flags.String("postgres.user", "", "DB user")
+    flags.String("postgres.password", "", "DB password")
+    flags.String("sentry.dsn", "", "Sentry DSN")
+    flags.String("console.jwt_secret", "", "JWT Secret")
+    flags.String("auth.google.client_id", "", "Google OAuth Client ID")
+}
+```
+
+### ジェネリクスを使った型安全なContextバインド
+
+```go
+// cmd/config/config.go:73-86
+func ParseConfig[T any](cmd *cobra.Command, args []string) error {
+    // CobraフラグをViperにバインド
+    if err := viper.BindPFlags(cmd.Flags()); err != nil {
+        return errors.Wrap(err, "failed to bind flags")
+    }
+
+    // 構造体にUnmarshal
+    var config T
+    if err := viper.Unmarshal(&config); err != nil {
+        return errors.Wrap(err, "failed to unmarshal config")
+    }
+
+    // Contextに格納（cmdをキーとして使用）
+    cmd.SetContext(context.WithValue(cmd.Context(), cmd, config))
+
+    return nil
+}
+```
+
+### サブコマンドでの使用
+
+```go
+// cmd/serve/console.go:29-48
+func ServeConsole() *cobra.Command {
+    cmd := &cobra.Command{
+        Use:     "console",
+        PreRunE: config.ParseConfig[config.Config],  // 実行前にパース
+        RunE:    runConsole,
+    }
+    flags := cmd.Flags()
+    flags.Int("port", 8081, "Listen port")
+    config.ConfigFlags(flags)
+    return cmd
+}
+
+func runConsole(cmd *cobra.Command, args []string) error {
+    ctx := cmd.Context()
+    // Contextから型安全に設定を取得
+    cfg, ok := ctx.Value(cmd).(config.Config)
+    if !ok {
+        return errors.New("failed to get config")
+    }
+    // cfgを使用してサーバー起動...
+}
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **3段階の設定ソース** | 設定ファイル → 環境変数 → CLIフラグの優先順位で上書き可能 |
+| **環境変数の自動マッピング** | `POSTGRES_HOST`が`postgres.host`に自動変換され、ネストした構造体に対応 |
+| **ジェネリクスによる型安全性** | `ParseConfig[T]`で任意の設定構造体を型安全にパース |
+| **Contextへの格納** | `cmd`自体をキーとして使用し、サブコマンドごとに独立した設定を管理 |
+| **PreRunEフック** | コマンド実行前に設定パースを完了し、`RunE`では設定済みの状態で処理開始 |
+
+---
+
 # フロントエンド
 
 ## 1. TanStack Queryの活用
@@ -1083,19 +1214,23 @@ export function logError(error: unknown, context?: { [key: string]: unknown }) {
 
 ---
 
-## 3. Zodの活用(バリデーション)
+## 3. Zodバリデーションとカスタムフォームフックの連携
 
 **適用箇所**:
-- [frontend/console/src/libs/utils/schema.ts](frontend/console/src/libs/utils/schema.ts)
-- [frontend/console/src/hooks/useForm.ts](frontend/console/src/hooks/useForm.ts)
+- [frontend/console/src/libs/utils/schema.ts](frontend/console/src/libs/utils/schema.ts) - バリデーションスキーマ
+- [frontend/console/src/hooks/useForm.ts](frontend/console/src/hooks/useForm.ts) - フォーム状態管理フック
+- [frontend/console/src/hooks/useFormField.ts](frontend/console/src/hooks/useFormField.ts) - フィールド単位のフック
+- [frontend/console/src/components/CreateTenantForm.tsx](frontend/console/src/components/CreateTenantForm.tsx) - 実際の使用例
 
 **詳細**:
 
-**スキーマ定義**:
+### ① Zodスキーマの定義（再利用可能なバリデーション）
+
 ```typescript
-// frontend/console/src/libs/utils/schema.ts:6-61
+// frontend/console/src/libs/utils/schema.ts
+// フィールドごとの再利用可能なバリデーションを定義
 export const tenantnameValidation = z.preprocess(
-  (val) => (typeof val === 'string' ? val.trim() : val),
+  (val) => (typeof val === 'string' ? val.trim() : val),  // 前処理でトリム
   z
     .string({ message: 'テナント名を文字列で入力してください' })
     .nonempty({ message: 'テナント名を1文字以上入力してください' })
@@ -1105,60 +1240,244 @@ export const tenantnameValidation = z.preprocess(
     }),
 );
 
-export const joinCodeValidation = z.preprocess(
-  (val) => (typeof val === 'string' ? val.trim() : val),
-  z
-    .string({ message: '参加コードを文字列で入力してください' })
-    .min(6, { message: '参加コードは6文字以上で入力してください' })
-    .max(20, { message: '参加コードは20文字以内で入力してください' })
-    .regex(/^[a-zA-Z0-9]+$/, { message: '参加コードは英数字のみで入力してください' }),
-);
+// Enum値のバリデーション（protobuf生成型と連携）
+export const tenanttypeValidation = z
+  .number({ message: 'テナントタイプを選択してください' })
+  .int({ message: 'テナントタイプは整数である必要があります' })
+  .refine((val) => Object.values(TenantType).includes(val), {
+    message: '有効なテナントタイプを選択してください',
+  });
 
+// フォーム全体のスキーマ（個別バリデーションを組み合わせ）
 export const tenantSchema = z.object({
   name: tenantnameValidation,
   description: descriptionValidation.optional(),
   tenantType: tenanttypeValidation,
   joinCode: joinCodeValidation,
-  joinCodeExpiry: joinCodeExpiryValidation,
-  joinCodeMaxUse: joinCodeMaxUseValidation,
+  joinCodeExpiry: joinCodeExpiryValidation,  // z.date().optional()
+  joinCodeMaxUse: joinCodeMaxUseValidation,  // z.number().optional()
 });
 
+// スキーマから型を自動生成
 export type TenantFormData = z.infer<typeof tenantSchema>;
 ```
 
-**カスタムフォームフック**:
+### ② useForm: フォーム全体の状態管理
+
 ```typescript
-// frontend/console/src/hooks/useForm.ts:13-96
+// frontend/console/src/hooks/useForm.ts
+export type UseFormReturn<T extends z.ZodObject<z.ZodRawShape>> = {
+  state: z.infer<T>;                                    // フォームの現在値
+  errors: { [K in keyof z.infer<T>]: string[] };       // フィールドごとのエラー配列
+  updateField: <K extends keyof z.infer<T>>(key: K, value: z.infer<T>[K]) => void;
+  validateField: (key: keyof z.infer<T>) => boolean;   // 単一フィールドのバリデーション
+  validate: () => z.ZodSafeParseResult<z.infer<T>>;    // 全体バリデーション
+  setState: React.Dispatch<React.SetStateAction<z.infer<T>>>;
+};
+
 export const useForm = <T extends z.ZodObject<z.ZodRawShape>>(
   schema: T,
   options: { revalidate?: boolean; initialValues?: Partial<z.infer<T>> } = {},
 ): UseFormReturn<T> => {
-  // ...
+  const [state, setState] = useState<FormType>(options.initialValues || {});
+  const [errors, setErrors] = useState<FormErrorsType>({});
+  const [fieldToValidate, setFieldToValidate] = useState<keyof FormType | null>(null);
+
+  // revalidateモード: 値変更時に自動でバリデーション実行
+  useEffect(() => {
+    if (fieldToValidate && options.revalidate) {
+      const result = (schema.shape[fieldToValidate as string] as z.ZodTypeAny)
+        .safeParse(state[fieldToValidate]);
+      setErrors((prev) => ({
+        ...prev,
+        [fieldToValidate]: result.success ? [] : result.error.issues.map((i) => i.message),
+      }));
+      setFieldToValidate(null);
+    }
+  }, [state, fieldToValidate, options.revalidate, schema]);
+
+  // フィールド値の更新（revalidateモードなら再バリデーションをトリガー）
+  const updateField = (key: keyof FormType, value: FormType[keyof FormType]) => {
+    setState((prev) => ({ ...prev, [key]: value }));
+    if (options.revalidate) {
+      setFieldToValidate(key);
+    }
+  };
+
+  // 単一フィールドのバリデーション（onBlur時などに使用）
+  const validateField = (key: keyof FormType) => {
+    const result = (schema.shape[key as string] as z.ZodTypeAny).safeParse(state[key]);
+    setErrors((prev) => ({
+      ...prev,
+      [key]: result.success ? [] : result.error.issues.map((i) => i.message),
+    }));
+    return result.success;
+  };
+
+  // フォーム全体のバリデーション（submit時に使用）
   const validate = () => {
     const result = schema.safeParse(state);
     if (!result.success) {
       const newErrors = {} as FormErrorsType;
       result.error.issues.forEach((issue) => {
         const field = issue.path[0] as keyof FormType;
-        if (!newErrors[field]) {
-          newErrors[field] = [];
-        }
+        if (!newErrors[field]) newErrors[field] = [];
         newErrors[field].push(issue.message);
       });
       setErrors(newErrors);
     }
-    return result;
+    return result;  // result.success && result.data で型安全にデータ取得
   };
 
   return { state, errors, updateField, validateField, validate, setState };
 };
 ```
 
+### ③ useFormField: フィールド単位のprops生成
+
+```typescript
+// frontend/console/src/hooks/useFormField.ts
+export type UseFormFieldProps<T> = {
+  value: T;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onBlur: () => void;
+  error: string[];
+};
+
+export const useFormField = <T extends z.ZodObject<z.ZodRawShape>, F extends keyof z.infer<T>>(
+  form: UseFormReturn<T>,
+  field: F,
+  options?: {
+    transform?: (value: string) => z.infer<T>[F];  // 文字列→型変換
+  },
+): UseFormFieldProps<z.infer<T>[F]> => {
+  return {
+    value: form.state[field],
+    onChange: (e) => {
+      // transformで型変換（number, Date, enum等に対応）
+      const value = options?.transform
+        ? options.transform(e.target.value)
+        : (e.target.value as z.infer<T>[F]);
+      form.updateField(field, value);
+    },
+    onBlur: () => {
+      form.validateField(field);  // フォーカスアウト時にバリデーション
+    },
+    error: form.errors[field] || [],
+  };
+};
+```
+
+### ④ コンポーネントでの実際の使用例
+
+```typescript
+// frontend/console/src/components/CreateTenantForm.tsx
+export const CreateTenantForm = ({ onSubmit, isSubmitting }: Props) => {
+  // スキーマとオプションを渡してフォームを初期化
+  const form = useForm(tenantSchema, {
+    revalidate: true,  // 入力中にリアルタイムバリデーション
+    initialValues: {
+      name: '',
+      tenantType: TenantType.TEAM,
+      joinCode: '',
+    },
+  });
+
+  // 各フィールドのpropsを生成（型安全）
+  const nameField = useFormField(form, 'name');
+  const tenantTypeField = useFormField(form, 'tenantType', {
+    transform: (value) => Number(value) as TenantType,  // select→number変換
+  });
+  const joinCodeExpiryField = useFormField(form, 'joinCodeExpiry', {
+    transform: (value) => (value ? new Date(value) : undefined),  // string→Date変換
+  });
+  const joinCodeMaxUseField = useFormField(form, 'joinCodeMaxUse', {
+    transform: (value) => (value ? Number(value) : undefined),  // string→number変換
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = form.validate();  // 全体バリデーション
+    if (result.success) {
+      onSubmit(result.data);  // 型安全なデータを親に渡す
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* nameフィールド */}
+      <input
+        value={nameField.value || ''}
+        onChange={nameField.onChange}
+        onBlur={nameField.onBlur}  // フォーカスアウトでバリデーション
+      />
+      {nameField.error.length > 0 && (
+        <p className="text-red-600">{nameField.error[0]}</p>
+      )}
+
+      {/* tenantTypeフィールド（enum） */}
+      <select
+        value={tenantTypeField.value}
+        onChange={tenantTypeField.onChange}
+        onBlur={tenantTypeField.onBlur}
+      >
+        {TENANT_TYPE_OPTIONS.map((type) => (
+          <option key={type.value} value={type.value}>{type.label}</option>
+        ))}
+      </select>
+      {tenantTypeField.error.length > 0 && (
+        <p className="text-red-600">{tenantTypeField.error[0]}</p>
+      )}
+
+      <button type="submit" disabled={isSubmitting}>作成</button>
+    </form>
+  );
+};
+```
+
+### アーキテクチャ図
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ schema.ts                                                        │
+│   └── Zodスキーマ定義（バリデーションルール + 型定義）            │
+│        ├── tenantnameValidation, joinCodeValidation, ...        │
+│        ├── tenantSchema = z.object({...})                       │
+│        └── type TenantFormData = z.infer<typeof tenantSchema>   │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ useForm(schema, options)                                         │
+│   ├── state: フォームの現在値                                    │
+│   ├── errors: フィールドごとのエラー配列                         │
+│   ├── updateField(): 値更新 + revalidateトリガー                │
+│   ├── validateField(): 単一フィールドバリデーション              │
+│   └── validate(): 全体バリデーション（submit時）                 │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ useFormField(form, fieldName, { transform })                     │
+│   └── { value, onChange, onBlur, error } を返す                  │
+│        └── transform: string → number/Date/enum 変換             │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ Component                                                        │
+│   └── <input {...nameField} /> のようにスプレッドで使用          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
 **こだわりポイント**:
-- **日本語エラーメッセージ**: ユーザーに分かりやすいメッセージを定義
-- **preprocess**: 入力値のトリミングをスキーマレベルで統一
-- **型推論**: `z.infer<typeof schema>`で型を自動導出、フォーム状態とスキーマの一貫性を保証
-- **リアルタイムバリデーション**: `revalidate`オプションで入力中の即時フィードバック
+
+| 観点 | 設計意図 |
+|------|---------|
+| **日本語エラーメッセージ** | ユーザーに分かりやすいメッセージをスキーマレベルで定義 |
+| **preprocess** | 入力値のトリミングをスキーマレベルで統一し、コンポーネント側での処理を不要に |
+| **z.infer<T>による型推論** | スキーマから型を自動導出し、フォーム状態・バリデーション結果・APIリクエストの型を一貫 |
+| **revalidateモード** | 値変更時に自動でバリデーションを実行し、リアルタイムフィードバック |
+| **transform関数** | `<select>`や`<input type="number">`の文字列値を適切な型に変換 |
+| **useFormFieldによる関心の分離** | フィールドごとのprops生成を抽象化し、コンポーネントのコードを簡潔に |
+| **safeParse + result.data** | バリデーション成功時のみ型安全なデータを取得、例外処理不要 |
 
 ---
 
