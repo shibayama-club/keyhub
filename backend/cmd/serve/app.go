@@ -7,7 +7,7 @@ import (
 
 	"connectrpc.com/connect"
 	"github.com/cockroachdb/errors"
-	"github.com/getsentry/sentry-go"
+	sentrygo "github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	slogecho "github.com/samber/slog-echo"
@@ -19,6 +19,7 @@ import (
 	"github.com/shibayama-club/keyhub/internal/interface/app/v1/interceptor"
 	"github.com/shibayama-club/keyhub/internal/interface/gen/keyhub/app/v1/appv1connect"
 	"github.com/shibayama-club/keyhub/internal/interface/health"
+	"github.com/shibayama-club/keyhub/internal/interface/sentry"
 	"github.com/shibayama-club/keyhub/internal/usecase/app"
 	"github.com/spf13/cobra"
 	"golang.org/x/net/http2"
@@ -53,7 +54,7 @@ func runApp(cmd *cobra.Command, args []string) error {
 }
 
 func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
-	if err := sentry.Init(sentry.ClientOptions{
+	if err := sentrygo.Init(sentrygo.ClientOptions{
 		Dsn:              cfg.Sentry.DSN,
 		Environment:      cfg.Env,
 		TracesSampleRate: 1.0,
@@ -115,23 +116,25 @@ func SetupApp(ctx context.Context, cfg config.Config) (*echo.Echo, error) {
 	e.GET("/auth/google/login", appHandler.GoogleLogin)
 	e.GET("/auth/google/callback", appHandler.GoogleCallback)
 
+	enableDetailedErrors := cfg.Env != "production"
+	sentryInterceptor := sentry.NewErrorInterceptor(enableDetailedErrors)
 	authInterceptor := interceptor.NewAuthInterceptor(appUseCase)
 
 	authPath, authHandler := appv1connect.NewAuthServiceHandler(
 		appHandler,
-		connect.WithInterceptors(authInterceptor),
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
 	)
 	e.Any(authPath+"*", echo.WrapHandler(authHandler))
 
 	tenantPath, tenantHandler := appv1connect.NewTenantServiceHandler(
 		appHandler,
-		connect.WithInterceptors(authInterceptor),
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
 	)
 	e.Any(tenantPath+"*", echo.WrapHandler(tenantHandler))
 
 	roomPath, roomHandler := appv1connect.NewRoomServiceHandler(
 		appHandler,
-		connect.WithInterceptors(authInterceptor),
+		connect.WithInterceptors(sentryInterceptor, authInterceptor),
 	)
 	e.Any(roomPath+"*", echo.WrapHandler(roomHandler))
 
