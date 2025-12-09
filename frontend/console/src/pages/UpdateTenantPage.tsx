@@ -105,7 +105,6 @@ export const UpdateTenantPage = () => {
             ) : (
               <div className="text-sm text-gray-500">テナント情報を読み込み中...</div>
             )}
-            <div>{tenantData?.tenant?.name}</div>
           </div>
         </div>
       </div>
