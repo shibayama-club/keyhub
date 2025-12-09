@@ -1,14 +1,18 @@
-import { forwardRef, type ComponentProps } from 'react';
+import { forwardRef } from 'react';
 
 type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends ComponentProps<'button'> {
+type ButtonProps = {
   variant?: ButtonVariant;
   size?: ButtonSize;
   fullWidth?: boolean;
   isLoading?: boolean;
-}
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+};
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary: 'bg-orange-500 text-white hover:bg-orange-600 focus-visible:ring-orange-500',
