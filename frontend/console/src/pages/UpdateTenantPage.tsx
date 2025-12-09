@@ -21,11 +21,6 @@ export const UpdateTenantPage = () => {
     isError: isTenantError,
   } = useQueryGetTenantById(tenantId || '');
 
-  if (!tenantId) {
-    navigate('/tenants');
-    return null;
-  }
-
   // initialValuesをメモ化
   const initialValues = useMemo(
     () => ({
@@ -38,6 +33,11 @@ export const UpdateTenantPage = () => {
     }),
     [tenantData],
   );
+
+  if (!tenantId) {
+    navigate('/tenants');
+    return null;
+  }
 
   const handleUpdateTenant = async (data: TenantFormData) => {
     try {
