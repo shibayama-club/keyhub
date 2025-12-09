@@ -1,0 +1,1714 @@
+## プロダクト概要
+
+- **GitHubリポジトリURL**: https://github.com/shibayama-club/keyhub
+- **プロダクト名**: KeyHub
+- **概要**: 組織内の鍵管理を効率化するマルチテナント型SaaSアプリケーション。部屋や施設の鍵の貸出・返却を管理し、組織ごとにテナントを作成して利用者やリソースを管理できる。
+
+## 目次
+
+- [プロダクト概要](#プロダクト概要)
+- [開発の経緯](#開発の経緯)
+- [担当範囲](#担当範囲)
+
+### バックエンド
+1. [ポインタと値渡しの適切な使い分け](#1-ポインタと値渡しの適切な使い分け)
+2. [インターフェース設計によるDI（依存性注入）とテスト容易性](#2-インターフェース設計によるdi依存性注入とテスト容易性)
+3. [DTOによる層間のデータ受け渡し](#3-dtoによる層間のデータ受け渡し)
+4. [型安全なContext管理](#4-型安全なcontext管理)
+5. [Contextの応用](#5-contextの応用contextへのさまざまデータの格納各層での値の取り出し自動ロギング)
+6. [DBのTransaction, pool, bulk, migration](#6-dbのtransaction-pool-bulk-migration)
+7. [エラーのラッピング、キャプチャー(Sentry)](#7-エラーのラッピングキャプチャーsentry)
+8. [DDDの実践](#8-dddの実践)
+9. [クリーンアーキテクチャの実践](#9-クリーンアーキテクチャの実践)
+10. [テスト&mock](#10-テストmock)
+11. [SQL設計（Migration, Seed, RLS, インデックス, Trigger）](#11-sql設計migration-seed-rls-インデックス-trigger)
+12. [Viper/Cobraによる環境変数管理とContextへのバインド](#12-vipercobraによる環境変数管理とcontextへのバインド)
+
+### フロントエンド
+1. [TanStack Queryの活用](#1-tanstack-queryの活用)
+2. [Sentryの活用](#2-sentryの活用)
+3. [Zodバリデーションとカスタムフォームフックの連携](#3-zodバリデーションとカスタムフォームフックの連携)
+4. [適切な責任分離(Presentation Layerパターン)](#4-適切な責任分離presentation-layerパターン)
+
+### その他
+1. [CI](#1-ci)
+2. [ER図の自動生成](#2-er図の自動生成)
+3. [protobuf, connectRPC](#3-protobuf-connectrpc)
+4. [コードの自動生成(開発体験の向上)](#4-コードの自動生成開発体験の向上)
+
+---
+
+## 開発の経緯
+
+私の所属する大学では、研究室ごとに貸し出せる鍵が1本のみで、地下1階の守衛室で紙の書類を記入しなければ借りることができない仕組みになっています。
+また、大学は高層ビル構造であるため、例えば14階で授業を受けた後に研究室へ向かう場合、地下1階まで降りるか、22階の研究室まで行って初めて「鍵が借りられているかどうか」が分かります。結果的に、鍵がすでに貸し出されていた場合は再び移動が発生し、往復で5〜7分程度の無駄な時間が生じていました。
+さらに、貸出・返却時の手続きはすべて紙による記入で行われており、混雑時には並ばなければならないことも多く、学生・管理者双方にとって非効率な運用となっていました。
+このような日常的な不便さを解消するため、「鍵の状態を事前に確認でき」「貸出・返却をスマートフォンから完結できる」仕組みを作りたいと考え、keyhubの開発に至りました。
+
+## 担当範囲
+
+バックエンド・フロントエンドの設計・実装・コードレビューを担当。
+
+---
+
+# バックエンド
+
+## 1. ポインタと値渡しの適切な使い分け
+
+**適用箇所**:
+- [internal/domain/model/tenant.go](backend/internal/domain/model/tenant.go) - ドメインモデル
+- [internal/domain/repository/tenant.go](backend/internal/domain/repository/tenant.go) - Repository引数構造体
+- [internal/usecase/console/dto/tenant.go](backend/internal/usecase/console/dto/tenant.go) - DTO
+- [internal/interface/console/v1/tenant_handler.go](backend/internal/interface/console/v1/tenant_handler.go) - Handler
+
+**詳細**:
+
+構造体のサイズが大きくない限り、ポインタを使用しない設計方針を全層で採用しています。
+
+**こだわりポイント**:
+
+| 観点 | 値渡しのメリット |
+|------|-----------------|
+| **nilの心配が不要** | ポインタを使わないことで`nil`チェックが不要になり、余計な防御的コードを削減 |
+| **メモリ効率の向上** | 小〜中サイズの構造体はスタックに割り当てられ、不要なヒープ割り当てを回避 |
+| **GC圧力の軽減** | ヒープ割り当てが減ることでGCの負荷が軽減され、パフォーマンスが安定 |
+| **並行処理の安全性** | 値渡しによりデータがコピーされるため、複数のgoroutineから同時にアクセスしても競合が発生しない |
+| **不変性の保証** | 関数に渡した値が意図せず変更される（エイリアシング問題）を防止 |
+
+### 各層での実装例
+
+**① Interface層（Handler）: DTOへの値代入**
+```go
+// internal/interface/console/v1/tenant_handler.go:48-55
+input := dto.CreateTenantInput{
+    OrganizationID: orgID,           // 値で代入
+    Name:           req.Msg.Name,
+    Description:    req.Msg.Description,
+    TenantType:     tenantTypeStr,
+    JoinCode:       req.Msg.JoinCode,
+    JoinCodeMaxUse: req.Msg.JoinCodeMaxUse,
+}
+
+tenantID, err := h.useCase.CreateTenant(ctx, input)  // DTOを値渡し
+```
+
+**② Usecase層: Repository引数構造体への値代入**
+```go
+// internal/usecase/console/tenant.go:65-71
+err = tx.CreateTenant(ctx, repository.CreateTenantArg{
+    ID:             tenant.ID,           // 値オブジェクトを値で代入
+    OrganizationID: tenant.OrganizationID,
+    Name:           tenant.Name,
+    Description:    tenant.Description,
+    Type:           tenant.Type,
+})  // 引数構造体を値渡し
+```
+
+**③ Domain層（Repository）: 引数構造体の定義**
+```go
+// internal/domain/repository/tenant.go:9-15
+type CreateTenantArg struct {
+    ID             model.TenantID          // 値オブジェクト（ポインタではない）
+    OrganizationID model.OrganizationID
+    Name           model.TenantName
+    Description    model.TenantDescription
+    Type           model.TenantType
+}
+
+// internal/domain/repository/tenant.go:27-30
+type TenantWithJoinCode struct {
+    Tenant   model.Tenant                  // エンティティを値で保持
+    JoinCode model.TenantJoinCodeEntity
+}
+```
+
+**④ Domain層（Model）: ファクトリ関数**
+```go
+// internal/domain/model/tenant.go:171-193
+func NewTenant(
+    organizationID OrganizationID,
+    name TenantName,
+    description TenantDescription,
+    tenantType TenantType,
+) (Tenant, error) {  // ポインタではなく値を返す
+    now := time.Now()
+    tenant := Tenant{
+        ID:             TenantID(uuid.New()),
+        OrganizationID: organizationID,
+        Name:           name,
+        Description:    description,
+        Type:           tenantType,
+        CreatedAt:      now,
+        UpdatedAt:      now,
+    }
+
+    if err := tenant.Validate(); err != nil {
+        return Tenant{}, err  // ゼロ値を返すことでnilの心配なし
+    }
+
+    return tenant, nil
+}
+```
+
+**ポインタを使用する例外ケース**:
+- SQLCの自動生成コードではnull許容カラムに対してポインタを使用（[sqlc.yaml:13](backend/sqlc.yaml#L13)で設定）
+- DTOでnullableなフィールド（例: `JoinCodeExpiry *time.Time`）のみポインタで表現
+
+---
+
+## 2. インターフェース設計によるDI（依存性注入）とテスト容易性
+
+**適用箇所**:
+- [internal/domain/repository/repository.go](backend/internal/domain/repository/repository.go) - Repositoryインターフェース
+- [internal/domain/authenticator/auth_console.go](backend/internal/domain/authenticator/auth_console.go) - 認証インターフェース
+- [internal/usecase/console/iface/interface.go](backend/internal/usecase/console/iface/interface.go) - Usecaseインターフェース
+- [cmd/serve/console.go](backend/cmd/serve/console.go) - DI（依存性注入）の実装
+
+**詳細**:
+
+各層でインターフェースを定義し、コンストラクタインジェクションによるDIを実現しています。
+
+**層ごとのインターフェース設計**:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ Interface層 (Handler)                                           │
+│   └── iface.IUseCase に依存（Usecaseインターフェース）            │
+├─────────────────────────────────────────────────────────────────┤
+│ Usecase層                                                        │
+│   ├── repository.Repository に依存（Repositoryインターフェース）  │
+│   └── authenticator.ConsoleAuthenticator に依存                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Domain層                                                         │
+│   └── インターフェースを定義（実装には依存しない）                  │
+├─────────────────────────────────────────────────────────────────┤
+│ Infrastructure層                                                 │
+│   └── Domain層のインターフェースを実装                            │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Usecaseインターフェースの定義**:
+```go
+// internal/usecase/console/iface/interface.go:3-25
+//go:generate go run go.uber.org/mock/mockgen@latest -source=$GOFILE -destination=../mock/mock_usecase.go -package=mock
+
+type IUseCase interface {
+    LoginWithOrgId(ctx context.Context, orgID, orgKey string) (string, int64, error)
+    Logout(ctx context.Context, sessionID string) error
+    ValidateSession(ctx context.Context, token string) (model.ConsoleSession, error)
+    CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error)
+    GetAllTenants(ctx context.Context) ([]model.Tenant, error)
+    GetTenantById(ctx context.Context, tenantId model.TenantID) (dto.GetTenantByIdOutput, error)
+    UpdateTenant(ctx context.Context, input dto.UpdateTenantInput) error
+    CreateRoom(ctx context.Context, input dto.CreateRoomInput) (string, error)
+    // ...
+}
+```
+
+**Usecase実装でのインターフェース準拠チェック**:
+```go
+// internal/usecase/console/console.go:19-25
+type UseCase struct {
+    repo        repository.Repository      // インターフェースに依存
+    config      config.Config
+    authService authenticator.ConsoleAuthenticator  // インターフェースに依存
+}
+
+// コンパイル時にインターフェース実装を検証
+var _ iface.IUseCase = (*UseCase)(nil)
+```
+
+**エントリーポイントでのDI（依存性注入）**:
+```go
+// cmd/serve/console.go:82-107
+// Infrastructure層の実装を生成
+pool, err := sqlc.NewPool(ctx, cfg.Postgres)
+repo := sqlc.NewRepository(pool)
+
+consoleAuth, err := consoleauth.NewAuthService(jwtSecret)
+
+// Usecase層にインターフェース経由で注入
+consoleUseCase, err := console.NewUseCase(ctx, repo, cfg, consoleAuth)
+
+// Interface層にインターフェース経由で注入
+consoleHandler, err := consolev1.NewHandler(consoleUseCase, jwtSecret)
+```
+
+**こだわりポイント**:
+
+| 観点 | メリット |
+|------|---------|
+| **テスト容易性** | `go:generate mockgen`でインターフェースからモックを自動生成。ユニットテストでDBや外部サービスなしにテスト可能 |
+| **依存性逆転の原則** | 上位層（Usecase）は下位層（Infrastructure）の具体実装に依存せず、抽象（インターフェース）に依存 |
+| **コンパイル時検証** | `var _ iface.IUseCase = (*UseCase)(nil)`で実装漏れをコンパイル時に検出 |
+| **疎結合** | DBをPostgreSQLから別のDBに変更しても、Repositoryインターフェースを実装するだけでUsecase層は変更不要 |
+
+---
+
+## 3. DTOによる層間のデータ受け渡し
+
+**適用箇所**:
+- [internal/usecase/console/dto/tenant.go](backend/internal/usecase/console/dto/tenant.go)
+- [internal/usecase/console/dto/room.go](backend/internal/usecase/console/dto/room.go)
+- [internal/usecase/console/dto/key.go](backend/internal/usecase/console/dto/key.go)
+
+**詳細**:
+
+Interface層とUsecase層の間でデータを受け渡すためにDTO（Data Transfer Object）を使用しています。
+
+**入力DTO（Input）**:
+```go
+// internal/usecase/console/dto/tenant.go:9-17
+type CreateTenantInput struct {
+    OrganizationID model.OrganizationID  // 型安全なID
+    Name           string                 // バリデーション前の生値
+    Description    string
+    TenantType     string
+    JoinCode       string
+    JoinCodeExpiry *time.Time            // nullableはポインタ
+    JoinCodeMaxUse int32
+}
+```
+
+**出力DTO（Output）**:
+```go
+// internal/usecase/console/dto/tenant.go:29-32
+type GetTenantByIdOutput struct {
+    Tenant   model.Tenant              // ドメインモデルを含む
+    JoinCode model.TenantJoinCodeEntity
+}
+```
+
+**UsecaseでのDTOの使用**:
+```go
+// internal/usecase/console/tenant.go:13-37
+func (u *UseCase) CreateTenant(ctx context.Context, input dto.CreateTenantInput) (string, error) {
+    // DTOから値オブジェクトへの変換（バリデーション込み）
+    tenantName, err := model.NewTenantName(input.Name)
+    if err != nil {
+        return "", errors.Wrap(errors.Mark(err, domainerrors.ErrValidation), "invalid tenant name")
+    }
+
+    tenantDescription, err := model.NewTenantDescription(input.Description)
+    // ...
+
+    // ドメインモデルの生成
+    tenant, err := model.NewTenant(
+        input.OrganizationID,
+        tenantName,
+        tenantDescription,
+        tenantType,
+    )
+    // ...
+}
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **protobuf型との分離** | Interface層のprotobuf生成型に直接依存せず、DTOを介することでUsecase層の独立性を保つ |
+| **バリデーション責務の明確化** | DTOは生の値を持ち、Usecase内で値オブジェクトに変換する際にバリデーション |
+| **nullable表現の統一** | `*time.Time`のようにポインタでnullableを表現し、SQLCの生成コードとも整合 |
+| **Input/Outputの分離** | 入力と出力で別の構造体を定義し、責務を明確化 |
+
+---
+
+## 4. 型安全なContext管理
+
+**適用箇所**:
+- [internal/domain/context.go](backend/internal/domain/context.go)
+
+**詳細**:
+
+Go 1.18のジェネリクスを活用し、型安全なContext値の管理を実現しています。
+
+```go
+// internal/domain/context.go:1-20
+package domain
+
+import "context"
+
+type (
+    ctxKey[T any] struct{}
+)
+
+func WithValue[T any](ctx context.Context, val T) context.Context {
+    return context.WithValue(ctx, ctxKey[T]{}, val)
+}
+
+func RemoveValue[T any](ctx context.Context) context.Context {
+    return context.WithValue(ctx, ctxKey[T]{}, nil)
+}
+
+func Value[T any](ctx context.Context) (T, bool) {
+    value, ok := ctx.Value(ctxKey[T]{}).(T)
+    return value, ok
+}
+```
+
+**こだわりポイント**:
+- **ジェネリクスによる型安全性**: 従来の`context.Value`はキーと値が`any`型で型安全性が低いが、ジェネリクスを使用することで型パラメータ`T`によりコンパイル時に型チェック可能
+- **キーの衝突防止**: `ctxKey[T]{}`という空構造体をキーとして使用することで、異なる型同士のキー衝突を完全に防止
+- **シンプルなAPI**: `domain.WithValue`、`domain.Value`の2つの関数のみで完結
+
+---
+
+## 5. Contextの応用(contextへのさまざまデータの格納、各層での値の取り出し、自動ロギング)
+
+**適用箇所**:
+- [internal/interface/console/v1/interceptor/auth.go](backend/internal/interface/console/v1/interceptor/auth.go)
+- [internal/infrastructure/sqlc/driver.go](backend/internal/infrastructure/sqlc/driver.go)
+- [internal/domain/logger/logger.go](backend/internal/domain/logger/logger.go)
+
+**詳細**:
+
+Contextを通じて認証情報を各層で共有し、ロギングにも自動的に反映させています。
+
+**認証Interceptorでの設定**:
+```go
+// internal/interface/console/v1/interceptor/auth.go:39-41
+session, err := i.useCase.ValidateSession(ctx, token)
+if err != nil {
+    return ctx, connect.NewError(connect.CodeUnauthenticated, err)
+}
+ctx = domain.WithValue(ctx, session.OrganizationID)
+```
+
+**DB接続時のRLS設定への活用**:
+```go
+// internal/infrastructure/sqlc/driver.go:33-44
+config.BeforeAcquire = func(ctx context.Context, conn *pgx.Conn) bool {
+    if orgID, ok := domain.Value[model.OrganizationID](ctx); ok {
+        if _, err := conn.Exec(ctx, "SELECT set_config('keyhub.organization_id', $1, false)", orgID.UUID().String()); err != nil {
+            slog.ErrorContext(ctx, "BeforeAcquire: failed to set RLS organization_id", slog.String("error", err.Error()))
+            return false
+        }
+    } else {
+        if _, err := conn.Exec(ctx, "RESET keyhub.organization_id"); err != nil {
+            slog.ErrorContext(ctx, "BeforeAcquire: failed to reset RLS organization_id", slog.String("error", err.Error()))
+            return false
+        }
+    }
+    // ...
+}
+```
+
+**ロガーでの自動コンテキスト抽出**:
+```go
+// internal/domain/logger/logger.go:39-62
+func (h contextualLoggingHandler) Handle(ctx context.Context, record slog.Record) error {
+    requestID, ok := domain.Value[RequestID](ctx)
+    if ok {
+        record.Add(slog.String("request_id", string(requestID)))
+    }
+
+    // app
+    userID, ok := domain.Value[model.UserID](ctx)
+    if ok {
+        record.Add(slog.String("user_id", userID.String()))
+    }
+    tenantID, ok := domain.Value[model.TenantID](ctx)
+    if ok {
+        record.Add(slog.String("tenant_id", tenantID.String()))
+    }
+
+    // console
+    organizationID, ok := domain.Value[model.OrganizationID](ctx)
+    if ok {
+        record.Add(slog.String("organization_id", organizationID.String()))
+    }
+
+    return h.Handler.Handle(ctx, record)
+}
+```
+
+**こだわりポイント**:
+- **横断的関心事の一元管理**: 認証情報をContextに格納することで、各層で明示的にパラメータを渡す必要がなく、コードがクリーンに
+- **自動ログエンリッチメント**: カスタムslog.Handlerにより、すべてのログに自動的にユーザーID、テナントID、リクエストIDが付与され、トレーサビリティが向上
+- **RLSとの連携**: ContextからDB接続時に自動的にPostgreSQLのセッション変数を設定し、Row Level Securityを有効化
+
+---
+
+## 6. DBのTransaction, pool, bulk, migration
+
+**適用箇所**:
+- [internal/infrastructure/sqlc/sqlc.go](backend/internal/infrastructure/sqlc/sqlc.go)
+- [internal/infrastructure/sqlc/driver.go](backend/internal/infrastructure/sqlc/driver.go)
+- [internal/usecase/console/tenant.go](backend/internal/usecase/console/tenant.go)
+- [db/migrations/](backend/db/migrations/)
+
+**詳細**:
+
+**トランザクション境界を管理する（Unit of Work）**:
+```go
+// internal/infrastructure/sqlc/sqlc.go:31-60
+func (r *SqlcRepository) WithTransaction(ctx context.Context, fn func(ctx context.Context, tx repository.Transaction) error) (err error) {
+    tx, err := r.pool.Begin(ctx)
+    if err != nil {
+        return errors.Wrap(err, "failed to begin transaction")
+    }
+
+    committed := false
+    defer func() {
+        if committed {
+            return
+        }
+        if rbErr := tx.Rollback(ctx); rbErr != nil && !errors.Is(rbErr, pgx.ErrTxClosed) {
+            if err != nil {
+                err = errors.Wrapf(err, "failed to rollback transaction: %v", rbErr)
+            }
+        }
+    }()
+
+    if txErr := fn(ctx, &SqlcTransaction{queries: r.queries.WithTx(tx)}); txErr != nil {
+        err = errors.Wrap(txErr, "failed to Queries")
+        return err
+    }
+
+    if err = tx.Commit(ctx); err != nil {
+        return errors.Wrap(err, "failed to Commit")
+    }
+    committed = true
+
+    return nil
+}
+```
+
+**Usecaseでのトランザクション使用例**:
+```go
+// internal/usecase/console/tenant.go:64-92
+err = u.repo.WithTransaction(ctx, func(ctx context.Context, tx repository.Transaction) error {
+    err = tx.CreateTenant(ctx, repository.CreateTenantArg{
+        ID:             tenant.ID,
+        OrganizationID: tenant.OrganizationID,
+        Name:           tenant.Name,
+        Description:    tenant.Description,
+        Type:           tenant.Type,
+    })
+    if err != nil {
+        return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant in repository")
+    }
+
+    err = tx.CreateTenantJoinCode(ctx, repository.CreateTenantJoinCodeArg{
+        ID:        joinCodeEntity.ID,
+        TenantID:  joinCodeEntity.TenantID,
+        Code:      joinCodeEntity.Code,
+        ExpiresAt: joinCodeEntity.ExpiresAt,
+        MaxUses:   joinCodeEntity.MaxUses,
+        UsedCount: joinCodeEntity.UsedCount,
+    })
+    if err != nil {
+        return errors.Wrap(errors.Mark(err, domainerrors.ErrInternal), "failed to create tenant join code in repository")
+    }
+
+    return nil
+})
+```
+
+**コネクションプールの設定**:
+```go
+// internal/infrastructure/sqlc/driver.go:17-80
+func NewPool(ctx context.Context, cf config.DBConfig) (*pgxpool.Pool, error) {
+    dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s database=%s",
+        cf.Host, cf.Port, cf.User, cf.Password, cf.Database)
+
+    config, err := pgxpool.ParseConfig(dsn)
+    if err != nil {
+        return nil, errors.Wrap(err, "failed to parse pgx config")
+    }
+
+    // BeforeAcquire/AfterReleaseでRLS用セッション変数を管理
+    config.BeforeAcquire = func(ctx context.Context, conn *pgx.Conn) bool { /* ... */ }
+    config.AfterRelease = func(conn *pgx.Conn) bool { /* ... */ }
+
+    pool, err := pgxpool.NewWithConfig(ctx, config)
+    // ...
+}
+```
+
+**マイグレーション**: gooseを使用し、Up/Down両方向のマイグレーションをサポート。
+
+**こだわりポイント**:
+- **関数型トランザクションパターン**: `WithTransaction`に関数を渡すパターンにより、ロールバックの保証やcommit漏れを防止
+- **Unit of WorkによるDDD整合性境界の表現**: Unit of Workパターンを使うことで、DDDの原則である「1つのトランザクションで1つの集約を更新する」という整合性の境界を明確に表現できる
+- **コネクションプールフック**: `BeforeAcquire`/`AfterRelease`を活用し、各接続でRLS用のセッション変数を自動設定・クリア
+- **エラー時の適切なラップ**: ロールバック失敗時も元のエラー情報を保持
+
+---
+
+## 7. エラーのラッピング、キャプチャー(Sentry)
+
+**適用箇所**:
+- [internal/domain/errors/errors.go](backend/internal/domain/errors/errors.go)
+- [internal/interface/sentry/sentry.go](backend/internal/interface/sentry/sentry.go)
+
+**詳細**:
+
+**ドメインエラー定義**:
+```go
+// internal/domain/errors/errors.go:1-31
+package errors
+
+import "github.com/cockroachdb/errors"
+
+var (
+    ErrValidation    = errors.New("Validation Error")
+    ErrNotFound      = errors.New("Not Found Error")
+    ErrUnAuthorized  = errors.New("Unauthorized Error")
+    ErrInternal      = errors.New("Internal Error")
+    ErrAlreadyExists = errors.New("Already Exists Error")
+)
+
+func IsValidationError(err error) bool {
+    return errors.Is(err, ErrValidation)
+}
+// ...
+```
+
+**Sentry統合Interceptor**:
+```go
+// internal/interface/sentry/sentry.go:72-88
+func (i *ErrorInterceptor) connectError(err error) *connect.Error {
+    switch {
+    case errors.Is(err, domainerrors.ErrValidation):
+        return connect.NewError(connect.CodeInvalidArgument, err)
+    case errors.Is(err, domainerrors.ErrNotFound):
+        return connect.NewError(connect.CodeNotFound, err)
+    case errors.Is(err, domainerrors.ErrUnAuthorized):
+        return connect.NewError(connect.CodeUnauthenticated, err)
+    case errors.Is(err, domainerrors.ErrAlreadyExists):
+        return connect.NewError(connect.CodeAlreadyExists, err)
+    case errors.Is(err, domainerrors.ErrInternal):
+        return connect.NewError(connect.CodeInternal, err)
+    default:
+        return connect.NewError(connect.CodeUnknown, err)
+    }
+}
+```
+
+**Sentryへのキャプチャ（サーバーエラーのみ）**:
+```go
+// internal/interface/sentry/sentry.go:230-243
+func shouldCaptureInSentry(code connect.Code) bool {
+    switch code {
+    case connect.CodeInternal,
+        connect.CodeUnknown,
+        connect.CodeDataLoss,
+        connect.CodeUnimplemented,
+        connect.CodeUnavailable:
+        return true
+    default:
+        return false
+    }
+}
+```
+
+**エラーヒント機能による多言語対応**:
+```go
+// internal/interface/sentry/sentry.go:137-150
+hints := errors.FlattenHints(err)
+if len(hints) > 0 {
+    detail, detailErr := connect.NewErrorDetail(&errdetails.LocalizedMessage{
+        Locale:  "ja-JP",
+        Message: hints,
+    })
+    if detailErr != nil {
+        slog.ErrorContext(ctx, "failed to create error detail", slog.String("error", detailErr.Error()))
+    } else {
+        newError.AddDetail(detail)
+    }
+}
+```
+
+**こだわりポイント**:
+- **cockroachdb/errorsの活用**: スタックトレース、エラーラッピング、ヒント機能を持つ高機能エラーライブラリを使用
+- **エラーヒントによるユーザーフレンドリーなメッセージ**: `errors.WithHint`でユーザー向けの日本語メッセージを添付し、Connect RPCのエラー詳細として送信
+- **選択的なSentry送信**: クライアントエラー（バリデーション等）はWarnログのみ、サーバーエラーのみSentryに送信
+
+---
+
+## 8. DDDの実践
+
+**適用箇所**:
+- [internal/domain/model/](backend/internal/domain/model/) - エンティティ・値オブジェクト
+- [internal/domain/repository/](backend/internal/domain/repository/) - リポジトリインターフェース
+- [internal/usecase/](backend/internal/usecase/) - ユースケース
+
+**詳細**:
+
+**値オブジェクトの定義とバリデーション**:
+```go
+// internal/domain/model/tenant.go:33-62
+type TenantName string
+
+func (n TenantName) String() string {
+    return string(n)
+}
+
+func (n TenantName) Validate() error {
+    if n == "" {
+        return errors.WithHint(
+            errors.New("tenant name is required"),
+            "Tenant Nameは必須です。",
+        )
+    }
+
+    if utf8.RuneCountInString(string(n)) > 30 {
+        return errors.WithHint(
+            errors.New("Please enter a tenantname within 30 characters"),
+            "テナント名は30文字以内で入力してください。",
+        )
+    }
+    return nil
+}
+
+func NewTenantName(value string) (TenantName, error) {
+    n := TenantName(value)
+    if err := n.Validate(); err != nil {
+        return "", err
+    }
+    return n, nil
+}
+```
+
+**リポジトリインターフェース（ドメイン層に定義）**:
+```go
+// internal/domain/repository/tenant.go:32-38
+type TenantRepository interface {
+    CreateTenant(ctx context.Context, arg CreateTenantArg) error
+    GetAllTenants(ctx context.Context) ([]model.Tenant, error)
+    GetTenantsByUserID(ctx context.Context, userID model.UserID) ([]TenantWithMemberCount, error)
+    GetTenantByID(ctx context.Context, id model.TenantID) (TenantWithJoinCode, error)
+    UpdateTenant(ctx context.Context, arg UpdateTenantArg) error
+}
+```
+
+**こだわりポイント**:
+- **ドメインプリミティブ**: `TenantID`、`TenantName`などプリミティブ型をラップした型で表現力と型安全性を向上
+- **不変条件の保証**: 各値オブジェクトは`Validate()`を持ち、ファクトリ関数で必ずバリデーションを実行
+- **リポジトリパターン**: ドメイン層にインターフェースを定義し、インフラ層で実装（依存性逆転の原則）
+
+---
+
+## 9. クリーンアーキテクチャの実践
+
+**適用箇所**:
+```
+backend/internal/
+├── domain/           # ドメイン層（ビジネスルール）
+│   ├── model/        # エンティティ・値オブジェクト
+│   ├── repository/   # リポジトリインターフェース
+│   ├── errors/       # ドメインエラー
+│   └── logger/       # ロギング
+├── usecase/          # ユースケース層（アプリケーションロジック）
+│   ├── app/          # appユースケース
+│   └── console/      # consoleユースケース
+├── interface/        # インターフェース層（入出力）
+│   ├── app/          # app向けハンドラー
+│   └── console/      # console向けハンドラー
+└── infrastructure/   # インフラ層（外部システム連携）
+    ├── sqlc/         # DB実装
+    ├── jwt/          # JWT処理
+    └── auth/         # 認証サービス
+```
+
+**詳細**:
+
+**依存方向**:
+- interface → usecase → domain ← infrastructure
+- ドメイン層は外部に依存しない（リポジトリはインターフェースのみ定義）
+
+**こだわりポイント**:
+- **層の分離**: 各層が明確な責務を持ち、依存関係が一方向
+- **テスト容易性**: リポジトリインターフェースによりモックが容易
+- **技術選択の柔軟性**: インフラ層を差し替えてもドメイン/ユースケースは影響なし
+
+---
+
+## 10. テスト&mock
+
+**適用箇所**:
+- [internal/usecase/console/tenant_test.go](backend/internal/usecase/console/tenant_test.go)
+- [internal/domain/repository/mock/](backend/internal/domain/repository/mock/)
+- [Taskfile.yaml](Taskfile.yaml#L130-L176) - mockタスク
+
+**詳細**:
+
+**テーブル駆動テスト**:
+```go
+// internal/usecase/console/tenant_test.go:19-171
+func TestUseCase_CreateTenant(t *testing.T) {
+    type fields struct {
+        setupMock func(*mock.MockRepository)
+    }
+    type args struct {
+        ctx   context.Context
+        input dto.CreateTenantInput
+    }
+    tests := []struct {
+        name    string
+        fields  fields
+        args    args
+        want    string
+        wantErr bool
+        errType error
+    }{
+        {
+            name: "正常系: テナント作成成功",
+            fields: fields{
+                setupMock: func(m *mock.MockRepository) {
+                    m.EXPECT().
+                        WithTransaction(gomock.Any(), gomock.Any()).
+                        DoAndReturn(func(ctx context.Context, fn func(context.Context, repository.Transaction) error) error {
+                            mockTx := mock.NewMockTransaction(gomock.NewController(t))
+                            mockTx.EXPECT().CreateTenant(gomock.Any(), gomock.Any()).Return(nil)
+                            mockTx.EXPECT().CreateTenantJoinCode(gomock.Any(), gomock.Any()).Return(nil)
+                            return fn(ctx, mockTx)
+                        })
+                },
+            },
+            // ...
+        },
+        {
+            name: "異常系: 名前が空",
+            // ...
+        },
+    }
+
+    for _, tt := range tests {
+        t.Run(tt.name, func(t *testing.T) {
+            ctrl := gomock.NewController(t)
+            defer ctrl.Finish()
+
+            mockRepo := mock.NewMockRepository(ctrl)
+            tt.fields.setupMock(mockRepo)
+
+            u := &UseCase{repo: mockRepo, config: config.Config{}}
+
+            got, err := u.CreateTenant(tt.args.ctx, tt.args.input)
+
+            if tt.wantErr {
+                assert.Error(t, err)
+                if tt.errType != nil {
+                    assert.True(t, errors.Is(err, tt.errType))
+                }
+            } else {
+                assert.NoError(t, err)
+            }
+        })
+    }
+}
+```
+
+**mockgenによる自動生成**:
+```go
+// internal/domain/repository/repository.go:3
+//go:generate go run go.uber.org/mock/mockgen@latest -source=$GOFILE -destination=mock/mock_repository.go -package=mock
+```
+
+**こだわりポイント**:
+- **テーブル駆動テスト**: 正常系・異常系を網羅的にテスト、新規ケース追加が容易
+- **uber/mockを使用したモック生成**: インターフェースから自動生成、型安全なモック
+- **トランザクション内の動作もテスト**: `DoAndReturn`を使用してトランザクション内のモック動作を定義
+
+---
+
+## 11. SQL設計（Migration, Seed, RLS, インデックス, Trigger）
+
+**適用箇所**:
+- [db/migrations/](backend/db/migrations/) - マイグレーションファイル
+- [db/seeds/](backend/db/seeds/) - シードファイル
+- [db/sqlc/queries/](backend/db/sqlc/queries/) - SQLクエリ
+
+**詳細**:
+
+### マイグレーション設計
+
+**gooseによる双方向マイグレーション**:
+```sql
+-- db/migrations/20251007060707_add_tenants_table.sql
+-- +goose Up
+-- +goose StatementBegin
+CREATE TABLE tenants (
+    id UUID NOT NULL DEFAULT UUID_GENERATE_V4(),
+    organization_id UUID NOT NULL,
+    name TEXT NOT NULL UNIQUE,
+    tenant_type TEXT NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+GRANT SELECT,INSERT,UPDATE ON TABLE tenants TO keyhub;
+CREATE INDEX idx_tenants_organization_id ON tenants(organization_id);
+-- +goose StatementEnd
+
+-- +goose Down（ロールバック用）
+-- +goose StatementBegin
+DROP INDEX IF EXISTS idx_tenants_organization_id;
+DROP TABLE IF EXISTS tenants;
+-- +goose StatementEnd
+```
+
+**共通関数のベースライン定義**:
+```sql
+-- db/migrations/1_baseline.sql
+-- updated_atの自動更新トリガー関数
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+```
+
+**テーブルへのトリガー適用**:
+```sql
+-- db/migrations/20251007060707_add_tenants_table.sql:32-34
+CREATE TRIGGER refresh_tenants_updated_at
+BEFORE UPDATE ON tenants
+FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+```
+
+### パフォーマンス最適化（部分インデックス）
+
+```sql
+-- db/migrations/20251118000000_add_tenant_membership_performance_indexes.sql
+-- アクティブなメンバーシップのみを対象とした部分インデックス
+CREATE INDEX idx_memberships_user_left_tenant
+ON tenant_memberships(user_id, left_at, tenant_id)
+WHERE left_at IS NULL;  -- 退会していないメンバーのみ
+
+-- テナントごとのメンバー数カウント用インデックス
+CREATE INDEX idx_memberships_tenant_left
+ON tenant_memberships(tenant_id, left_at)
+WHERE left_at IS NULL;
+```
+
+### Row Level Security（RLS）
+
+**RLS用関数の定義**:
+```sql
+-- db/migrations/20251007060706_add_rls_functions.sql
+-- セッション変数から現在のorganization_idを取得
+CREATE OR REPLACE FUNCTION current_organization_id()
+RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT NULLIF(current_setting('keyhub.organization_id', true), '')::uuid
+$$;
+
+-- membership_idからtenant_idを取得（JOINを使った派生関数）
+CREATE OR REPLACE FUNCTION current_tenant_id()
+RETURNS uuid LANGUAGE sql STABLE AS $$
+  SELECT tm.tenant_id
+  FROM tenant_memberships tm
+  WHERE tm.id = current_membership_id()
+$$;
+```
+
+**RLSポリシーの適用**:
+```sql
+-- db/migrations/20251007060707_add_tenants_table.sql:20-30
+ALTER TABLE tenants ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tenants FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenants_org_isolation ON tenants
+    FOR ALL
+    TO keyhub
+    USING (
+        current_organization_id() IS NULL  -- 管理者はNULLで全データアクセス
+        OR organization_id = current_organization_id()
+    );
+```
+
+### シードデータ設計
+
+**識別しやすいUUIDパターン**:
+```sql
+-- db/seeds/003_tenants.sql
+INSERT INTO tenants (id, organization_id, name, description, tenant_type) VALUES
+    ('10000000-0000-0000-0000-000000000001', '550e8400-...', '開発チームAlpha', '...', 'TENANT_TYPE_TEAM'),
+    ('10000000-0000-0000-0000-000000000002', '550e8400-...', '総務部', '...', 'TENANT_TYPE_DEPARTMENT');
+--   ^^^^^^^^                          ^^^
+--   テーブル識別用               連番
+```
+
+**リレーション関係のシード**:
+```sql
+-- db/seeds/004_tenant_memberships.sql
+INSERT INTO tenant_memberships (id, tenant_id, user_id, role) VALUES
+    -- 開発チームAlpha: 山田(admin), 鈴木(member)
+    ('20000000-...001', '10000000-...001', '11111111-...', 'admin'),
+    ('20000000-...002', '10000000-...001', '22222222-...', 'member'),
+    -- 総務部: 鈴木(admin), 佐藤(member)
+    ('20000000-...003', '10000000-...002', '22222222-...', 'admin'),
+    ('20000000-...004', '10000000-...002', '33333333-...', 'member');
+```
+
+### sqlc.embedによるJOIN結果の構造化
+
+```sql
+-- db/sqlc/queries/tenant.sql
+-- name: GetTenantById :one
+SELECT
+    sqlc.embed(t),
+    sqlc.embed(jc)
+FROM tenants t
+INNER JOIN tenant_join_codes jc ON jc.tenant_id = t.id
+WHERE t.id = $1;
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **双方向マイグレーション** | `+goose Up`と`+goose Down`で安全なロールバックを保証 |
+| **共通トリガー関数** | `update_updated_at_column()`を全テーブルで再利用し、`updated_at`の自動更新を統一 |
+| **部分インデックス** | `WHERE left_at IS NULL`でアクティブなレコードのみをインデックス化し、性能とストレージを最適化 |
+| **RLSによるデータ分離** | アプリケーションコードに依存せずDB層でマルチテナント分離を保証 |
+| **識別しやすいシードUUID** | `10000000-...-001`のようなパターンでテーブルと連番が一目でわかる |
+| **sqlc.embed** | JOIN結果を個別の構造体として取得、型安全なマッピング |
+
+---
+
+## 12. Viper/Cobraによる環境変数管理とContextへのバインド
+
+**適用箇所**:
+- [cmd/cmd.go](backend/cmd/cmd.go) - CLIエントリーポイント
+- [cmd/config/config.go](backend/cmd/config/config.go) - 設定構造体とパース
+- [cmd/serve/console.go](backend/cmd/serve/console.go) - サブコマンド定義
+
+**詳細**:
+
+### 設定構造体の定義（mapstructureタグ）
+
+```go
+// cmd/config/config.go:12-54
+type DBConfig struct {
+    Host     string `mapstructure:"host"`
+    Port     int    `mapstructure:"port"`
+    User     string `mapstructure:"user"`
+    Password string `mapstructure:"password"`
+    Database string `mapstructure:"database"`
+}
+
+type Config struct {
+    Port        int               `mapstructure:"port"`
+    Env         string            `mapstructure:"env"`
+    FrontendURL FrontendURLConfig `mapstructure:"frontend_url"`
+    Postgres    DBConfig          `mapstructure:"postgres"`
+    Sentry      struct {
+        DSN string `mapstructure:"dsn"`
+    } `mapstructure:"sentry"`
+    Console ConsoleConfig `mapstructure:"console"`
+    Auth    AuthConfig    `mapstructure:"auth"`
+}
+```
+
+### Viperによる環境変数の自動バインド
+
+```go
+// cmd/cmd.go:26-35
+cobra.OnInitialize(func() {
+    if configFile != "" {
+        viper.SetConfigFile(configFile)
+        if err := viper.ReadInConfig(); err != nil {
+            log.Fatal(err)
+        }
+    }
+    // 環境変数のキー変換: POSTGRES_HOST → postgres.host
+    viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+    viper.AutomaticEnv()  // 環境変数を自動読み込み
+})
+```
+
+### Cobraフラグの定義とViperバインド
+
+```go
+// cmd/config/config.go:56-71
+func ConfigFlags(flags *pflag.FlagSet) {
+    flags.String("env", "dev", "Environment (dev, prod)")
+    flags.String("frontend_url.app", "http://localhost:5173", "App Frontend URL")
+    flags.String("postgres.host", "localhost", "DB host")
+    flags.Int("postgres.port", 5432, "DB port")
+    flags.String("postgres.user", "", "DB user")
+    flags.String("postgres.password", "", "DB password")
+    flags.String("sentry.dsn", "", "Sentry DSN")
+    flags.String("console.jwt_secret", "", "JWT Secret")
+    flags.String("auth.google.client_id", "", "Google OAuth Client ID")
+}
+```
+
+### ジェネリクスを使った型安全なContextバインド
+
+```go
+// cmd/config/config.go:73-86
+func ParseConfig[T any](cmd *cobra.Command, args []string) error {
+    // CobraフラグをViperにバインド
+    if err := viper.BindPFlags(cmd.Flags()); err != nil {
+        return errors.Wrap(err, "failed to bind flags")
+    }
+
+    // 構造体にUnmarshal
+    var config T
+    if err := viper.Unmarshal(&config); err != nil {
+        return errors.Wrap(err, "failed to unmarshal config")
+    }
+
+    // Contextに格納（cmdをキーとして使用）
+    cmd.SetContext(context.WithValue(cmd.Context(), cmd, config))
+
+    return nil
+}
+```
+
+### サブコマンドでの使用
+
+```go
+// cmd/serve/console.go:29-48
+func ServeConsole() *cobra.Command {
+    cmd := &cobra.Command{
+        Use:     "console",
+        PreRunE: config.ParseConfig[config.Config],  // 実行前にパース
+        RunE:    runConsole,
+    }
+    flags := cmd.Flags()
+    flags.Int("port", 8081, "Listen port")
+    config.ConfigFlags(flags)
+    return cmd
+}
+
+func runConsole(cmd *cobra.Command, args []string) error {
+    ctx := cmd.Context()
+    // Contextから型安全に設定を取得
+    cfg, ok := ctx.Value(cmd).(config.Config)
+    if !ok {
+        return errors.New("failed to get config")
+    }
+    // cfgを使用してサーバー起動...
+}
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **3段階の設定ソース** | 設定ファイル → 環境変数 → CLIフラグの優先順位で上書き可能 |
+| **環境変数の自動マッピング** | `POSTGRES_HOST`が`postgres.host`に自動変換され、ネストした構造体に対応 |
+| **ジェネリクスによる型安全性** | `ParseConfig[T]`で任意の設定構造体を型安全にパース |
+| **Contextへの格納** | `cmd`自体をキーとして使用し、サブコマンドごとに独立した設定を管理 |
+| **PreRunEフック** | コマンド実行前に設定パースを完了し、`RunE`では設定済みの状態で処理開始 |
+
+---
+
+# フロントエンド
+
+## 1. TanStack Queryの活用
+
+**適用箇所**:
+- [frontend/app/src/lib/query.ts](frontend/app/src/lib/query.ts)
+- [frontend/console/src/libs/query.ts](frontend/console/src/libs/query.ts)
+
+**詳細**:
+
+```typescript
+// frontend/app/src/lib/query.ts:1-54
+import { Code, ConnectError } from '@connectrpc/connect';
+import { useMutation, useQuery } from '@connectrpc/connect-query';
+import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query';
+
+const retry = (failureCount: number, err: unknown) => {
+  if (err instanceof ConnectError) {
+    if (err.code === Code.PermissionDenied || err.code === Code.Unauthenticated) {
+      return false; // 認証エラーはリトライしない
+    }
+  }
+  return failureCount < 3;
+};
+
+export const queryClient = new QueryClient({
+  queryCache: new QueryCache({ onError }),
+  mutationCache: new MutationCache({ onError }),
+  defaultOptions: {
+    queries: {
+      retry,
+      staleTime: 60 * 1000, // 1分間はstaleとみなさない
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
+// connect-queryとの統合
+export const useQueryGetTenantByJoinCode = (joinCode: string) => {
+  return useQuery(getTenantByJoinCode, { joinCode }, { enabled: !!joinCode });
+};
+```
+
+**こだわりポイント**:
+- **query.tsへの一元化による可読性向上**: TanStack Queryのカスタムフック（`useQueryGetMe`、`useMutationLogout`など）を`query.ts`に集約。各コンポーネントでは`import { useQueryGetMe } from '../lib/query'`のようにシンプルにインポートでき、API呼び出しロジックの重複を排除
+- **@connectrpc/connect-queryとの統合**: Protocol Buffersで定義したAPIをTanStack Queryのhooksとして使用
+- **スマートなリトライ戦略**: 認証エラーは即座に失敗、その他は3回まで再試行
+- **適切なキャッシュ設定**: `staleTime`で不要なリフェッチを防止
+
+---
+
+## 2. Sentryの活用
+
+**適用箇所**:
+- [frontend/app/src/lib/sentry.ts](frontend/app/src/lib/sentry.ts)
+- [frontend/console/src/libs/sentry.ts](frontend/console/src/libs/sentry.ts)
+
+**詳細**:
+
+```typescript
+// frontend/app/src/lib/sentry.ts:90-124
+const SKIP_RPC_CODES = [
+  Code.Unauthenticated,  // 認証エラー（ログインページへ）
+  Code.PermissionDenied, // 権限なし（正常なビジネスロジック）
+  Code.InvalidArgument,  // バリデーションエラー
+  Code.NotFound,         // リソースなし
+  Code.AlreadyExists,    // 重複
+];
+
+function shouldCaptureError(error: unknown): boolean {
+  if (!isSentryEnabled) return false;
+
+  // Connect RPCエラーの場合、ビジネスエラーはスキップ
+  if (error instanceof ConnectError) {
+    if (SKIP_RPC_CODES.includes(error.code)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+// エラーログ関数
+export function logError(error: unknown, context?: { [key: string]: unknown }) {
+  console.error('Error:', error, context);
+
+  if (!shouldCaptureError(error)) return;
+
+  if (error instanceof ConnectError) {
+    Sentry.withScope((scope) => {
+      scope.setFingerprint(['{{ default }}', endpoint, String(error.code), method || 'unknown']);
+      scope.setContext('connectRPC', {
+        code: error.code,
+        message: error.message,
+        endpoint,
+        method,
+        metadata: error.metadata,
+      });
+      scope.setTag('error_type', 'connect_rpc');
+      Sentry.captureException(error);
+    });
+  }
+}
+```
+
+**こだわりポイント**:
+- **ノイズの削減**: ビジネスエラー（認証、バリデーション等）はSentryに送信せずログのみ
+- **Connect RPCエラーの詳細なコンテキスト**: エンドポイント、メソッド、エラーコードをSentryのタグ・コンテキストに設定
+- **適切なフィンガープリンティング**: 同じエンドポイント・エラーコードでグルーピング
+
+---
+
+## 3. Zodバリデーションとカスタムフォームフックの連携
+
+**適用箇所**:
+- [frontend/console/src/libs/utils/schema.ts](frontend/console/src/libs/utils/schema.ts) - バリデーションスキーマ
+- [frontend/console/src/hooks/useForm.ts](frontend/console/src/hooks/useForm.ts) - フォーム状態管理フック
+- [frontend/console/src/hooks/useFormField.ts](frontend/console/src/hooks/useFormField.ts) - フィールド単位のフック
+- [frontend/console/src/components/CreateTenantForm.tsx](frontend/console/src/components/CreateTenantForm.tsx) - 実際の使用例
+
+**詳細**:
+
+### ① Zodスキーマの定義（再利用可能なバリデーション）
+
+```typescript
+// frontend/console/src/libs/utils/schema.ts
+// フィールドごとの再利用可能なバリデーションを定義
+export const tenantnameValidation = z.preprocess(
+  (val) => (typeof val === 'string' ? val.trim() : val),  // 前処理でトリム
+  z
+    .string({ message: 'テナント名を文字列で入力してください' })
+    .nonempty({ message: 'テナント名を1文字以上入力してください' })
+    .max(15, { message: 'テナント名は15文字以内で入力してください' })
+    .refine((value: string) => !isBlankOrInvisible(value), {
+      message: 'テナント名を1文字以上で入力してください',
+    }),
+);
+
+// Enum値のバリデーション（protobuf生成型と連携）
+export const tenanttypeValidation = z
+  .number({ message: 'テナントタイプを選択してください' })
+  .int({ message: 'テナントタイプは整数である必要があります' })
+  .refine((val) => Object.values(TenantType).includes(val), {
+    message: '有効なテナントタイプを選択してください',
+  });
+
+// フォーム全体のスキーマ（個別バリデーションを組み合わせ）
+export const tenantSchema = z.object({
+  name: tenantnameValidation,
+  description: descriptionValidation.optional(),
+  tenantType: tenanttypeValidation,
+  joinCode: joinCodeValidation,
+  joinCodeExpiry: joinCodeExpiryValidation,  // z.date().optional()
+  joinCodeMaxUse: joinCodeMaxUseValidation,  // z.number().optional()
+});
+
+// スキーマから型を自動生成
+export type TenantFormData = z.infer<typeof tenantSchema>;
+```
+
+### ② useForm: フォーム全体の状態管理
+
+```typescript
+// frontend/console/src/hooks/useForm.ts
+export type UseFormReturn<T extends z.ZodObject<z.ZodRawShape>> = {
+  state: z.infer<T>;                                    // フォームの現在値
+  errors: { [K in keyof z.infer<T>]: string[] };       // フィールドごとのエラー配列
+  updateField: <K extends keyof z.infer<T>>(key: K, value: z.infer<T>[K]) => void;
+  validateField: (key: keyof z.infer<T>) => boolean;   // 単一フィールドのバリデーション
+  validate: () => z.ZodSafeParseResult<z.infer<T>>;    // 全体バリデーション
+  setState: React.Dispatch<React.SetStateAction<z.infer<T>>>;
+};
+
+export const useForm = <T extends z.ZodObject<z.ZodRawShape>>(
+  schema: T,
+  options: { revalidate?: boolean; initialValues?: Partial<z.infer<T>> } = {},
+): UseFormReturn<T> => {
+  const [state, setState] = useState<FormType>(options.initialValues || {});
+  const [errors, setErrors] = useState<FormErrorsType>({});
+  const [fieldToValidate, setFieldToValidate] = useState<keyof FormType | null>(null);
+
+  // revalidateモード: 値変更時に自動でバリデーション実行
+  useEffect(() => {
+    if (fieldToValidate && options.revalidate) {
+      const result = (schema.shape[fieldToValidate as string] as z.ZodTypeAny)
+        .safeParse(state[fieldToValidate]);
+      setErrors((prev) => ({
+        ...prev,
+        [fieldToValidate]: result.success ? [] : result.error.issues.map((i) => i.message),
+      }));
+      setFieldToValidate(null);
+    }
+  }, [state, fieldToValidate, options.revalidate, schema]);
+
+  // フィールド値の更新（revalidateモードなら再バリデーションをトリガー）
+  const updateField = (key: keyof FormType, value: FormType[keyof FormType]) => {
+    setState((prev) => ({ ...prev, [key]: value }));
+    if (options.revalidate) {
+      setFieldToValidate(key);
+    }
+  };
+
+  // 単一フィールドのバリデーション（onBlur時などに使用）
+  const validateField = (key: keyof FormType) => {
+    const result = (schema.shape[key as string] as z.ZodTypeAny).safeParse(state[key]);
+    setErrors((prev) => ({
+      ...prev,
+      [key]: result.success ? [] : result.error.issues.map((i) => i.message),
+    }));
+    return result.success;
+  };
+
+  // フォーム全体のバリデーション（submit時に使用）
+  const validate = () => {
+    const result = schema.safeParse(state);
+    if (!result.success) {
+      const newErrors = {} as FormErrorsType;
+      result.error.issues.forEach((issue) => {
+        const field = issue.path[0] as keyof FormType;
+        if (!newErrors[field]) newErrors[field] = [];
+        newErrors[field].push(issue.message);
+      });
+      setErrors(newErrors);
+    }
+    return result;  // result.success && result.data で型安全にデータ取得
+  };
+
+  return { state, errors, updateField, validateField, validate, setState };
+};
+```
+
+### ③ useFormField: フィールド単位のprops生成
+
+```typescript
+// frontend/console/src/hooks/useFormField.ts
+export type UseFormFieldProps<T> = {
+  value: T;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
+  onBlur: () => void;
+  error: string[];
+};
+
+export const useFormField = <T extends z.ZodObject<z.ZodRawShape>, F extends keyof z.infer<T>>(
+  form: UseFormReturn<T>,
+  field: F,
+  options?: {
+    transform?: (value: string) => z.infer<T>[F];  // 文字列→型変換
+  },
+): UseFormFieldProps<z.infer<T>[F]> => {
+  return {
+    value: form.state[field],
+    onChange: (e) => {
+      // transformで型変換（number, Date, enum等に対応）
+      const value = options?.transform
+        ? options.transform(e.target.value)
+        : (e.target.value as z.infer<T>[F]);
+      form.updateField(field, value);
+    },
+    onBlur: () => {
+      form.validateField(field);  // フォーカスアウト時にバリデーション
+    },
+    error: form.errors[field] || [],
+  };
+};
+```
+
+### ④ コンポーネントでの実際の使用例
+
+```typescript
+// frontend/console/src/components/CreateTenantForm.tsx
+export const CreateTenantForm = ({ onSubmit, isSubmitting }: Props) => {
+  // スキーマとオプションを渡してフォームを初期化
+  const form = useForm(tenantSchema, {
+    revalidate: true,  // 入力中にリアルタイムバリデーション
+    initialValues: {
+      name: '',
+      tenantType: TenantType.TEAM,
+      joinCode: '',
+    },
+  });
+
+  // 各フィールドのpropsを生成（型安全）
+  const nameField = useFormField(form, 'name');
+  const tenantTypeField = useFormField(form, 'tenantType', {
+    transform: (value) => Number(value) as TenantType,  // select→number変換
+  });
+  const joinCodeExpiryField = useFormField(form, 'joinCodeExpiry', {
+    transform: (value) => (value ? new Date(value) : undefined),  // string→Date変換
+  });
+  const joinCodeMaxUseField = useFormField(form, 'joinCodeMaxUse', {
+    transform: (value) => (value ? Number(value) : undefined),  // string→number変換
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = form.validate();  // 全体バリデーション
+    if (result.success) {
+      onSubmit(result.data);  // 型安全なデータを親に渡す
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* nameフィールド */}
+      <input
+        value={nameField.value || ''}
+        onChange={nameField.onChange}
+        onBlur={nameField.onBlur}  // フォーカスアウトでバリデーション
+      />
+      {nameField.error.length > 0 && (
+        <p className="text-red-600">{nameField.error[0]}</p>
+      )}
+
+      {/* tenantTypeフィールド（enum） */}
+      <select
+        value={tenantTypeField.value}
+        onChange={tenantTypeField.onChange}
+        onBlur={tenantTypeField.onBlur}
+      >
+        {TENANT_TYPE_OPTIONS.map((type) => (
+          <option key={type.value} value={type.value}>{type.label}</option>
+        ))}
+      </select>
+      {tenantTypeField.error.length > 0 && (
+        <p className="text-red-600">{tenantTypeField.error[0]}</p>
+      )}
+
+      <button type="submit" disabled={isSubmitting}>作成</button>
+    </form>
+  );
+};
+```
+
+### アーキテクチャ図
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ schema.ts                                                        │
+│   └── Zodスキーマ定義（バリデーションルール + 型定義）            │
+│        ├── tenantnameValidation, joinCodeValidation, ...        │
+│        ├── tenantSchema = z.object({...})                       │
+│        └── type TenantFormData = z.infer<typeof tenantSchema>   │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ useForm(schema, options)                                         │
+│   ├── state: フォームの現在値                                    │
+│   ├── errors: フィールドごとのエラー配列                         │
+│   ├── updateField(): 値更新 + revalidateトリガー                │
+│   ├── validateField(): 単一フィールドバリデーション              │
+│   └── validate(): 全体バリデーション（submit時）                 │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ useFormField(form, fieldName, { transform })                     │
+│   └── { value, onChange, onBlur, error } を返す                  │
+│        └── transform: string → number/Date/enum 変換             │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│ Component                                                        │
+│   └── <input {...nameField} /> のようにスプレッドで使用          │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**こだわりポイント**:
+
+| 観点 | 設計意図 |
+|------|---------|
+| **日本語エラーメッセージ** | ユーザーに分かりやすいメッセージをスキーマレベルで定義 |
+| **preprocess** | 入力値のトリミングをスキーマレベルで統一し、コンポーネント側での処理を不要に |
+| **z.infer<T>による型推論** | スキーマから型を自動導出し、フォーム状態・バリデーション結果・APIリクエストの型を一貫 |
+| **revalidateモード** | 値変更時に自動でバリデーションを実行し、リアルタイムフィードバック |
+| **transform関数** | `<select>`や`<input type="number">`の文字列値を適切な型に変換 |
+| **useFormFieldによる関心の分離** | フィールドごとのprops生成を抽象化し、コンポーネントのコードを簡潔に |
+| **safeParse + result.data** | バリデーション成功時のみ型安全なデータを取得、例外処理不要 |
+
+---
+
+## 4. 適切な責任分離(Presentation Layerパターン)
+
+**適用箇所**:
+- [frontend/console/src/pages/CreateTenantPage.tsx](frontend/console/src/pages/CreateTenantPage.tsx) - Pageコンポーネント
+- [frontend/console/src/components/CreateTenantForm.tsx](frontend/console/src/components/CreateTenantForm.tsx) - Formコンポーネント
+
+**詳細**:
+
+**Page（Container）コンポーネント**:
+```typescript
+// frontend/console/src/pages/CreateTenantPage.tsx:10-44
+export const CreateTenantPage = () => {
+  const navigate = useNavigate();
+  const { mutateAsync: createTenant, isPending } = useMutationCreateTenant();
+
+  const handleSubmit = async (data: { /* ... */ }) => {
+    try {
+      await createTenant({
+        name: data.name,
+        description: data.description || '',
+        // ...
+      });
+
+      await queryClient.invalidateQueries();
+      toast.success('テナントを作成しました');
+      navigate('/tenants', { replace: true });
+    } catch (error) {
+      Sentry.captureException(error);
+      toast.error('テナントの作成に失敗しました');
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <h1>新しいテナントを作成</h1>
+        <CreateTenantForm onSubmit={handleSubmit} isSubmitting={isPending} />
+      </div>
+    </div>
+  );
+};
+```
+
+**Form（Presentational）コンポーネント**:
+```typescript
+// frontend/console/src/components/CreateTenantForm.tsx:8-52
+type CreateTenantFormProps = {
+  onSubmit: (data: TenantFormData) => void;
+  isSubmitting?: boolean;
+};
+
+export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenantFormProps) => {
+  const form = useForm(tenantSchema, { revalidate: true, initialValues });
+
+  const nameField = useFormField(form, 'name');
+  const descriptionField = useFormField(form, 'description');
+  // ...
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const result = form.validate();
+    if (result.success) {
+      onSubmit(result.data);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={nameField.value} onChange={nameField.onChange} onBlur={nameField.onBlur} />
+      {nameField.error.length > 0 && <p>{nameField.error[0]}</p>}
+      {/* ... */}
+    </form>
+  );
+};
+```
+
+**こだわりポイント**:
+- **Pageコンポーネント**: データ取得、mutation、ナビゲーション、エラーハンドリングを担当
+- **Formコンポーネント**: 表示とフォームロジック（バリデーション含む）に集中、propsで受け取るシンプルなインターフェース
+- **再利用性**: Formコンポーネントは編集画面でも再利用可能な設計
+
+---
+
+# その他
+
+## 1. CI
+
+**適用箇所**:
+- [.github/workflows/](https://github.com/shibayama-club/keyhub/tree/main/.github/workflows)
+
+**詳細**:
+
+| ワークフロー | 目的 |
+|------------|------|
+| **go-lint.yaml** | golangci-lintによるGoコードの静的解析 |
+| **go-test.yaml** | Goのユニットテスト実行 |
+| **ts-lint.yaml** | ESLint + Prettierによるフロントエンドのlint/format |
+| **gen-lint.yaml** | 自動生成コードの差分チェック（sqlc, protobuf, tbls） |
+
+**gen-lint.yamlの特徴**:
+```yaml
+# .github/workflows/gen-lint.yaml
+# PostgreSQLを起動し、マイグレーションを実行
+- run: docker compose up -d postgres
+- run: goose -dir ./backend/db/migrations postgres '...' up
+
+# 各種コード生成
+- run: cd backend && tbls doc --force -c tbls.yaml
+- run: cd backend && sqlc generate
+- run: buf generate
+  working-directory: ./proto
+
+# 生成コードに差分がないことを確認
+- run: git diff --exit-code
+```
+
+**こだわりポイント**:
+- **自動生成コードの整合性保証**: CIで差分を検出することで、生成忘れを防止
+- **実際のDBを使用したスキーマ生成**: マイグレーションを適用したPostgreSQLからER図やスキーマを生成
+
+---
+
+## 2. ER図の自動生成
+
+**適用箇所**:
+- [backend/tbls.yaml](backend/tbls.yaml)
+- [backend/docs/schema/](backend/docs/schema/)
+
+**詳細**:
+
+[tbls](https://github.com/k1LoW/tbls)を使用し、PostgreSQLスキーマからER図とテーブルドキュメントを自動生成。
+
+```yaml
+# backend/tbls.yaml
+dsn: postgresql://postgres:keyhub@localhost:5432/keyhub?sslmode=disable
+docPath: docs/schema
+
+exclude:
+  - goose_db_version  # マイグレーション管理テーブルを除外
+
+er:
+  format: svg
+  comment: true
+  distance: 2
+```
+
+**生成成果物**:
+- `schema.svg` - 全体ER図
+- `public.tenants.svg` - テーブルごとのER図
+- `public.tenants.md` - カラム定義、インデックス、外部キー情報
+
+---
+
+## 3. protobuf, connectRPC
+
+**適用箇所**:
+- [proto/](https://github.com/shibayama-club/keyhub/tree/main/proto)
+- [proto/buf.gen.yaml](proto/buf.gen.yaml)
+
+**詳細**:
+
+[Connect](https://connectrpc.com/)を使用し、Protocol BuffersベースのRPCを実現。
+
+```yaml
+# proto/buf.gen.yaml
+plugins:
+  # Go向け
+  - remote: buf.build/protocolbuffers/go
+    out: ../backend/internal/interface/gen
+  - remote: buf.build/connectrpc/go
+    out: ../backend/internal/interface/gen
+
+  # TypeScript向け
+  - remote: buf.build/bufbuild/es
+    out: ../frontend/gen/src
+    opt: target=ts
+  - remote: buf.build/connectrpc/query-es  # TanStack Query統合
+    out: ../frontend/gen/src
+```
+
+**こだわりポイント**:
+- **connect-query-es**: Protocol Buffersの定義からTanStack Queryのhooksを自動生成
+- **型安全なAPI通信**: フロントエンド・バックエンドで同じスキーマを共有
+
+---
+
+## 4. コードの自動生成(開発体験の向上)
+
+**適用箇所**:
+- [Taskfile.yaml](Taskfile.yaml)
+
+**詳細**:
+
+```yaml
+# Taskfile.yaml - 主要な生成タスク
+
+# Protocol Buffers → Go/TypeScript
+proto:
+  dir: ./proto
+  cmds:
+    - buf dep update
+    - buf generate
+    - buf lint
+    - buf format -w
+
+# SQLクエリ → Go (型安全なDB操作)
+gen:sqlc:
+  dir: ./backend
+  cmds:
+    - sqlc generate -f sqlc.yaml
+
+# DBスキーマ → ER図/ドキュメント
+gen:docs:schema:
+  dir: ./backend
+  cmds:
+    - tbls doc --rm-dist -c tbls.yaml
+
+# モック生成
+mock:
+  deps:
+    - mock:install
+    - mock:console
+    - mock:repository
+```
+
+**こだわりポイント**:
+- **task一発で全生成**: `task gen`で全ての自動生成を実行
+- **増分生成**: `sources`/`generates`でファイル変更時のみ再生成
+- **開発ワークフローの統一**: 新規参加者も`task init && task gen`で環境構築完了
