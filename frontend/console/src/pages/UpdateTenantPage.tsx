@@ -3,12 +3,13 @@ import { useQueryGetTenantById, useMutationUpdateTenant } from '../libs/query';
 
 import { Navbar } from '../components/Navbar';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
-import { timestampFromDate } from '@bufbuild/protobuf/wkt';
+import { timestampFromDate, timestampDate } from '@bufbuild/protobuf/wkt';
 import toast from 'react-hot-toast';
 import * as Sentry from '@sentry/react';
 import { queryClient } from '../libs/query';
 import type { TenantFormData } from '../libs/utils/schema';
-import { UpdateTenantForm } from '../components/UpdateTenantForm';
+import { TenantForm } from '../components/TenantForm';
+import { useMemo } from 'react';
 
 export const UpdateTenantPage = () => {
   const { tenantId } = useParams<{ tenantId: string }>();
@@ -24,6 +25,19 @@ export const UpdateTenantPage = () => {
     navigate('/tenants');
     return null;
   }
+
+  // initialValuesをメモ化
+  const initialValues = useMemo(
+    () => ({
+      name: tenantData?.tenant?.name || '',
+      description: tenantData?.tenant?.description || '',
+      tenantType: tenantData?.tenant?.tenantType || TenantType.TEAM,
+      joinCode: tenantData?.joinCode || '',
+      joinCodeExpiry: tenantData?.joinCodeExpiry ? timestampDate(tenantData.joinCodeExpiry) : undefined,
+      joinCodeMaxUse: tenantData?.joinCodeMaxUse || 0,
+    }),
+    [tenantData],
+  );
 
   const handleUpdateTenant = async (data: TenantFormData) => {
     try {
@@ -81,7 +95,13 @@ export const UpdateTenantPage = () => {
           <div className="border-t border-gray-200 pt-6">
             <h2 className="mb-4 text-lg font-semibold text-gray-900">テナント情報の更新</h2>
             {tenantData ? (
-              <UpdateTenantForm onSubmit={handleUpdateTenant} isSubmitting={isPending} tenantData={tenantData} />
+              <TenantForm
+                onSubmit={handleUpdateTenant}
+                isSubmitting={isPending}
+                initialValues={initialValues}
+                submitButtonText="更新"
+                submittingText="更新中..."
+              />
             ) : (
               <div className="text-sm text-gray-500">テナント情報を読み込み中...</div>
             )}
