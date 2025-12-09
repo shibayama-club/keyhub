@@ -440,7 +440,7 @@ func (h contextualLoggingHandler) Handle(ctx context.Context, record slog.Record
 
 **詳細**:
 
-**トランザクション管理**:
+**トランザクション境界を管理する（Unit of Work）**:
 ```go
 // internal/infrastructure/sqlc/sqlc.go:31-60
 func (r *SqlcRepository) WithTransaction(ctx context.Context, fn func(ctx context.Context, tx repository.Transaction) error) (err error) {
@@ -531,6 +531,7 @@ func NewPool(ctx context.Context, cf config.DBConfig) (*pgxpool.Pool, error) {
 
 **こだわりポイント**:
 - **関数型トランザクションパターン**: `WithTransaction`に関数を渡すパターンにより、ロールバックの保証やcommit漏れを防止
+- **Unit of WorkによるDDD整合性境界の表現**: Unit of Workパターンを使うことで、DDDの原則である「1つのトランザクションで1つの集約を更新する」という整合性の境界を明確に表現できる
 - **コネクションプールフック**: `BeforeAcquire`/`AfterRelease`を活用し、各接続でRLS用のセッション変数を自動設定・クリア
 - **エラー時の適切なラップ**: ロールバック失敗時も元のエラー情報を保持
 
