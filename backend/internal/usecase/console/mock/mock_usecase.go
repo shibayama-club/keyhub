@@ -102,6 +102,20 @@ func (mr *MockIUseCaseMockRecorder) CreateTenant(ctx, input any) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTenant", reflect.TypeOf((*MockIUseCase)(nil).CreateTenant), ctx, input)
 }
 
+// DeleteTenantById mocks base method.
+func (m *MockIUseCase) DeleteTenantById(ctx context.Context, tenantId model.TenantID) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteTenantById", ctx, tenantId)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteTenantById indicates an expected call of DeleteTenantById.
+func (mr *MockIUseCaseMockRecorder) DeleteTenantById(ctx, tenantId any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTenantById", reflect.TypeOf((*MockIUseCase)(nil).DeleteTenantById), ctx, tenantId)
+}
+
 // GetAllRooms mocks base method.
 func (m *MockIUseCase) GetAllRooms(ctx context.Context) ([]model.Room, error) {
 	m.ctrl.T.Helper()

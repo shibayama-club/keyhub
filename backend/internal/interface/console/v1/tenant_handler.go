@@ -177,5 +177,21 @@ func (h *Handler) UpdateTenant(
 	}
 
 	return connect.NewResponse(&consolev1.UpdateTenantResponse{}), nil
+}
 
+func (h *Handler) DeleteTenant(
+	ctx context.Context,
+	req *connect.Request[consolev1.DeleteTenantRequest],
+) (*connect.Response[consolev1.DeleteTenantResponse], error) {
+	tenantId, err := model.ParseTenantID(req.Msg.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
+	}
+
+	err = h.useCase.DeleteTenantById(ctx, tenantId)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	return connect.NewResponse(&consolev1.DeleteTenantResponse{}), nil
 }

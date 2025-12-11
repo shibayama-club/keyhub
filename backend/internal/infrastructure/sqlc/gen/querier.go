@@ -15,6 +15,7 @@ type Querier interface {
 	CleanupExpiredAppSessions(ctx context.Context) error
 	CleanupExpiredConsoleSessions(ctx context.Context) error
 	CleanupExpiredOAuthStates(ctx context.Context) error
+	ClearActiveMembershipByTenantID(ctx context.Context, tenantID uuid.UUID) error
 	ConsumeOAuthState(ctx context.Context, state string) error
 	CreateAppSession(ctx context.Context, arg CreateAppSessionParams) error
 	CreateConsoleSession(ctx context.Context, arg CreateConsoleSessionParams) error
@@ -25,6 +26,7 @@ type Querier interface {
 	CreateTenantJoinCode(ctx context.Context, arg CreateTenantJoinCodeParams) error
 	CreateTenantMembership(ctx context.Context, arg CreateTenantMembershipParams) error
 	DeleteConsoleSession(ctx context.Context, sessionID string) error
+	DeleteTenantById(ctx context.Context, id uuid.UUID) error
 	GetAllRooms(ctx context.Context) ([]GetAllRoomsRow, error)
 	GetAllTenants(ctx context.Context) ([]GetAllTenantsRow, error)
 	GetAppSession(ctx context.Context, sessionID string) (GetAppSessionRow, error)

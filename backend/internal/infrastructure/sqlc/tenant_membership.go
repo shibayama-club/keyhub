@@ -50,3 +50,11 @@ func (t *SqlcTransaction) GetTenantMembershipByTenantAndUser(ctx context.Context
 	}
 	return parseSqlcTenantMembership(sqlcRow.TenantMembership)
 }
+
+func (t *SqlcTransaction) ClearActiveMembershipByTenantID(ctx context.Context, tenantId model.TenantID) error {
+	err := t.queries.ClearActiveMembershipByTenantID(ctx, tenantId.UUID())
+	if err != nil {
+		return err
+	}
+	return nil
+}

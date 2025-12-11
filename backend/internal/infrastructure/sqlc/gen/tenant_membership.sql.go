@@ -11,6 +11,19 @@ import (
 	"github.com/google/uuid"
 )
 
+const clearActiveMembershipByTenantID = `-- name: ClearActiveMembershipByTenantID :exec
+UPDATE sessions 
+SET active_membership_id = NULL 
+WHERE active_membership_id IN (
+    SELECT id FROM tenant_memberships WHERE tenant_id = $1
+)
+`
+
+func (q *Queries) ClearActiveMembershipByTenantID(ctx context.Context, tenantID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, clearActiveMembershipByTenantID, tenantID)
+	return err
+}
+
 const createTenantMembership = `-- name: CreateTenantMembership :exec
 INSERT INTO tenant_memberships(
     id,

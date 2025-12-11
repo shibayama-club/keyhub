@@ -48,3 +48,7 @@ WHERE tm.user_id = $1
   AND tm.left_at IS NULL
 GROUP BY t.id
 ORDER BY t.created_at DESC;
+
+-- name: DeleteTenantById :exec
+DELETE FROM tenants
+WHERE id = $1;
