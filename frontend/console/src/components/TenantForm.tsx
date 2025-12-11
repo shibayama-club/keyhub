@@ -1,29 +1,24 @@
-import { useMemo } from 'react';
 import { useForm } from '../hooks/useForm';
 import { useFormField } from '../hooks/useFormField';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
 import { tenantSchema, type TenantFormData } from '../libs/utils/schema';
 import { TENANT_TYPE_OPTIONS } from '../constants/tenant';
 
-type CreateTenantFormProps = {
+type TenantFormProps = {
   onSubmit: (data: TenantFormData) => void;
   isSubmitting?: boolean;
+  initialValues: TenantFormData;
+  submitButtonText: string;
+  submittingText: string;
 };
 
-export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenantFormProps) => {
-  // initialValuesをメモ化して無限ループを防ぐ
-  const initialValues = useMemo(
-    () => ({
-      name: '',
-      description: '',
-      tenantType: TenantType.TEAM,
-      joinCode: '',
-      joinCodeExpiry: undefined,
-      joinCodeMaxUse: undefined,
-    }),
-    [],
-  );
-
+export const TenantForm = ({
+  onSubmit,
+  isSubmitting = false,
+  initialValues,
+  submitButtonText,
+  submittingText,
+}: TenantFormProps) => {
   const form = useForm(tenantSchema, {
     revalidate: true,
     initialValues,
@@ -170,7 +165,7 @@ export const CreateTenantForm = ({ onSubmit, isSubmitting = false }: CreateTenan
           disabled={isSubmitting}
           className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting ? '作成中...' : '作成'}
+          {isSubmitting ? submittingText : submitButtonText}
         </button>
       </div>
     </form>
