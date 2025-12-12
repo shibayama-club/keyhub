@@ -6,10 +6,12 @@ export const TenantList = ({
   tenants,
   isLoading,
   isError,
+  onDelete,
 }: {
   tenants: Tenant[];
   isLoading: boolean;
   isError: boolean;
+  onDelete?: (tenantId: string, tenantName: string) => void;
 }) => {
   const navigate = useNavigate();
   if (isLoading) {
@@ -51,7 +53,7 @@ export const TenantList = ({
               </div>
               {tenant.description && <p className="mt-1 text-sm text-gray-600">{tenant.description}</p>}
             </div>
-            <div>
+            <div className="flex space-x-2">
               <button
                 onClick={() => navigate(`/tenants/${tenant.id}/assign-room`)}
                 className="inline-flex items-center rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
@@ -66,6 +68,22 @@ export const TenantList = ({
                 </svg>
                 Room割り当て
               </button>
+              {onDelete && (
+                <button
+                  onClick={() => onDelete(tenant.id, tenant.name)}
+                  className="inline-flex items-center rounded-md border border-red-300 bg-white px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:outline-none"
+                >
+                  <svg className="mr-1.5 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  削除
+                </button>
+              )}
             </div>
           </div>
         </li>
