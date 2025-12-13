@@ -15,15 +15,18 @@
     "@connectrpc/connect": "^2.1.0",
     "@connectrpc/connect-query": "^2.2.0",
     "@connectrpc/connect-web": "^2.1.0",
+    "@hookform/resolvers": "^5.2.2",
     "@keyhub/gen": "workspace:*",
     "@sentry/react": "^10.20.0",
     "@tailwindcss/vite": "^4.1.14",
     "@tanstack/react-query": "^5.66.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-hook-form": "^7.68.0",
     "react-hot-toast": "^2.6.0",
     "react-router-dom": "^7.9.4",
     "tailwindcss": "^4.1.14",
+    "zod": "^4.1.12",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
