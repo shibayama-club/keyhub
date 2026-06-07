@@ -61,8 +61,6 @@ jobs:
             go-build-cache-v2-${{runner.os}}-${{runner.arch}}-
       - run: gofmt -w .
         working-directory: ./backend
-      - run: buf dep update
-        working-directory: ./proto
       - run: buf generate
         working-directory: ./proto
       - run: git diff --exit-code
