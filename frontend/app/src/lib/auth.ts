@@ -1,7 +1,9 @@
+import { createClient } from '@connectrpc/connect';
 import { create } from 'zustand';
+import { AuthService } from '../../../gen/src/keyhub/app/v1/app_pb';
+import { transport } from './connect';
 
 const STORAGE_USER_KEY = 'app_user';
-const STORAGE_CHECKED_KEY = 'app_auth_checked';
 
 interface User {
   id: string;
@@ -15,9 +17,11 @@ interface AuthState {
   user: User | null;
   isLoading: boolean;
   setUser: (user: User) => void;
-  checkAuth: () => void;
+  checkAuth: () => Promise<void>;
   clearAuth: () => void;
 }
+
+const authClient = createClient(AuthService, transport);
 
 export const useAuthStore = create<AuthState>((set, get) => ({
   isAuthenticated: false,
@@ -26,7 +30,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   setUser: (user: User) => {
     localStorage.setItem(STORAGE_USER_KEY, JSON.stringify(user));
-    localStorage.setItem(STORAGE_CHECKED_KEY, 'true');
 
     set({
       isAuthenticated: true,
@@ -35,25 +38,25 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 
-  checkAuth: () => {
-    const userStr = localStorage.getItem(STORAGE_USER_KEY);
-    const checked = localStorage.getItem(STORAGE_CHECKED_KEY);
-
-    if (!userStr || !checked) {
-      set({
-        isAuthenticated: false,
-        user: null,
-        isLoading: false,
-      });
-      return;
-    }
+  // アプリ起動時の認証確認。localStorageを信用せず、必ずサーバーの
+  // セッション（Cookie）をGetMeで検証する。検証に通った場合のみ認証済みとし、
+  // 失敗した場合はlocalStorageごとクリアしてログイン画面へ送る。
+  checkAuth: async () => {
+    set({ isLoading: true });
 
     try {
-      const user = JSON.parse(userStr) as User;
-      set({
-        isAuthenticated: true,
-        user,
-        isLoading: false,
+      const { user } = await authClient.getMe({});
+
+      if (!user) {
+        get().clearAuth();
+        return;
+      }
+
+      get().setUser({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.icon,
       });
     } catch {
       get().clearAuth();
@@ -62,7 +65,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearAuth: () => {
     localStorage.removeItem(STORAGE_USER_KEY);
-    localStorage.removeItem(STORAGE_CHECKED_KEY);
 
     set({
       isAuthenticated: false,
