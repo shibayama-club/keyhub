@@ -1,11 +1,26 @@
 import { useNavigate } from 'react-router-dom';
 import { Navbar } from '../components/Navbar';
 import { TenantList } from '../components/TenantList';
-import { useQueryGetAllTenants } from '../libs/query';
+import { useQueryGetAllTenants, useMutationDeleteTenant, queryClient } from '../libs/query';
+import toast from 'react-hot-toast';
+import * as Sentry from '@sentry/react';
 
 export const TenantsPage = () => {
   const navigate = useNavigate();
   const { data, isLoading, isError } = useQueryGetAllTenants();
+  const { mutateAsync: deleteTenant } = useMutationDeleteTenant();
+
+  const handleDeleteTenant = async (tenantId: string, tenantName: string) => {
+    try {
+      await deleteTenant({ id: tenantId });
+      await queryClient.invalidateQueries();
+      toast.success(`「${tenantName}」を削除しました`);
+    } catch (error) {
+      console.error('テナント削除エラー:', error);
+      Sentry.captureException(error);
+      toast.error('テナントの削除に失敗しました');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,7 +48,12 @@ export const TenantsPage = () => {
               <h3 className="text-lg leading-6 font-medium text-gray-900">既存のテナント</h3>
             </div>
             <div className="border-t border-gray-200">
-              <TenantList tenants={data?.tenants || []} isLoading={isLoading} isError={isError} />
+              <TenantList
+                tenants={data?.tenants || []}
+                isLoading={isLoading}
+                isError={isError}
+                onDelete={handleDeleteTenant}
+              />
             </div>
           </div>
         </div>

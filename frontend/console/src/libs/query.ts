@@ -8,6 +8,7 @@ import {
   getTenantById,
   updateTenant,
 } from '../../../gen/src/keyhub/console/v1/console-ConsoleService_connectquery';
+import { deleteTenant } from '../../../gen/src/keyhub/console/v1/tenant-ConsoleService_connectquery';
 import {
   createRoom,
   getAllRooms,
@@ -84,4 +85,8 @@ export const useMutationCreateKey = () => {
 
 export const useQueryGetKeysByRoom = (roomId: string) => {
   return useQuery(getKeysByRoom, { roomId });
+};
+
+export const useMutationDeleteTenant = () => {
+  return useMutation(deleteTenant);
 };
