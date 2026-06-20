@@ -2,14 +2,28 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import * as Sentry from '@sentry/react';
 import { Navbar } from '../components/Navbar';
-import { CreateTenantForm } from '../components/CreateTenantForm';
+import { TenantForm } from '../components/TenantForm';
 import { useMutationCreateTenant, queryClient } from '../libs/query';
 import { TenantType } from '../../../gen/src/keyhub/console/v1/console_pb';
 import { timestampFromDate } from '@bufbuild/protobuf/wkt';
+import { useMemo } from 'react';
 
 export const CreateTenantPage = () => {
   const navigate = useNavigate();
   const { mutateAsync: createTenant, isPending } = useMutationCreateTenant();
+
+  // initialValuesをメモ化して無限ループを防ぐ
+  const initialValues = useMemo(
+    () => ({
+      name: '',
+      description: '',
+      tenantType: TenantType.TEAM,
+      joinCode: '',
+      joinCodeExpiry: undefined,
+      joinCodeMaxUse: undefined,
+    }),
+    [],
+  );
 
   const handleSubmit = async (data: {
     name: string;
@@ -52,7 +66,13 @@ export const CreateTenantPage = () => {
         </div>
 
         <div className="rounded-lg border-2 border-gray-200 bg-white p-8 shadow-md">
-          <CreateTenantForm onSubmit={handleSubmit} isSubmitting={isPending} />
+          <TenantForm
+            onSubmit={handleSubmit}
+            isSubmitting={isPending}
+            initialValues={initialValues}
+            submitButtonText="作成"
+            submittingText="作成中..."
+          />
         </div>
       </div>
     </div>
